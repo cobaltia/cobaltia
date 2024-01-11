@@ -1,0 +1,15 @@
+{
+	"root": true,
+	"extends": ["neon/common", "neon/node", "neon/typescript", "neon/prettier"],
+	"parserOptions": {
+		"project": "./tsconfig.eslint.json"
+	},
+	"rules": {
+		// doesn't work with aliases imports
+		"import/extensions": "off"
+	},
+	"ignorePatterns": ["**/dist/*"],
+	"env": {
+		"jest": true
+	}
+}

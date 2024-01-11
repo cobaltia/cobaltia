@@ -1,0 +1,6 @@
+dist/
+node_modules/
+package.json
+.github/
+coverage
+pnpm-lock.yaml
