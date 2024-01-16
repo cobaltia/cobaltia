@@ -9,7 +9,7 @@
 		"#root/*": "./dist/*.js"
 	},
 	"scripts": {
-		"build": "tsc -b src",
+		"build": "pnpm exec prisma generate && tsc -b src",
 		"dev": "pnpm build && pnpm start",
 		"lint": "eslint --fix --ext ts src tests",
 		"format": "prettier --write .",
