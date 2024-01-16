@@ -8,6 +8,11 @@ process.env.NODE_ENV ??= 'development';
 setup(new URL('../.env', import.meta.url));
 
 export const CLIENT_OPTIONS: ClientOptions = {
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration],
-	partials: [Partials.Message],
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildModeration,
+		GatewayIntentBits.GuildMembers,
+	],
+	partials: [Partials.Message, Partials.GuildMember],
 };

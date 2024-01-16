@@ -1,15 +1,15 @@
 import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
-import { EmbedBuilder, time, type GuildMember, TimestampStyles, bold } from 'discord.js';
+import { EmbedBuilder, bold, type GuildMember, TimestampStyles, time } from 'discord.js';
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
 
-export class GuildMemberAdd extends Listener<typeof Events.GuildMemberAdd> {
+export class GuildMemberRemove extends Listener<typeof Events.GuildMemberRemove> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,
-			event: Events.GuildMemberAdd,
+			event: Events.GuildMemberRemove,
 		});
 	}
 
@@ -25,6 +25,7 @@ export class GuildMemberAdd extends Listener<typeof Events.GuildMemberAdd> {
 	}
 
 	private async handleOk(member: GuildMember, { logChannelId }: PrismaGuild) {
+		await this.container.client.users.fetch(member.id);
 		const { guild } = member;
 		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${member.guild.name}`));
 
@@ -54,17 +55,17 @@ export class GuildMemberAdd extends Listener<typeof Events.GuildMemberAdd> {
 
 	private buildEmbed(member: GuildMember) {
 		const icon = member.user.displayAvatarURL({ extension: 'png', forceStatic: false });
-		const created = new Date(member.user.createdTimestamp);
+		const joined = new Date(member.guild.joinedTimestamp);
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
-			.setTitle('New Member Joined')
+			.setTitle('Member Left')
 			.setDescription(
-				`Registered ${bold(time(created, TimestampStyles.RelativeTime))} on ${bold(
-					time(created, TimestampStyles.LongDate),
-				)}\nGuild Member Count: ${bold(`${member.guild.memberCount}`)}`,
+				`Joined ${bold(time(joined, TimestampStyles.RelativeTime))} on ${bold(
+					time(joined, TimestampStyles.LongDate),
+				)}\nGuid Member Count: ${bold(member.guild.memberCount.toLocaleString())}`,
 			)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(Colors.Green)
+			.setColor(Colors.Red)
 			.setTimestamp();
 	}
 }

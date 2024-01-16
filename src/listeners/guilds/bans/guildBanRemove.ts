@@ -3,8 +3,9 @@ import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { type Guild, type GuildBan, type User, EmbedBuilder } from 'discord.js';
 import { Colors } from '#lib/util/constants';
+import { getTag } from '#lib/util/util';
 
-export class GuildBanRemoveListener extends Listener {
+export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemove> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,
@@ -52,7 +53,7 @@ export class GuildBanRemoveListener extends Listener {
 	private buildEmbed(user: User, _guild: Guild) {
 		const icon = user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		return new EmbedBuilder()
-			.setAuthor({ name: user.username, iconURL: icon })
+			.setAuthor({ name: getTag(user), iconURL: icon })
 			.setTitle('User unbanned')
 			.setFooter({ text: `User ID: ${user.id}` })
 			.setColor(Colors.Blue)

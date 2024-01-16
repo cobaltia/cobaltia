@@ -12,8 +12,9 @@ import {
 	type GuildAuditLogsEntry,
 } from 'discord.js';
 import { Colors } from '#lib/util/constants';
+import { getTag } from '#lib/util/util';
 
-export class GuildBanAddListener extends Listener {
+export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,
@@ -66,7 +67,7 @@ export class GuildBanAddListener extends Listener {
 	private buildEmbed(user: User, reason: Nullish | string, audit: GuildAuditLogsEntry | Nullish): EmbedBuilder {
 		const icon = user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		return new EmbedBuilder()
-			.setAuthor({ name: user.username, iconURL: icon })
+			.setAuthor({ name: getTag(user), iconURL: icon })
 			.setTitle('Member Banned')
 			.setDescription(`**Reason:** ${reason ?? audit?.reason ?? 'No reason provided'}`)
 			.setFooter({ text: `User ID: ${user.id}` })
