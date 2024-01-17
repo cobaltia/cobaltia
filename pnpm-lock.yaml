@@ -23,6 +23,9 @@ dependencies:
   '@skyra/env-utilities':
     specifier: ^1.3.0
     version: 1.3.0
+  diff:
+    specifier: ^5.1.0
+    version: 5.1.0
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
@@ -34,6 +37,9 @@ devDependencies:
   '@commitlint/config-angular':
     specifier: ^18.4.4
     version: 18.4.4
+  '@types/diff':
+    specifier: ^5.0.9
+    version: 5.0.9
   '@types/eslint':
     specifier: ^8.56.1
     version: 8.56.1
@@ -1200,6 +1206,10 @@ packages:
       '@types/ms': 0.7.34
     dev: true
 
+  /@types/diff@5.0.9:
+    resolution: {integrity: sha512-RWVEhh/zGXpAVF/ZChwNnv7r4rvqzJ7lYNSmZSVTxjV0PBLf6Qu7RNg+SUtkpzxmiNkjCx0Xn2tPp7FIkshJwQ==}
+    dev: true
+
   /@types/eslint@8.56.1:
     resolution: {integrity: sha512-18PLWRzhy9glDQp3+wOgfLYRWlhgX0azxgJ63rdpoUHyrC9z0f5CkFburjQx4uD7ZCruw85ZtMt6K+L+R8fLJQ==}
     dependencies:
@@ -2263,7 +2273,6 @@ packages:
   /diff@5.1.0:
     resolution: {integrity: sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==}
     engines: {node: '>=0.3.1'}
-    dev: true
 
   /dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}

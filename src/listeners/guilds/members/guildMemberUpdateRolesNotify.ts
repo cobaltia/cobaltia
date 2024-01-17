@@ -5,7 +5,7 @@ import { type Role, type GuildMember, EmbedBuilder } from 'discord.js';
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
 
-export class GuildMemberUpdateRoleNotify extends Listener<typeof Events.GuildMemberUpdate> {
+export class GuildMemberUpdateRoleNotifyListener extends Listener<typeof Events.GuildMemberUpdate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,

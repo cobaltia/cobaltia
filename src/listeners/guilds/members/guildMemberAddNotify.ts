@@ -3,7 +3,7 @@ import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { type GuildMember } from 'discord.js';
 
-export class GuildMemberAddNotify extends Listener<typeof Events.GuildMemberAdd> {
+export class GuildMemberAddNotifyListener extends Listener<typeof Events.GuildMemberAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,

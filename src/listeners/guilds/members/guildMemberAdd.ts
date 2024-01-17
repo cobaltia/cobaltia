@@ -5,7 +5,7 @@ import { EmbedBuilder, time, type GuildMember, TimestampStyles, bold } from 'dis
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
 
-export class GuildMemberAdd extends Listener<typeof Events.GuildMemberAdd> {
+export class GuildMemberAddListener extends Listener<typeof Events.GuildMemberAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,

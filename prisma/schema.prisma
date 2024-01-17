@@ -24,3 +24,25 @@ model Guild {
 
   @@map("guilds")
 }
+
+model User {
+  id          String  @id @db.VarChar(19)
+  bankBalance Int     @default(0) @map("bank_balance")
+  bankLimit   Int     @default(0) @map("bank_limit")
+  wallet      Int     @default(0) @map("wallet")
+  bounty      Int     @default(0) @map("bounty")
+  experience  Int     @default(0) @map("experience")
+  level       Int     @default(0) @map("level")
+  Voice       Voice[]
+
+  @@map("user")
+}
+
+model Voice {
+  id        String   @id @db.VarChar(19)
+  user      User     @relation(fields: [id], references: [id])
+  channelId String   @map("channel_id") @db.VarChar(19)
+  guildId   String   @map("guild_id") @db.VarChar(19)
+  date      DateTime @default(now()) @map("date")
+  duration  Int      @default(0) @map("duration")
+}
