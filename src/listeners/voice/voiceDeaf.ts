@@ -6,11 +6,11 @@ import { Events } from '#lib/types';
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
 
-export class VoiceMuteListener extends Listener<typeof Events.VoiceMute> {
+export class VoiceDeafListener extends Listener<typeof Events.VoiceDeaf> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,
-			event: Events.VoiceMute,
+			event: Events.VoiceDeaf,
 		});
 	}
 
@@ -26,8 +26,8 @@ export class VoiceMuteListener extends Listener<typeof Events.VoiceMute> {
 	}
 
 	private async handleOk(member: GuildMember, next: VoiceState, { logChannelId }: PrismaGuild) {
-		const { guild } = next;
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${next.guild.name}`));
+		const { guild } = member;
+		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${member.guild.name}`));
 
 		const channel = guild.channels.cache.get(logChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
@@ -40,7 +40,7 @@ export class VoiceMuteListener extends Listener<typeof Events.VoiceMute> {
 			return this.handleErr(error);
 
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.create({ data: { id: next.guild.id } }),
+			this.container.prisma.guild.create({ data: { id: member.guild.id } }),
 		);
 
 		await result.match({
@@ -57,10 +57,10 @@ export class VoiceMuteListener extends Listener<typeof Events.VoiceMute> {
 		const icon = member.user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
-			.setTitle(next.selfMute ? 'Member Self Muted' : 'Member Muted')
+			.setTitle(next.selfDeaf ? 'Member Self Deafened' : 'Member Deafened')
 			.setDescription(`${bold('VC Channel')}: ${next.channel}`)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(next.selfMute ? Colors.Yellow : Colors.Red)
+			.setColor(next.selfDeaf ? Colors.Yellow : Colors.Red)
 			.setTimestamp();
 	}
 }
