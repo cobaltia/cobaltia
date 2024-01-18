@@ -14,6 +14,7 @@ export const CLIENT_OPTIONS: ClientOptions = {
 		GatewayIntentBits.GuildModeration,
 		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildVoiceStates,
 	],
 	partials: [Partials.Message, Partials.GuildMember],
 };
