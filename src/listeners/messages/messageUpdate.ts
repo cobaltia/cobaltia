@@ -2,11 +2,11 @@ import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { EmbedBuilder, type Message } from 'discord.js';
+import type { GuildMessage } from '#lib/types';
 import { getDifference } from '#lib/util/common';
 import { Colors } from '#lib/util/constants';
 import { isGuildMessage } from '#lib/util/discord-utilities';
 import { getTag } from '#lib/util/util';
-import type { GuildMessage } from '#lib/types';
 
 export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
