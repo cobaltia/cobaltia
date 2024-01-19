@@ -3,11 +3,11 @@ import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { EmbedBuilder, type Message } from 'discord.js';
+import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#lib/util/constants';
 import { getContent, getImage, isGuildMessage } from '#lib/util/discord-utilities';
 import { getTag } from '#lib/util/util';
-import { getGuild } from '#lib/database';
 
 export class MessageDeleteListener extends Listener<typeof Events.MessageDelete> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
