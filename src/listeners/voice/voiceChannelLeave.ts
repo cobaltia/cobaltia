@@ -67,7 +67,7 @@ export class VoiceChannelLeaveListener extends Listener<typeof Events.VoiceChann
 			.setTitle('Member Left VC')
 			.setDescription(this.buildDescription(previous, elapsed))
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(Colors.Green)
+			.setColor(Colors.Yellow)
 			.setTimestamp();
 	}
 

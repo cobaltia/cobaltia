@@ -60,7 +60,7 @@ export class VoiceStreamStartListener extends Listener<typeof Events.VoiceStream
 			.setTitle('Member Started Streaming')
 			.setDescription(`${bold('VC Channel')}: ${next.channel}`)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(Colors.Yellow)
+			.setColor(Colors.Black)
 			.setTimestamp();
 	}
 }

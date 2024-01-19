@@ -61,7 +61,7 @@ export class VoiceChannelSwitchListener extends Listener<typeof Events.VoiceChan
 			.setTitle('Member Switched VC')
 			.setDescription(this.buildDescription(previous, next))
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(Colors.Green)
+			.setColor(Colors.Black)
 			.setTimestamp();
 	}
 

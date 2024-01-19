@@ -31,19 +31,19 @@ export class RawVoiceStateUpdate extends Listener<typeof Events.VoiceStateUpdate
 			this.container.client.emit(CobaltEvents.VoiceChannelSwitch, previous, next);
 		}
 
-		if (!previous.mute && next.mute) {
+		if (!previous.mute && next.mute && previous.channelId) {
 			this.container.client.emit(CobaltEvents.VoiceMute, member, next);
 		}
 
-		if (previous.mute && !next.mute) {
+		if (previous.mute && !next.mute && previous.channelId) {
 			this.container.client.emit(CobaltEvents.VoiceUnmute, member, previous);
 		}
 
-		if (!previous.deaf && next.deaf) {
+		if (!previous.deaf && next.deaf && previous.channelId) {
 			this.container.client.emit(CobaltEvents.VoiceDeaf, member, next);
 		}
 
-		if (previous.deaf && !next.deaf) {
+		if (previous.deaf && !next.deaf && previous.channelId) {
 			this.container.client.emit(CobaltEvents.VoiceUndeaf, member, previous);
 		}
 

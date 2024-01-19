@@ -60,7 +60,7 @@ export class VoiceStreamStopListener extends Listener<typeof Events.VoiceStreamS
 			.setTitle('Member Stopped Streaming')
 			.setDescription(`${bold('VC Channel')}: ${previous.channel}`)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(Colors.Yellow)
+			.setColor(Colors.Black)
 			.setTimestamp();
 	}
 }

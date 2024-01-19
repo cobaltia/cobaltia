@@ -60,7 +60,7 @@ export class VoiceUnmuteListener extends Listener<typeof Events.VoiceUnmute> {
 			.setTitle(previous.selfMute ? 'Member Self Unmuted' : 'Member Unmuted')
 			.setDescription(`${bold('VC Channel')}: ${previous.channel}`)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(previous.selfMute ? Colors.Yellow : Colors.Green)
+			.setColor(previous.selfMute ? Colors.Black : Colors.Green)
 			.setTimestamp();
 	}
 }

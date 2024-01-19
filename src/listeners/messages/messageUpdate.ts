@@ -63,7 +63,7 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 			.setAuthor({ name: getTag(message.author), iconURL: icon })
 			.setTitle('Message Edited')
 			.setDescription(getDifference(old.content, message.content))
-			.setColor(Colors.Blue)
+			.setColor(Colors.Yellow)
 			.setTimestamp();
 	}
 }

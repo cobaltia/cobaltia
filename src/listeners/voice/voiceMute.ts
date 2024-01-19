@@ -60,7 +60,7 @@ export class VoiceMuteListener extends Listener<typeof Events.VoiceMute> {
 			.setTitle(next.selfMute ? 'Member Self Muted' : 'Member Muted')
 			.setDescription(`${bold('VC Channel')}: ${next.channel}`)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(next.selfMute ? Colors.Yellow : Colors.Red)
+			.setColor(next.selfMute ? Colors.Black : Colors.Red)
 			.setTimestamp();
 	}
 }

@@ -60,7 +60,7 @@ export class VoiceDeafListener extends Listener<typeof Events.VoiceDeaf> {
 			.setTitle(next.selfDeaf ? 'Member Self Deafened' : 'Member Deafened')
 			.setDescription(`${bold('VC Channel')}: ${next.channel}`)
 			.setFooter({ text: `User ID: ${member.id}` })
-			.setColor(next.selfDeaf ? Colors.Yellow : Colors.Red)
+			.setColor(next.selfDeaf ? Colors.Black : Colors.Red)
 			.setTimestamp();
 	}
 }
