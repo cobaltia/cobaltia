@@ -1,7 +1,8 @@
-import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
+import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Listener, Result } from '@sapphire/framework';
 import { EmbedBuilder, bold, type GuildMember, type VoiceState } from 'discord.js';
+import { getGuild } from '#lib/database';
 import { Events } from '#lib/types';
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
@@ -15,13 +16,11 @@ export class VoiceDeafListener extends Listener<typeof Events.VoiceDeaf> {
 	}
 
 	public async run(member: GuildMember, next: VoiceState) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.findUniqueOrThrow({ where: { id: member.guild.id } }),
-		);
+		const result = await Result.fromAsync(async () => getGuild(member.guild.id));
 
 		await result.match({
 			ok: async data => this.handleOk(member, next, data),
-			err: async error => this.handleDbErr(error, member, next),
+			err: async error => this.handleErr(error),
 		});
 	}
 
@@ -33,20 +32,6 @@ export class VoiceDeafListener extends Listener<typeof Events.VoiceDeaf> {
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
 
 		return channel.send({ embeds: [this.buildEmbed(member, next)] });
-	}
-
-	private async handleDbErr(error: unknown, member: GuildMember, next: VoiceState) {
-		if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025'))
-			return this.handleErr(error);
-
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.create({ data: { id: member.guild.id } }),
-		);
-
-		await result.match({
-			ok: async data => this.handleOk(member, next, data),
-			err: async error => this.handleErr(error),
-		});
 	}
 
 	private async handleErr(error: unknown) {

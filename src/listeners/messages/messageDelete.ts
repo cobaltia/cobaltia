@@ -1,4 +1,4 @@
-import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
+import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
@@ -7,6 +7,7 @@ import type { GuildMessage } from '#lib/types';
 import { Colors } from '#lib/util/constants';
 import { getContent, getImage, isGuildMessage } from '#lib/util/discord-utilities';
 import { getTag } from '#lib/util/util';
+import { getGuild } from '#lib/database';
 
 export class MessageDeleteListener extends Listener<typeof Events.MessageDelete> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
@@ -19,13 +20,11 @@ export class MessageDeleteListener extends Listener<typeof Events.MessageDelete>
 	public async run(message: Message) {
 		if (message.partial || !isGuildMessage(message)) return;
 
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.findUniqueOrThrow({ where: { id: message.guild.id } }),
-		);
+		const result = await Result.fromAsync(async () => getGuild(message.guild.id));
 
 		await result.match({
 			ok: async data => this.handleOk(message, data),
-			err: async error => this.handleDbErr(error, message),
+			err: async error => this.handleErr(error),
 		});
 	}
 
@@ -36,20 +35,6 @@ export class MessageDeleteListener extends Listener<typeof Events.MessageDelete>
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
 
 		return channel.send({ embeds: [this.buildEmbed(message)] });
-	}
-
-	private async handleDbErr(error: unknown, message: GuildMessage) {
-		if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025'))
-			return this.handleErr(error);
-
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.create({ data: { id: message.guild.id } }),
-		);
-
-		await result.match({
-			ok: async data => this.handleOk(message, data),
-			err: async error => this.handleDbErr(error, message),
-		});
 	}
 
 	private async handleErr(error: unknown) {

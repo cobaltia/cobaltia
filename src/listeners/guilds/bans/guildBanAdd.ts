@@ -1,4 +1,4 @@
-import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
+import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import type { Nullish } from '@sapphire/utilities';
@@ -13,6 +13,7 @@ import {
 } from 'discord.js';
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
+import { getGuild } from '#lib/database';
 
 export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
@@ -23,13 +24,11 @@ export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 	}
 
 	public async run({ guild, user, reason }: GuildBan) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.findUniqueOrThrow({ where: { id: guild.id } }),
-		);
+		const result = await Result.fromAsync(async () => getGuild(guild.id));
 
 		await result.match({
 			ok: async data => this.handleOk(user, guild, reason, data),
-			err: async error => this.handleDbErr(error, user, guild, reason),
+			err: async error => this.handleErr(error),
 		});
 	}
 
@@ -45,19 +44,6 @@ export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
 
 		return channel.send({ embeds: [this.buildEmbed(user, reason, audit)] });
-	}
-
-	private async handleDbErr(error: unknown, user: User, guild: Guild, reason: Nullish | string) {
-		if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025'))
-			return this.handleErr(error);
-
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.create({ data: { id: guild.id } }),
-		);
-		await result.match({
-			ok: async data => this.handleOk(user, guild, reason, data),
-			err: async error => this.handleErr(error),
-		});
 	}
 
 	private async handleErr(error: unknown) {

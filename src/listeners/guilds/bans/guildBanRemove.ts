@@ -1,9 +1,10 @@
-import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
+import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { type Guild, type GuildBan, type User, EmbedBuilder } from 'discord.js';
 import { Colors } from '#lib/util/constants';
 import { getTag } from '#lib/util/util';
+import { getGuild } from '#lib/database';
 
 export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemove> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
@@ -14,12 +15,10 @@ export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemov
 	}
 
 	public async run({ guild, user }: GuildBan) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.findUniqueOrThrow({ where: { id: guild.id } }),
-		);
+		const result = await Result.fromAsync(async () => getGuild(guild.id));
 		await result.match({
 			ok: async data => this.handleOk(user, guild, data),
-			err: async error => this.handleDbErr(error, user, guild),
+			err: async error => this.handleErr(error),
 		});
 	}
 
@@ -30,20 +29,6 @@ export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemov
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
 
 		return channel.send({ embeds: [this.buildEmbed(user, guild)] });
-	}
-
-	private async handleDbErr(error: unknown, user: User, guild: Guild) {
-		if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025'))
-			return this.handleErr(error);
-
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.create({ data: { id: guild.id } }),
-		);
-
-		await result.match({
-			ok: async data => this.handleOk(user, guild, data),
-			err: async error => this.handleErr(error),
-		});
 	}
 
 	private async handleErr(error: unknown) {

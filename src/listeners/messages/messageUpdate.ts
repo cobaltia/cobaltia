@@ -1,7 +1,8 @@
-import { Prisma, type Guild as PrismaGuild } from '@prisma/client';
+import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { EmbedBuilder, type Message } from 'discord.js';
+import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
 import { getDifference } from '#lib/util/common';
 import { Colors } from '#lib/util/constants';
@@ -17,15 +18,14 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 	}
 
 	public async run(old: Message, message: Message) {
+		// TODO(Isidro): old.content is nullable which breaks the bot
 		if (!isGuildMessage(message) || old.content === message.content) return;
 
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.findUniqueOrThrow({ where: { id: message.guild.id } }),
-		);
+		const result = await Result.fromAsync(async () => getGuild(message.guild.id));
 
 		await result.match({
 			ok: async data => this.handleOk(old, message, data),
-			err: async error => this.handleDbErr(error, old, message),
+			err: async error => this.handleErr(error),
 		});
 	}
 
@@ -36,20 +36,6 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
 
 		return channel.send({ embeds: [this.buildEmbed(old, message)] });
-	}
-
-	private async handleDbErr(error: unknown, old: Message, message: GuildMessage) {
-		if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025'))
-			return this.handleErr(error);
-
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.guild.create({ data: { id: message.guild.id } }),
-		);
-
-		await result.match({
-			ok: async data => this.handleOk(old, message, data),
-			err: async error => this.handleDbErr(error, old, message),
-		});
 	}
 
 	private async handleErr(error: unknown) {
