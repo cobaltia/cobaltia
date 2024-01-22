@@ -40,7 +40,7 @@ export class GuildMemberRemoveListener extends Listener<typeof Events.GuildMembe
 
 	private buildEmbed(member: GuildMember) {
 		const icon = member.user.displayAvatarURL({ extension: 'png', forceStatic: false });
-		const joined = new Date(member.guild.joinedTimestamp);
+		const joined = member.joinedAt!;
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
 			.setTitle('Member Left')

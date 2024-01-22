@@ -1,12 +1,13 @@
 import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
+import { isNullish } from '@sapphire/utilities';
 import { EmbedBuilder, type Message } from 'discord.js';
 import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
 import { getDifference } from '#lib/util/common';
 import { Colors } from '#lib/util/constants';
-import { isGuildMessage } from '#lib/util/discord-utilities';
+import { getImage, isGuildMessage } from '#lib/util/discord-utilities';
 import { getTag } from '#lib/util/util';
 
 export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate> {
@@ -18,8 +19,7 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 	}
 
 	public async run(old: Message, message: Message) {
-		// TODO(Isidro): old.content is nullable which breaks the bot
-		if (!isGuildMessage(message) || old.content === message.content) return;
+		if (isNullish(old.content) || !isGuildMessage(message) || old.content === message.content) return;
 
 		const result = await Result.fromAsync(async () => getGuild(message.guild.id));
 
@@ -45,11 +45,22 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 	private buildEmbed(old: Message, message: GuildMessage) {
 		const icon = message.author.displayAvatarURL({ extension: 'png', forceStatic: false });
 
-		return new EmbedBuilder()
+		const embed = new EmbedBuilder()
 			.setAuthor({ name: getTag(message.author), iconURL: icon })
 			.setTitle('Message Edited')
-			.setDescription(getDifference(old.content, message.content))
+			.setDescription(this.buildDescription(old, message))
 			.setColor(Colors.Yellow)
 			.setTimestamp();
+
+		const image = getImage(message);
+		if (!isNullish(image)) embed.setImage(image);
+
+		return embed;
+	}
+
+	private buildDescription(old: Message, message: GuildMessage) {
+		// TODO(Isidro): Trim the message content if it's too long
+		const description = [`[Jump to message](${message.url})`, getDifference(old.content, message.content)];
+		return description.join('\n');
 	}
 }
