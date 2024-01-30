@@ -13,7 +13,7 @@ import {
 } from 'discord.js';
 import { getGuild } from '#lib/database';
 import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/util';
+import { getTag } from '#lib/util/discord-utilities';
 
 export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

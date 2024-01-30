@@ -4,7 +4,7 @@ import { Events, Listener, Result } from '@sapphire/framework';
 import { type Role, type GuildMember, EmbedBuilder } from 'discord.js';
 import { getGuild } from '#lib/database';
 import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/util';
+import { getTag } from '#lib/util/discord-utilities';
 
 export class GuildMemberUpdateRoleNotifyListener extends Listener<typeof Events.GuildMemberUpdate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

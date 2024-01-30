@@ -6,7 +6,7 @@ import { EmbedBuilder, bold, type GuildMember, type VoiceState } from 'discord.j
 import { getGuild } from '#lib/database';
 import { Events } from '#lib/types';
 import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/util';
+import { getTag } from '#lib/util/discord-utilities';
 
 export class VoiceChannelLeaveListener extends Listener<typeof Events.VoiceChannelLeave> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

@@ -7,8 +7,7 @@ import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
 import { getDifference } from '#lib/util/common';
 import { Colors } from '#lib/util/constants';
-import { getImage, isGuildMessage } from '#lib/util/discord-utilities';
-import { getTag } from '#lib/util/util';
+import { getImage, getTag, isGuildMessage } from '#lib/util/discord-utilities';
 
 export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
@@ -19,7 +18,8 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 	}
 
 	public async run(old: Message, message: Message) {
-		if (isNullish(old.content) || !isGuildMessage(message) || old.content === message.content) return;
+		if (isNullish(old.content) || !isGuildMessage(message) || old.content === message.content || message.author.bot)
+			return;
 
 		const result = await Result.fromAsync(async () => getGuild(message.guild.id));
 

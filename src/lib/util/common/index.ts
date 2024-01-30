@@ -1,1 +1,2 @@
-export * from './string.js';
+export * from './strings.js';
+export * from './numbers.js';

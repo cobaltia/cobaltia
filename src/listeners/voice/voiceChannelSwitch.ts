@@ -5,7 +5,7 @@ import { EmbedBuilder, bold, type VoiceState } from 'discord.js';
 import { getGuild } from '#lib/database';
 import { Events } from '#lib/types';
 import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/util';
+import { getTag } from '#lib/util/discord-utilities';
 
 export class VoiceChannelSwitchListener extends Listener<typeof Events.VoiceChannelSwitch> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
