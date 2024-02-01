@@ -41,7 +41,7 @@ export class ProfileCommand extends Command {
 
 	public async contextMenuRun(interaction: Command.ContextMenuCommandInteraction) {
 		await interaction.deferReply();
-		const user = this.container.client.users.cache.get(interaction.targetId)!;
+		const user = await this.container.client.users.fetch(interaction.targetId);
 
 		const result = await Result.fromAsync(async () => getUser(user.id));
 

@@ -1,4 +1,18 @@
+/* eslint-disable id-length */
 import { isNumber, roundNumber } from '@sapphire/utilities';
+
+const suffixes = {
+	k: 1e3,
+	m: 1e6,
+	b: 1e9,
+	t: 1e12,
+	'%': 1,
+};
+
+export type suffix = keyof typeof suffixes | '';
+
+// eslint-disable-next-line prefer-named-capture-group
+const NUMBER_SUFFIX = /^([\d.]+)([%bkmt]?)$/i;
 
 export function formatNumber(num: number | string) {
 	if (!isNumber(num)) return null;
@@ -18,4 +32,16 @@ export function formatMoney(num: number | string, compact = false) {
 
 export function addBonus(amount: number, bonus: number) {
 	return roundNumber(amount + amount * bonus);
+}
+
+export function getNumberWithSuffix(num: string) {
+	const match = NUMBER_SUFFIX.exec(num);
+	if (match === null) return null;
+	const number = Number(match[1]);
+	const suffix = match[2].toLowerCase() as suffix;
+	return { number, suffix };
+}
+
+export function parseNumberWithSuffix(number: number, suffix: suffix) {
+	return suffix === '' ? number : number * suffixes[suffix];
 }
