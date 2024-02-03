@@ -1,11 +1,14 @@
 import { type User as PrismaUser } from '@prisma/client';
 import { Command, Result } from '@sapphire/framework';
-import { DurationFormatter } from '@sapphire/time-utilities';
-import { EmbedBuilder, TimestampStyles, type User, inlineCode, time, ApplicationCommandType } from 'discord.js';
+import {
+	type User,
+	ApplicationCommandType,
+	ActionRowBuilder,
+	type MessageActionRowComponentBuilder,
+	StringSelectMenuBuilder,
+} from 'discord.js';
 import { getUser } from '#lib/database';
-import { compactNumber, formatMoney, formatNumber } from '#lib/util/common';
-import { getTag } from '#lib/util/discord-utilities';
-import { nextLevel } from '#lib/util/experience';
+import { profileEmbed } from '#lib/util/discord-embeds';
 
 export class ProfileCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -56,16 +59,22 @@ export class ProfileCommand extends Command {
 		data: PrismaUser,
 		user: User,
 	) {
-		const embed = new EmbedBuilder()
-			.setTitle(`${getTag(user)}'s Profile`)
-			.setFields(
-				{ name: 'Level', value: this.getLevel(data), inline: true },
-				{ name: 'Money', value: this.getMoney(data), inline: true },
-				{ name: 'Other', value: this.getOther(data), inline: true },
-				{ name: 'Voice Chat', value: await this.getVoice(data), inline: true },
-			);
+		const embed = await profileEmbed(data, user);
+
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder()
+					.setCustomId(`select-menu:profile:${user.id}`)
+					.addOptions([
+						{ label: 'Main Profile', value: 'profile' },
+						{ label: 'Experience Stats', value: 'experience' },
+					])
+					.setPlaceholder('Select a different profile view'),
+			),
+		];
 		return interaction.editReply({
 			embeds: [embed],
+			components,
 		});
 	}
 
@@ -75,44 +84,5 @@ export class ProfileCommand extends Command {
 	) {
 		this.container.logger.error(error);
 		return interaction.editReply('Failed to retrieve profile');
-	}
-
-	private getLevel(data: PrismaUser) {
-		const next = nextLevel(data.level);
-		const content = [
-			`Level: ${inlineCode(formatNumber(data.level)!)}`,
-			`Experience: ${inlineCode(`${compactNumber(data.experience)!}/${compactNumber(next.unwrap()!)}`)}`,
-		];
-		return content.join('\n');
-	}
-
-	private getMoney(data: PrismaUser) {
-		const content = [
-			`Wallet: ${inlineCode(formatMoney(data.wallet, true)!)}`,
-			`Bank: ${inlineCode(formatMoney(data.bankBalance, true)!)}`,
-			`Net: ${inlineCode(formatMoney(data.wallet + data.bankBalance, true)!)}`,
-			`Bounty: ${inlineCode(formatMoney(data.bounty, true)!)}`,
-		];
-		return content.join('\n');
-	}
-
-	private getOther(data: PrismaUser) {
-		const content = [`Social Credit: ${inlineCode(`${data.socialCredit.toString()}/2000`)}`];
-		return content.join('\n');
-	}
-
-	private async getVoice(data: PrismaUser) {
-		const formatter = new DurationFormatter();
-		const voiceData = await this.container.prisma.voice.findMany({
-			where: { userId: data.id },
-			orderBy: { date: 'desc' },
-		});
-		if (voiceData.length === 0) return 'No voice data found';
-		const content = [
-			`Last Joined: ${time(voiceData[0].date, TimestampStyles.RelativeTime)}`,
-			`Last Duration: ${inlineCode(formatter.format(voiceData[0].duration))}`,
-			`Total Time: ${inlineCode(formatter.format(voiceData.reduce((acc, curr) => acc + curr.duration, 0)))}`,
-		];
-		return content.join('\n');
 	}
 }
