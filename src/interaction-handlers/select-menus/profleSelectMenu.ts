@@ -1,6 +1,13 @@
 import { InteractionHandler, InteractionHandlerTypes, Result, UserError, container } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
-import { EmbedBuilder, inlineCode, type StringSelectMenuInteraction } from 'discord.js';
+import {
+	ActionRowBuilder,
+	EmbedBuilder,
+	inlineCode,
+	type MessageActionRowComponentBuilder,
+	StringSelectMenuBuilder,
+	type StringSelectMenuInteraction,
+} from 'discord.js';
 import { getUser } from '#lib/database';
 import { formatNumber } from '#lib/util/common';
 import { profileEmbed } from '#lib/util/discord-embeds';
@@ -44,8 +51,19 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 
 		const data = dataResult.unwrap();
 		const embed = await profileEmbed(data, user);
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder()
+					.setCustomId(`select-menu:profile:${user.id}`)
+					.addOptions([
+						{ label: 'Main Profile', value: 'profile', default: true },
+						{ label: 'Experience Stats', value: 'experience' },
+					])
+					.setPlaceholder('Select a different profile view'),
+			),
+		];
 
-		await interaction.editReply({ embeds: [embed] });
+		await interaction.editReply({ embeds: [embed], components });
 	}
 
 	private async handleExperience(
@@ -83,8 +101,19 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 			.setTitle(`${user.tag}'s Experience Stats`)
 			.setDescription(description.join('\n'))
 			.setFooter({ text: `Leaderboard Position: #${users.findIndex(user => user.id === userId) + 1}` });
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder()
+					.setCustomId(`select-menu:profile:${user.id}`)
+					.addOptions([
+						{ label: 'Main Profile', value: 'profile' },
+						{ label: 'Experience Stats', value: 'experience', default: true },
+					])
+					.setPlaceholder('Select a different profile view'),
+			),
+		];
 
-		await interaction.editReply({ embeds: [embed] });
+		await interaction.editReply({ embeds: [embed], components });
 	}
 
 	private async handleErr(interaction: StringSelectMenuInteraction, error: unknown) {

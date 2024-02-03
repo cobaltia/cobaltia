@@ -66,7 +66,7 @@ export class ProfileCommand extends Command {
 				new StringSelectMenuBuilder()
 					.setCustomId(`select-menu:profile:${user.id}`)
 					.addOptions([
-						{ label: 'Main Profile', value: 'profile' },
+						{ label: 'Main Profile', value: 'profile', default: true },
 						{ label: 'Experience Stats', value: 'experience' },
 					])
 					.setPlaceholder('Select a different profile view'),
