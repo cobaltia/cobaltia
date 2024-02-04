@@ -1,4 +1,4 @@
-import { InteractionHandler, InteractionHandlerTypes, Result, UserError } from '@sapphire/framework';
+import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -35,16 +35,12 @@ export class BankModalHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 
 		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
-		if (result.isErr()) {
-			return this.handleErr(interaction, result.unwrapErr());
-		}
+		if (result.isErr()) throw result.unwrapErr();
 
 		const amount = interaction.fields.getTextInputValue('input:bank:deposit');
 		const data = result.unwrap();
 		const nextResult = await Result.fromAsync(async () => handleDeposit(data, amount));
-		if (nextResult.isErr()) {
-			return this.handleErr(interaction, nextResult.unwrapErr());
-		}
+		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
 		const { next } = nextResult.unwrap();
 		const embed = new EmbedBuilder()
@@ -78,16 +74,12 @@ export class BankModalHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 
 		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
-		if (result.isErr()) {
-			return this.handleErr(interaction, result.unwrapErr());
-		}
+		if (result.isErr()) throw result.unwrapErr();
 
 		const amount = interaction.fields.getTextInputValue('input:bank:withdraw');
 		const data = result.unwrap();
 		const nextResult = await Result.fromAsync(async () => handleWithdraw(data, amount));
-		if (nextResult.isErr()) {
-			return this.handleErr(interaction, nextResult.unwrapErr());
-		}
+		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
 		const { next } = nextResult.unwrap();
 		const embed = new EmbedBuilder()
@@ -115,11 +107,5 @@ export class BankModalHandler extends InteractionHandler {
 		];
 
 		await interaction.editReply({ embeds: [embed], components });
-	}
-
-	private async handleErr(interaction: ModalSubmitInteraction, error: unknown) {
-		this.container.logger.error(error);
-		await interaction.editReply("Something went wrong. It's so over.....");
-		if (error instanceof UserError) await interaction.followUp({ content: error.message, ephemeral: true });
 	}
 }

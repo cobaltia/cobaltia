@@ -1,4 +1,4 @@
-import { Identifiers, InteractionHandler, InteractionHandlerTypes, UserError } from '@sapphire/framework';
+import { InteractionHandler, InteractionHandlerTypes, UserError } from '@sapphire/framework';
 import { ModalBuilder, type ButtonInteraction, TextInputBuilder, TextInputStyle, ActionRowBuilder } from 'discord.js';
 
 export class BankButtonHandler extends InteractionHandler {
@@ -20,11 +20,13 @@ export class BankButtonHandler extends InteractionHandler {
 
 	public async run(interaction: ButtonInteraction, result: InteractionHandler.ParseResult<this>) {
 		const userId = result.userId;
-		if (userId !== interaction.user.id)
+		if (userId !== interaction.user.id) {
 			throw new UserError({
-				identifier: Identifiers.ArgumentUserError,
+				identifier: 'UserFail',
 				message: "You cannot interact with someone else's bank.",
 			});
+		}
+
 		if (interaction.customId.startsWith('button:bank:deposit')) return this.handleDeposit(interaction);
 		if (interaction.customId.startsWith('button:bank:withdraw')) return this.handleWithdraw(interaction);
 	}

@@ -32,6 +32,8 @@ export const CLIENT_OPTIONS: ClientOptions = {
 		GatewayIntentBits.GuildVoiceStates,
 	],
 	partials: [Partials.Message, Partials.GuildMember],
+	loadDefaultErrorListeners: false,
+	loadSubcommandErrorListeners: false,
 	defaultCooldown: {
 		delay: 2 * Time.Second,
 		limit: 1,

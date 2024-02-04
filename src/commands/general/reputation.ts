@@ -36,12 +36,20 @@ export class ReputationCommand extends Subcommand {
 
 	public async chatInputGive(interaction: Subcommand.ChatInputCommandInteraction) {
 		await interaction.deferReply();
-		const giveResult = await Result.fromAsync(() => getUser(interaction.user.id));
-		if (giveResult.isErr()) return this.handleError(interaction, giveResult.unwrapErr());
-
 		const user = interaction.options.getUser('user', true);
+
+		if (user.id === interaction.user.id) {
+			throw new UserError({
+				identifier: 'reputationGiveSelf',
+				message: 'You cannot give reputation to yourself.',
+			});
+		}
+
+		const giveResult = await Result.fromAsync(() => getUser(interaction.user.id));
+		if (giveResult.isErr()) throw giveResult.unwrapErr();
+
 		const targetResult = await Result.fromAsync(() => getUser(user.id));
-		if (targetResult.isErr()) return this.handleError(interaction, targetResult.unwrapErr());
+		if (targetResult.isErr()) throw targetResult.unwrapErr();
 
 		const giver = giveResult.unwrap();
 		const target = targetResult.unwrap();
@@ -71,7 +79,7 @@ export class ReputationCommand extends Subcommand {
 	public async chatInputCheck(interaction: Subcommand.ChatInputCommandInteraction) {
 		await interaction.deferReply();
 		const result = await Result.fromAsync(() => getUser(interaction.user.id));
-		if (result.isErr()) return this.handleError(interaction, result.unwrapErr());
+		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
 
@@ -82,11 +90,5 @@ export class ReputationCommand extends Subcommand {
 		const embed = new EmbedBuilder().setDescription(description.join('\n'));
 
 		return interaction.editReply({ embeds: [embed] });
-	}
-
-	private async handleError(interaction: Subcommand.ChatInputCommandInteraction, error: unknown) {
-		this.container.logger.error(error);
-		if (error instanceof UserError) await interaction.followUp({ content: error.message, ephemeral: true });
-		else await interaction.editReply("Something went wrong. It's so over.....");
 	}
 }

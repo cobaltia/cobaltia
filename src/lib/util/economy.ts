@@ -62,7 +62,9 @@ export async function handleWithdraw(
 	const canWithdraw = data.bankBalance;
 
 	if (canWithdraw === 0) {
-		return err(new UserError({ identifier: 'NoMoney', message: 'You have no money in your bank account.' }));
+		const message = ['You have no money in your bank account.'];
+		if (data.wallet === 0) message.push('You are poor....');
+		return err(new UserError({ identifier: 'NoMoney', message: message.join('\n') }));
 	}
 
 	if (!raw && amount.toLowerCase() === 'all') amountToWithdraw = data.bankBalance;

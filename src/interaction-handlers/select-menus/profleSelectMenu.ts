@@ -1,4 +1,4 @@
-import { InteractionHandler, InteractionHandlerTypes, Result, UserError, container } from '@sapphire/framework';
+import { InteractionHandler, InteractionHandlerTypes, Result, container } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import {
 	ActionRowBuilder,
@@ -45,9 +45,7 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 
 		const dataResult = await Result.fromAsync(async () => getUser(userId));
 
-		if (dataResult.isErr()) {
-			return this.handleErr(interaction, dataResult.unwrapErr());
-		}
+		if (dataResult.isErr()) throw dataResult.unwrapErr();
 
 		const data = dataResult.unwrap();
 		const embed = await profileEmbed(data, user);
@@ -75,9 +73,7 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		const user = await this.container.client.users.fetch(userId);
 
 		const dataResult = await Result.fromAsync(async () => getUser(userId));
-		if (dataResult.isErr()) {
-			return this.handleErr(interaction, dataResult.unwrapErr());
-		}
+		if (dataResult.isErr()) dataResult.unwrapErr();
 
 		const users = await container.prisma.user.findMany({
 			orderBy: [
@@ -114,11 +110,5 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		];
 
 		await interaction.editReply({ embeds: [embed], components });
-	}
-
-	private async handleErr(interaction: StringSelectMenuInteraction, error: unknown) {
-		this.container.logger.error(error);
-		await interaction.editReply("Something went wrong. It's so over.....");
-		if (error instanceof UserError) await interaction.followUp({ content: error.message, ephemeral: true });
 	}
 }

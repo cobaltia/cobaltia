@@ -38,7 +38,9 @@ export class ProfileCommand extends Command {
 
 		await result.match({
 			ok: async data => this.handleOk(interaction, data, user),
-			err: async error => this.handleError(interaction, error),
+			err: async error => {
+				throw error;
+			},
 		});
 	}
 
@@ -50,7 +52,9 @@ export class ProfileCommand extends Command {
 
 		await result.match({
 			ok: async data => this.handleOk(interaction, data, user),
-			err: async error => this.handleError(interaction, error),
+			err: async error => {
+				throw error;
+			},
 		});
 	}
 
@@ -76,13 +80,5 @@ export class ProfileCommand extends Command {
 			embeds: [embed],
 			components,
 		});
-	}
-
-	private async handleError(
-		interaction: Command.ChatInputCommandInteraction | Command.ContextMenuCommandInteraction,
-		error: unknown,
-	) {
-		this.container.logger.error(error);
-		return interaction.editReply('Failed to retrieve profile');
 	}
 }

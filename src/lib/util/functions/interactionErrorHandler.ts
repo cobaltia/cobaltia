@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/new-for-builtins */
+import { fileURLToPath } from 'node:url';
 import {
 	UserError,
 	type InteractionHandlerError,
@@ -9,8 +10,8 @@ import {
 } from '@sapphire/framework';
 import { codeBlock, EmbedBuilder, type Interaction } from 'discord.js';
 import { OWNERS } from '#root/config';
-import { Colors } from '#util/constants';
-import { getErrorLine, getLinkLine } from './errorHelpers.js';
+import { Colors, rootFolder } from '#util/constants';
+import { getErrorLine, getLinkLine } from '#util/functions/errorHelpers';
 
 const unknownErrorMessage =
 	'An error occurred that I was not able to identify. Please try again. If error persists, please contact Juan.';
@@ -35,6 +36,8 @@ export async function handleInteractionError(
 	} catch (error) {
 		client.emit(Events.Error, error as Error);
 	}
+
+	return undefined;
 }
 
 function generateUnexpectedErrorMessage(interaction: Interaction, error: Error) {
@@ -49,8 +52,7 @@ async function userError(interaction: Interaction, error: UserError) {
 }
 
 async function alert(interaction: Interaction, content: string) {
-	if (!interaction.isAnySelectMenu() && !interaction.isButton()) return;
-
+	if (!interaction.isAnySelectMenu() && !interaction.isButton() && !interaction.isModalSubmit()) return;
 	if (interaction.replied || interaction.deferred) {
 		return interaction.editReply({
 			content,
@@ -67,9 +69,10 @@ async function alert(interaction: Interaction, content: string) {
 
 async function sendErrorChannel(interaction: Interaction, handler: InteractionHandler, error: Error) {
 	const webhook = container.webhookError;
-	if (!webhook || (!interaction.isAnySelectMenu() && !interaction.isButton())) return;
 
-	const interactionReply = await interaction.fetchReply();
+	if (!webhook || (!interaction.isAnySelectMenu() && !interaction.isButton() && !interaction.isModalSubmit())) return;
+
+	const interactionReply = interaction.message ?? (await interaction.fetchReply());
 
 	const lines = [getLinkLine(interactionReply), getHandlerLine(handler), getErrorLine(error)];
 
@@ -83,5 +86,5 @@ async function sendErrorChannel(interaction: Interaction, handler: InteractionHa
 }
 
 function getHandlerLine(handler: InteractionHandler) {
-	return `Handler: ${handler.location.full}`;
+	return `**Handler**: ${handler.location.full.slice(fileURLToPath(rootFolder).length)}`;
 }

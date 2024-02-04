@@ -83,7 +83,7 @@ export class BankCommand extends Subcommand {
 
 		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
 		if (result.isErr()) {
-			return this.handleError(interaction, result.unwrapErr());
+			throw result.unwrapErr();
 		}
 
 		const data = result.unwrap();
@@ -120,14 +120,14 @@ export class BankCommand extends Subcommand {
 
 		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
 		if (result.isErr()) {
-			return this.handleError(interaction, result.unwrapErr());
+			throw result.unwrapErr();
 		}
 
 		const amount = interaction.options.getString('amount', true);
 		const data = result.unwrap();
 		const nextResult = await handleDeposit(data, amount);
 		if (nextResult.isErr()) {
-			return this.handleError(interaction, nextResult.unwrapErr());
+			throw nextResult.unwrapErr();
 		}
 
 		const updated = nextResult.unwrap();
@@ -148,15 +148,17 @@ export class BankCommand extends Subcommand {
 
 		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
 		if (result.isErr()) {
-			return this.handleError(interaction, result.unwrapErr());
+			throw result.unwrapErr();
 		}
 
 		const amount = interaction.options.getString('amount', true);
 		const data = result.unwrap();
 		const nextResult = await handleWithdraw(data, amount);
 		if (nextResult.isErr()) {
-			return this.handleError(interaction, nextResult.unwrapErr());
+			throw nextResult.unwrapErr();
 		}
+
+		console.log('withdraw 2');
 
 		const updated = nextResult.unwrap();
 		const { next, money } = updated;
@@ -174,16 +176,20 @@ export class BankCommand extends Subcommand {
 
 	public async chatInputTransfer(interaction: Subcommand.ChatInputCommandInteraction) {
 		await interaction.deferReply();
+		const user = interaction.options.getUser('user', true);
+
+		if (user.id === interaction.user.id) {
+			throw new UserError({ identifier: 'SelfTransfer', message: 'You cannot transfer money to yourself.' });
+		}
 
 		const transferorResult = await Result.fromAsync(async () => getUser(interaction.user.id));
 		if (transferorResult.isErr()) {
-			return this.handleError(interaction, transferorResult.unwrapErr());
+			throw transferorResult.unwrapErr();
 		}
 
-		const user = interaction.options.getUser('user', true);
 		const transfereeResult = await Result.fromAsync(async () => getUser(user.id));
 		if (transfereeResult.isErr()) {
-			return this.handleError(interaction, transfereeResult.unwrapErr());
+			throw transfereeResult.unwrapErr();
 		}
 
 		const amount = interaction.options.getString('amount', true);
@@ -192,22 +198,16 @@ export class BankCommand extends Subcommand {
 
 		const raw = getNumberWithSuffix(amount);
 		if ((!options.has(amount.toLowerCase()) && raw === null) || (raw && raw.number <= 0)) {
-			return this.handleError(
-				interaction,
-				new UserError({
-					identifier: 'InvalidAmount',
-					message: 'I need a valid amount greater than 0 to transfer.',
-				}),
-			);
+			throw new UserError({
+				identifier: 'InvalidAmount',
+				message: 'I need a valid amount greater than 0 to transfer.',
+			});
 		}
 
 		let amountToTransfer = raw ? parseNumberWithSuffix(raw.number, raw.suffix) : 0;
 		const canTransfer = transferor.bankBalance;
 		if (canTransfer === 0) {
-			return this.handleError(
-				interaction,
-				new UserError({ identifier: 'NoMoney', message: 'You have no money in your bank account.' }),
-			);
+			throw new UserError({ identifier: 'NoMoney', message: 'You have no money in your bank account.' });
 		}
 
 		if (!raw && amount.toLowerCase() === 'all') amountToTransfer = transferor.bankBalance;
@@ -229,11 +229,5 @@ export class BankCommand extends Subcommand {
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 
 		await interaction.editReply({ embeds: [embed] });
-	}
-
-	private async handleError(interaction: Subcommand.ChatInputCommandInteraction, error: unknown) {
-		this.container.logger.error(error);
-		if (error instanceof UserError) await interaction.followUp({ content: error.message, ephemeral: true });
-		else await interaction.editReply("Something went wrong. It's so over.....");
 	}
 }

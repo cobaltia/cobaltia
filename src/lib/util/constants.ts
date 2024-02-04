@@ -1,3 +1,7 @@
+import { URL } from 'node:url';
+
+export const rootFolder = new URL('../../../', import.meta.url);
+
 export const enum Colors {
 	Red = 0x8f0a0a,
 	Green = 0x118511,

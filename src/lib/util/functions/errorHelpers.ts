@@ -8,6 +8,7 @@ import {
 	type Command,
 	Events,
 } from '@sapphire/framework';
+import type { ChatInputSubcommandErrorPayload } from '@sapphire/plugin-subcommands';
 import {
 	codeBlock,
 	EmbedBuilder,
@@ -26,7 +27,10 @@ const unknownErrorMessage =
 
 export async function handleChatInputOrContextMenuCommandError(
 	error: Error,
-	{ command, interaction }: ChatInputCommandErrorPayload | ContextMenuCommandErrorPayload,
+	{
+		command,
+		interaction,
+	}: ChatInputCommandErrorPayload | ChatInputSubcommandErrorPayload | ContextMenuCommandErrorPayload,
 ) {
 	if (error instanceof UserError) return userError(interaction, error);
 
