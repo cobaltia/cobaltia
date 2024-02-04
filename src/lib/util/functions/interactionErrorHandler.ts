@@ -9,7 +9,7 @@ import {
 } from '@sapphire/framework';
 import { codeBlock, EmbedBuilder, type Interaction } from 'discord.js';
 import { OWNERS } from '#root/config';
-import { Colors } from '../constants';
+import { Colors } from '#util/constants';
 import { getErrorLine, getLinkLine } from './errorHelpers.js';
 
 const unknownErrorMessage =

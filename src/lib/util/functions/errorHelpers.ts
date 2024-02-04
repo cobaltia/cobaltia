@@ -19,7 +19,7 @@ import {
 	hideLinkEmbed,
 } from 'discord.js';
 import { OWNERS } from '#root/config';
-import { Colors } from '../constants';
+import { Colors } from '#util/constants';
 
 const unknownErrorMessage =
 	'An error occurred that I was not able to identify. Please try again. If error persists, please contact Juan.';

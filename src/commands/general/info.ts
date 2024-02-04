@@ -4,7 +4,7 @@ import { version as sapphireVersion, Command } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
 import { EmbedBuilder, TimestampStyles, hideLinkEmbed, hyperlink, time, version } from 'discord.js';
-import { Colors } from '#lib/util/constants';
+import { Colors } from '#util/constants';
 
 export class InfoCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {

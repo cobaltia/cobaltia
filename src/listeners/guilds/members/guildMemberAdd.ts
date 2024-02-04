@@ -3,8 +3,8 @@ import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { EmbedBuilder, time, type GuildMember, TimestampStyles, bold } from 'discord.js';
 import { getGuild } from '#lib/database';
-import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/discord-utilities';
+import { Colors } from '#util/constants';
+import { getTag } from '#util/discord-utilities';
 
 export class GuildMemberAddListener extends Listener<typeof Events.GuildMemberAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

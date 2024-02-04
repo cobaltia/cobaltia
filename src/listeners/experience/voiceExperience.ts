@@ -5,9 +5,9 @@ import { isNullish, roundNumber } from '@sapphire/utilities';
 import { bold, type GuildMember, type VoiceState } from 'discord.js';
 import { getUser } from '#lib/database';
 import { Events } from '#lib/types';
-import { addBonus, formatMoney } from '#lib/util/common';
-import { calculateBonus } from '#lib/util/discord-utilities';
-import { handleExperience } from '#lib/util/experience';
+import { addBonus, formatMoney } from '#util/common';
+import { calculateBonus } from '#util/discord-utilities';
+import { handleExperience } from '#util/experience';
 
 export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannelLeave> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

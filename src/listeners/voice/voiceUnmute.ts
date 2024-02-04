@@ -4,8 +4,8 @@ import { Listener, Result } from '@sapphire/framework';
 import { EmbedBuilder, bold, type GuildMember, type VoiceState } from 'discord.js';
 import { getGuild } from '#lib/database';
 import { Events } from '#lib/types';
-import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/discord-utilities';
+import { Colors } from '#util/constants';
+import { getTag } from '#util/discord-utilities';
 
 export class VoiceUnmuteListener extends Listener<typeof Events.VoiceUnmute> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

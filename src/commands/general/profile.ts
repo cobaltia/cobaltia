@@ -8,7 +8,7 @@ import {
 	StringSelectMenuBuilder,
 } from 'discord.js';
 import { getUser } from '#lib/database';
-import { profileEmbed } from '#lib/util/discord-embeds';
+import { profileEmbed } from '#util/discord-embeds';
 
 export class ProfileCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {

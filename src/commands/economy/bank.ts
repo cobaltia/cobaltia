@@ -10,8 +10,8 @@ import {
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { getUser } from '#lib/database';
-import { formatMoney, getNumberWithSuffix, parseNumberWithSuffix } from '#lib/util/common';
-import { handleDeposit, handleWithdraw, options } from '#lib/util/economy';
+import { formatMoney, getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
+import { handleDeposit, handleWithdraw, options } from '#util/economy';
 
 export class BankCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {

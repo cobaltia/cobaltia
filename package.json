@@ -6,7 +6,8 @@
 	"type": "module",
 	"imports": {
 		"#lib/*": "./dist/lib/*.js",
-		"#lib/util/common": "./dist/lib/util/common/index.js",
+		"#util/*": "./dist/lib/util/*.js",
+		"#util/common": "./dist/lib/util/common/index.js",
 		"#lib/types": "./dist/lib/types/index.js",
 		"#lib/database": "./dist/lib/database/index.js",
 		"#root/*": "./dist/*.js"

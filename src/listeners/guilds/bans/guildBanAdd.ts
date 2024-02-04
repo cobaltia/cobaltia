@@ -12,8 +12,8 @@ import {
 	type GuildAuditLogsEntry,
 } from 'discord.js';
 import { getGuild } from '#lib/database';
-import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/discord-utilities';
+import { Colors } from '#util/constants';
+import { getTag } from '#util/discord-utilities';
 
 export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

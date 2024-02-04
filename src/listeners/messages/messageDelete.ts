@@ -5,8 +5,8 @@ import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { EmbedBuilder, type Message } from 'discord.js';
 import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
-import { Colors } from '#lib/util/constants';
-import { getContent, getImage, getTag, isGuildMessage } from '#lib/util/discord-utilities';
+import { Colors } from '#util/constants';
+import { getContent, getImage, getTag, isGuildMessage } from '#util/discord-utilities';
 
 export class MessageDeleteListener extends Listener<typeof Events.MessageDelete> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

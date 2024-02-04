@@ -9,9 +9,9 @@ import {
 	type StringSelectMenuInteraction,
 } from 'discord.js';
 import { getUser } from '#lib/database';
-import { formatNumber } from '#lib/util/common';
-import { profileEmbed } from '#lib/util/discord-embeds';
-import { nextLevel } from '#lib/util/experience';
+import { formatNumber } from '#util/common';
+import { profileEmbed } from '#util/discord-embeds';
+import { nextLevel } from '#util/experience';
 
 export class ProfileSelectMenuHandler extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {

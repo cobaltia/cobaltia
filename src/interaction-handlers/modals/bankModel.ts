@@ -8,8 +8,8 @@ import {
 	type ModalSubmitInteraction,
 } from 'discord.js';
 import { getUser } from '#lib/database';
-import { formatMoney } from '#lib/util/common';
-import { handleDeposit, handleWithdraw } from '#lib/util/economy';
+import { formatMoney } from '#util/common';
+import { handleDeposit, handleWithdraw } from '#util/economy';
 
 export class BankModalHandler extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {

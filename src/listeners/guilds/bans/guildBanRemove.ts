@@ -3,8 +3,8 @@ import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { type Guild, type GuildBan, type User, EmbedBuilder } from 'discord.js';
 import { getGuild } from '#lib/database';
-import { Colors } from '#lib/util/constants';
-import { getTag } from '#lib/util/discord-utilities';
+import { Colors } from '#util/constants';
+import { getTag } from '#util/discord-utilities';
 
 export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemove> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

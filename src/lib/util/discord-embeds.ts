@@ -2,9 +2,9 @@ import type { User as PrismaUser } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import { EmbedBuilder, inlineCode, time, TimestampStyles, type User } from 'discord.js';
-import { compactNumber, formatMoney, formatNumber } from '#lib/util/common';
-import { getTag } from '#lib/util/discord-utilities';
-import { nextLevel } from '#lib/util/experience';
+import { compactNumber, formatMoney, formatNumber } from '#util/common';
+import { getTag } from '#util/discord-utilities';
+import { nextLevel } from '#util/experience';
 
 export async function profileEmbed(data: PrismaUser, user: User) {
 	return new EmbedBuilder()

@@ -4,8 +4,8 @@ import { roundNumber } from '@sapphire/utilities';
 import { type Message } from 'discord.js';
 import { getUser } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
-import { isGuildMessage } from '#lib/util/discord-utilities';
-import { handleExperience } from '#lib/util/experience';
+import { isGuildMessage } from '#util/discord-utilities';
+import { handleExperience } from '#util/experience';
 
 export class MessageExperienceListener extends Listener<typeof Events.MessageCreate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

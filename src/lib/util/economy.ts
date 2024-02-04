@@ -3,7 +3,7 @@ import type { User as PrismaUser } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
-import { getNumberWithSuffix, parseNumberWithSuffix } from '#lib/util/common';
+import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
 
 export const options = new Set<string>(['all', 'half', 'max']);
 

@@ -4,8 +4,8 @@ import { roundNumber } from '@sapphire/utilities';
 import type { Message } from 'discord.js';
 import { getUser } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
-import { addBonus } from '#lib/util/common';
-import { calculateBonus, isGuildMessage } from '#lib/util/discord-utilities';
+import { addBonus } from '#util/common';
+import { calculateBonus, isGuildMessage } from '#util/discord-utilities';
 
 export class AddBankSpaceListener extends Listener<typeof Events.MessageCreate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {

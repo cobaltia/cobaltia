@@ -5,9 +5,9 @@ import { isNullish } from '@sapphire/utilities';
 import { EmbedBuilder, type Message } from 'discord.js';
 import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
-import { getDifference } from '#lib/util/common';
-import { Colors } from '#lib/util/constants';
-import { getImage, getTag, isGuildMessage } from '#lib/util/discord-utilities';
+import { getDifference } from '#util/common';
+import { Colors } from '#util/constants';
+import { getImage, getTag, isGuildMessage } from '#util/discord-utilities';
 
 export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate> {
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
