@@ -28,7 +28,9 @@ export class ProfileCommand extends Command {
 				),
 		);
 
-		registry.registerContextMenuCommand(builder => builder.setName(this.name).setType(ApplicationCommandType.User));
+		registry.registerContextMenuCommand(builder =>
+			builder.setName('View Profile').setType(ApplicationCommandType.User),
+		);
 	}
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {

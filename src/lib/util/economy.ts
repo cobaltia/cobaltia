@@ -86,3 +86,51 @@ export async function handleWithdraw(
 
 	return ok({ next, money });
 }
+
+export async function handleTransfer(
+	transferor: PrismaUser,
+	transferee: PrismaUser,
+	amount: string,
+): Promise<Result<{ transferor: PrismaUser; transferee: PrismaUser; money: number }, UserError>> {
+	const raw = getNumberWithSuffix(amount);
+	if ((!options.has(amount.toLowerCase()) && raw === null) || (raw && raw.number <= 0)) {
+		return err(
+			new UserError({
+				identifier: 'InvalidAmount',
+				message: 'I need a valid amount greater than 0 to transfer.',
+			}),
+		);
+	}
+
+	let amountToTransfer = raw ? parseNumberWithSuffix(raw.number, raw.suffix) : 0;
+	const canTransfer = transferor.bankBalance;
+	if (canTransfer === 0) {
+		return err(new UserError({ identifier: 'NoMoney', message: 'You have no money in your bank account.' }));
+	}
+
+	if (!raw && amount.toLowerCase() === 'all') amountToTransfer = transferor.bankBalance;
+	if (!raw && amount.toLowerCase() === 'half') amountToTransfer = roundNumber(transferor.bankBalance / 2);
+	if (!raw && amount.toLowerCase() === 'max') amountToTransfer = transferor.bankBalance;
+	if (raw?.suffix === '%') amountToTransfer = roundNumber(transferor.bankBalance * (amountToTransfer / 100));
+
+	const money = Math.min(amountToTransfer, canTransfer);
+	if (money <= 0) {
+		return err(
+			new UserError({
+				identifier: 'NotEnoughMoney',
+				message: 'You do not have enough money to transfer.',
+			}),
+		);
+	}
+
+	const nextTransferor = await container.prisma.user.update({
+		where: { id: transferor.id },
+		data: { bankBalance: transferor.bankBalance - money },
+	});
+	const nextTransferee = await container.prisma.user.update({
+		where: { id: transferee.id },
+		data: { wallet: transferee.wallet + money },
+	});
+
+	return ok({ transferor: nextTransferor, transferee: nextTransferee, money });
+}

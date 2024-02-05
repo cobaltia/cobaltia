@@ -45,3 +45,14 @@ export function getNumberWithSuffix(num: string) {
 export function parseNumberWithSuffix(number: number, suffix: suffix) {
 	return suffix === '' ? number : number * suffixes[suffix];
 }
+
+export function pickWeightedRandom(weights: number[]) {
+	const list = [];
+	for (const [i, weight] of weights.entries()) {
+		for (let j = 0; j < weight; j++) {
+			list.push(i);
+		}
+	}
+
+	return list[Math.floor(Math.random() * list.length)];
+}

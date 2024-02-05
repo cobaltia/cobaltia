@@ -1,7 +1,6 @@
 import { UserError } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { Result } from '@sapphire/result';
-import { roundNumber } from '@sapphire/utilities';
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -10,8 +9,8 @@ import {
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { getUser } from '#lib/database';
-import { formatMoney, getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
-import { handleDeposit, handleWithdraw, options } from '#util/economy';
+import { formatMoney } from '#util/common';
+import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
 export class BankCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -196,35 +195,12 @@ export class BankCommand extends Subcommand {
 		const transferor = transferorResult.unwrap();
 		const transferee = transfereeResult.unwrap();
 
-		const raw = getNumberWithSuffix(amount);
-		if ((!options.has(amount.toLowerCase()) && raw === null) || (raw && raw.number <= 0)) {
-			throw new UserError({
-				identifier: 'InvalidAmount',
-				message: 'I need a valid amount greater than 0 to transfer.',
-			});
+		const result = await Result.fromAsync(async () => handleTransfer(transferor, transferee, amount));
+		if (result.isErr()) {
+			throw result.unwrapErr();
 		}
 
-		let amountToTransfer = raw ? parseNumberWithSuffix(raw.number, raw.suffix) : 0;
-		const canTransfer = transferor.bankBalance;
-		if (canTransfer === 0) {
-			throw new UserError({ identifier: 'NoMoney', message: 'You have no money in your bank account.' });
-		}
-
-		if (!raw && amount.toLowerCase() === 'all') amountToTransfer = transferor.bankBalance;
-		if (!raw && amount.toLowerCase() === 'half') amountToTransfer = roundNumber(transferor.bankBalance / 2);
-		if (!raw && amount.toLowerCase() === 'max') amountToTransfer = transferor.bankBalance;
-		if (raw?.suffix === '%') amountToTransfer = roundNumber(transferor.bankBalance * (amountToTransfer / 100));
-
-		const money = Math.min(amountToTransfer, canTransfer);
-
-		await this.container.prisma.user.update({
-			where: { id: transferor.id },
-			data: { bankBalance: transferor.bankBalance - money },
-		});
-		await this.container.prisma.user.update({
-			where: { id: transferee.id },
-			data: { wallet: transferee.wallet + money },
-		});
+		const { money } = result.unwrap();
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 

@@ -9,7 +9,7 @@ import {
 } from 'discord.js';
 import { getUser } from '#lib/database';
 import { formatMoney } from '#util/common';
-import { handleDeposit, handleWithdraw } from '#util/economy';
+import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
 export class BankModalHandler extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
@@ -20,15 +20,19 @@ export class BankModalHandler extends InteractionHandler {
 	}
 
 	public override parse(interaction: ModalSubmitInteraction) {
-		const ids = new Set(['modal:bank:deposit', 'modal:bank:withdraw']);
-		if (!ids.has(interaction.customId)) return this.none();
+		const customId = interaction.customId;
+		if (customId === 'modal:bank:deposit') return this.some();
+		if (customId === 'modal:bank:withdraw') return this.some();
+		if (customId.startsWith('modal:bank:transfer')) return this.some({ targetId: customId.split(':')[3] });
 
-		return this.some();
+		return this.none();
 	}
 
-	public async run(interaction: ModalSubmitInteraction) {
+	public async run(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
+		console.log(interaction.customId);
 		if (interaction.customId === 'modal:bank:deposit') return this.handleDeposit(interaction);
 		if (interaction.customId === 'modal:bank:withdraw') return this.handleWithdraw(interaction);
+		if (interaction.customId.startsWith('modal:bank:transfer')) return this.handleTransfer(interaction, result);
 	}
 
 	private async handleDeposit(interaction: ModalSubmitInteraction) {
@@ -107,5 +111,38 @@ export class BankModalHandler extends InteractionHandler {
 		];
 
 		await interaction.editReply({ embeds: [embed], components });
+	}
+
+	private async handleTransfer(
+		interaction: ModalSubmitInteraction,
+		{ targetId }: InteractionHandler.ParseResult<this>,
+	) {
+		await interaction.deferReply();
+
+		const user = await interaction.client.users.fetch(targetId);
+
+		const transferorResult = await Result.fromAsync(async () => getUser(interaction.user.id));
+		if (transferorResult.isErr()) {
+			throw transferorResult.unwrapErr();
+		}
+
+		const transfereeResult = await Result.fromAsync(async () => getUser(user.id));
+		if (transfereeResult.isErr()) {
+			throw transfereeResult.unwrapErr();
+		}
+
+		const amount = interaction.fields.getTextInputValue('input:bank:transfer');
+		const transferor = transferorResult.unwrap();
+		const transferee = transfereeResult.unwrap();
+		const result = await Result.fromAsync(async () => handleTransfer(transferor, transferee, amount));
+		if (result.isErr()) {
+			throw result.unwrapErr();
+		}
+
+		const { money } = result.unwrap();
+
+		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
+
+		await interaction.editReply({ embeds: [embed] });
 	}
 }
