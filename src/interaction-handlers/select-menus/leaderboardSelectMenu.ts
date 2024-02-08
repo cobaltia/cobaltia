@@ -163,12 +163,13 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: [{ bankBalance: 'desc' }, { wallet: 'desc' }] }),
-		);
+		const result = await Result.fromAsync(async () => this.container.prisma.user.findMany());
 		if (result.isErr()) throw result.unwrapErr();
 
-		const data = result.unwrap();
+		const data = result
+			.unwrap()
+			.sort((a, b) => b.netWorth - a.netWorth)
+			.slice(0, 10);
 		const description = [];
 
 		for (const [index, userData] of data.entries()) {
