@@ -10,7 +10,6 @@ export class ContextMenuCommandErrorListener extends Listener<typeof Events.Cont
 	}
 
 	public async run(error: Error, payload: ContextMenuCommandErrorPayload) {
-		console.log('ContextMenuCommandError');
 		return handleChatInputOrContextMenuCommandError(error, payload);
 	}
 }

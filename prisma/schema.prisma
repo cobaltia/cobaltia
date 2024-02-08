@@ -13,6 +13,7 @@ datasource db {
 model Client {
   id          String @id @db.VarChar(19)
   bankBalance Int    @default(0) @map("bank_balance")
+  tax         Float  @default(0) @map("tax")
 
   @@map("client")
 }

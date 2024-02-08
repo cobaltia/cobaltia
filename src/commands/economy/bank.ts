@@ -157,8 +157,6 @@ export class BankCommand extends Subcommand {
 			throw nextResult.unwrapErr();
 		}
 
-		console.log('withdraw 2');
-
 		const updated = nextResult.unwrap();
 		const { next, money } = updated;
 

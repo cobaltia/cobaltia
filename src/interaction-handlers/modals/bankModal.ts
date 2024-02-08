@@ -29,7 +29,6 @@ export class BankModalHandler extends InteractionHandler {
 	}
 
 	public async run(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
-		console.log(interaction.customId);
 		if (interaction.customId === 'modal:bank:deposit') return this.handleDeposit(interaction);
 		if (interaction.customId === 'modal:bank:withdraw') return this.handleWithdraw(interaction);
 		if (interaction.customId.startsWith('modal:bank:transfer')) return this.handleTransfer(interaction, result);

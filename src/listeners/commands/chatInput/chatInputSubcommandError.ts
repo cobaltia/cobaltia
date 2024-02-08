@@ -11,7 +11,6 @@ export class ChatInputSubcommandErrorListener extends Listener<typeof Subcommand
 	}
 
 	public async run(error: Error, payload: ChatInputSubcommandErrorPayload) {
-		console.log('ChatInputSubcommandError');
 		return handleChatInputOrContextMenuCommandError(error, payload);
 	}
 }
