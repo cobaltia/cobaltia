@@ -31,6 +31,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		if (value === 'level') return this.handleLevel(interaction);
 		if (value === 'reputation') return this.handleReputation(interaction);
 		if (value === 'networth') return this.handleNetWorth(interaction);
+		if (value === 'socialcredit') return this.handleSocialCredit(interaction);
 	}
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
@@ -58,6 +59,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
+					{ label: 'Social Credit', value: 'socialcredit' },
 				]),
 			),
 		];
@@ -90,6 +92,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
+					{ label: 'Social Credit', value: 'socialcredit' },
 				]),
 			),
 		];
@@ -122,6 +125,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Reputation', value: 'reputation' },
+					{ label: 'Social Credit', value: 'socialcredit' },
 				]),
 			),
 		];
@@ -154,6 +158,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation', default: true },
+					{ label: 'Social Credit', value: 'socialcredit' },
 				]),
 			),
 		];
@@ -187,6 +192,40 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Net Worth', value: 'networth', default: true },
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
+					{ label: 'Social Credit', value: 'socialcredit' },
+				]),
+			),
+		];
+
+		await interaction.editReply({ embeds: [embed], components });
+	}
+
+	private async handleSocialCredit(interaction: StringSelectMenuInteraction) {
+		await interaction.deferUpdate();
+		const result = await Result.fromAsync(async () =>
+			this.container.prisma.user.findMany({ take: 10, orderBy: { socialCredit: 'desc' } }),
+		);
+		if (result.isErr()) throw result.unwrapErr();
+
+		const data = result.unwrap();
+		const description = [];
+
+		for (const [index, userData] of data.entries()) {
+			const user = await this.container.client.users.fetch(userData.id);
+			const socialCredit = userData.socialCredit.toString();
+			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${socialCredit} `)} - ${user}`);
+		}
+
+		const embed = new EmbedBuilder().setTitle('Social Credit Leaderboard').setDescription(description.join('\n'));
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+					{ label: 'Wallet', value: 'wallet' },
+					{ label: 'Bank', value: 'bank' },
+					{ label: 'Net Worth', value: 'networth' },
+					{ label: 'Level', value: 'level' },
+					{ label: 'Reputation', value: 'reputation' },
+					{ label: 'Social Credit', value: 'socialcredit', default: true },
 				]),
 			),
 		];
