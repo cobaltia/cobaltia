@@ -1,5 +1,7 @@
 import type { User as PrismaUser } from '@prisma/client';
 import { Events, Listener, Result } from '@sapphire/framework';
+import { type RateLimit, RateLimitManager } from '@sapphire/ratelimits';
+import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
 import { type Message } from 'discord.js';
 import { getUser } from '#lib/database';
@@ -18,21 +20,26 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 	public async run(message: Message) {
 		if (message.author.bot || !isGuildMessage(message) || message.system || message.webhookId !== null) return;
 
+		const ratelimit = this.getManager(message.author.id).acquire(message.author.id);
+
+		if (ratelimit.limited) return;
+
 		const result = await Result.fromAsync(async () => getUser(message.author.id));
 
 		await result.match({
-			ok: async data => this.handleOk(message, data),
+			ok: async data => this.handleOk(message, data, ratelimit),
 			err: async error => this.handleErr(error),
 		});
 	}
 
-	private async handleOk(message: GuildMessage, data: PrismaUser) {
+	private async handleOk(message: GuildMessage, data: PrismaUser, ratelimit: RateLimit<string>) {
 		const experience = roundNumber(Math.random() * 11 + 15);
 
 		const result = await handleExperience(experience, data);
 
 		await result.match({
 			ok: async data => {
+				ratelimit.consume();
 				if (data === false) return;
 				message.channel.send(`Congratulations ${message.author}, you have leveled up to level ${data.level}!`);
 			},
@@ -42,5 +49,14 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 
 	private async handleErr(error: unknown) {
 		this.container.logger.error(error);
+	}
+
+	private getManager(id: string) {
+		const manager = this.container.experienceBucket.get(id);
+		if (manager) return manager;
+
+		const newManager = new RateLimitManager(Time.Minute);
+		this.container.experienceBucket.set(id, newManager);
+		return newManager;
 	}
 }

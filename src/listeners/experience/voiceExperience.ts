@@ -37,7 +37,7 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 		const time = elapsed / Time.Minute;
 		const experience = roundNumber(Math.random() * 11 + time);
 
-		const amount = roundNumber(Math.random() * 11 + 15);
+		const amount = roundNumber(Math.random() * 11 + time);
 		const bonus = await calculateBonus(member.user, member.guild);
 		const total = addBonus(amount, bonus);
 

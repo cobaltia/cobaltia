@@ -20,7 +20,12 @@ function parseWebhookError(): WebhookClientData | null {
 	};
 }
 
+function parseRedisUri() {
+	return envParseString('REDIS_URI', 'redis://localhost:6379');
+}
+
 export const WEBHOOK_ERROR = parseWebhookError();
+export const REDIS_URI = parseRedisUri();
 
 export const CLIENT_OPTIONS: ClientOptions = {
 	intents: [
@@ -43,6 +48,7 @@ export const CLIENT_OPTIONS: ClientOptions = {
 
 declare module '@skyra/env-utilities' {
 	interface Env {
+		REDIS_URI: string;
 		WEBHOOK_ERROR_ID: string;
 		WEBHOOK_ERROR_TOKEN: string;
 	}

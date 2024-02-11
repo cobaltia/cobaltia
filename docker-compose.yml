@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  cobaltia:
+    build: ./
+    container_name: cobaltia-bot
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: 'redis:alpine'
+    container_name: redis
+    restart: unless-stopped
