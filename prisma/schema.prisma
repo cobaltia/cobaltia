@@ -37,6 +37,7 @@ model User {
   socialCredit       Int      @default(1000) @map("social_credit")
   reputation         Int      @default(0)
   reputationCooldown DateTime @default(now()) @map("reputation_cooldown")
+  workCooldown       DateTime @default(now()) @map("work_cooldown")
   Voice              Voice[]
 
   @@map("users")

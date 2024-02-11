@@ -38,6 +38,9 @@ dependencies:
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
+  dnd5e-dice-roller:
+    specifier: ^0.0.13
+    version: 0.0.13
   ioredis:
     specifier: ^5.3.2
     version: 5.3.2
@@ -2366,6 +2369,10 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    dev: false
+
+  /dnd5e-dice-roller@0.0.13:
+    resolution: {integrity: sha512-2gc/ocy4J3KRG+32hGOJyA+wVYP/YhP49rG8dM3/0VZvzoUbMAcCt2z0Kt95pX4s5EA1xJEVJEAgwpDGdl/L7A==}
     dev: false
 
   /doctrine@2.1.0:
