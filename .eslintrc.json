@@ -6,7 +6,8 @@
 	},
 	"rules": {
 		// doesn't work with aliases imports
-		"import/extensions": "off"
+		"import/extensions": "off",
+		"@typescript-eslint/consistent-type-definitions": ["error", "interface"]
 	},
 	"ignorePatterns": ["**/dist/*"],
 	"env": {
