@@ -3,7 +3,7 @@ import { Subcommand } from '@sapphire/plugin-subcommands';
 import { roundNumber } from '@sapphire/utilities';
 import { EmbedBuilder, inlineCode } from 'discord.js';
 import { roll } from 'dnd5e-dice-roller';
-import { getUser } from '#lib/database';
+import { getClient, getUser } from '#lib/database';
 import { formatMoney, getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
 import { Colors } from '#util/constants';
 import { options } from '#util/economy';
@@ -46,8 +46,12 @@ export class PlayCommand extends Subcommand {
 		await interaction.deferReply();
 		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
 		if (result.isErr()) throw result.unwrapErr();
-
 		const data = result.unwrap();
+
+		const clientResult = await Result.fromAsync(async () => getClient(this.container.client.id!));
+		if (clientResult.isErr()) throw clientResult.unwrapErr();
+		const client = clientResult.unwrap();
+
 		let amountToGamble = raw ? parseNumberWithSuffix(raw.number, raw.suffix) : 0;
 		const canGamble = data.wallet;
 		if (canGamble === 0) {
@@ -79,12 +83,21 @@ export class PlayCommand extends Subcommand {
 
 		if (houseRoll < userRoll) {
 			const won = roundNumber(amountToGamble * 1.5);
+			const tax = roundNumber(won * (client.tax / 100));
+			await this.container.prisma.client.update({
+				where: { id: this.container.client.id! },
+				data: { bankBalance: { increment: tax } },
+			});
 			const next = await this.container.prisma.user.update({
 				where: { id: interaction.user.id },
-				data: { wallet: { increment: won } },
+				data: { wallet: { increment: won - tax } },
 			});
 			embed
-				.setDescription(`You won ${formatMoney(won)}!\n\nYour new balance is ${formatMoney(next.wallet)}.`)
+				.setDescription(
+					`You won ${formatMoney(won - tax)} after paying ${formatMoney(
+						tax,
+					)} of tax!\n\nYour new balance is ${formatMoney(next.wallet)}.`,
+				)
 				.setColor(Colors.Green);
 		} else if (houseRoll === userRoll) {
 			embed.setDescription('It was a tie! You get your money back.');

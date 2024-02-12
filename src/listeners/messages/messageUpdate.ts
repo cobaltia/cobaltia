@@ -5,7 +5,7 @@ import { isNullish } from '@sapphire/utilities';
 import { EmbedBuilder, type Message } from 'discord.js';
 import { getGuild } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
-import { getDifference } from '#util/common';
+import { getDifference, truncate } from '#util/common';
 import { Colors } from '#util/constants';
 import { getImage, getTag, isGuildMessage } from '#util/discord-utilities';
 
@@ -59,8 +59,7 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 	}
 
 	private buildDescription(old: Message, message: GuildMessage) {
-		// TODO(Isidro): Trim the message content if it's too long
 		const description = [`[Jump to message](${message.url})`, getDifference(old.content, message.content)];
-		return description.join('\n');
+		return truncate(description.join('\n'), 4_096);
 	}
 }

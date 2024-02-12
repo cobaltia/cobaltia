@@ -21,9 +21,15 @@ export class WorkCommand extends Command {
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.user.findUniqueOrThrow({ where: { id: interaction.user.id } }),
 		);
-		if (result.isErr()) throw result.unwrapErr();
-
 		const data = result.unwrap();
+
+		if (result.isErr()) throw result.unwrapErr();
+		const clientResult = await Result.fromAsync(async () =>
+			this.container.prisma.client.findUniqueOrThrow({ where: { id: this.container.client.id! } }),
+		);
+		if (clientResult.isErr()) throw clientResult.unwrapErr();
+		const client = clientResult.unwrap();
+
 		const cooldown = data.workCooldown.getTime();
 		const now = Date.now();
 		if (cooldown > now) {
@@ -31,15 +37,21 @@ export class WorkCommand extends Command {
 		}
 
 		const money = roundNumber(200 + Math.random() * 150);
+		const tax = roundNumber(money * (client.tax / 100));
 
 		const newCooldown = new Date(now + Time.Day);
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
-			data: { wallet: data.wallet + money, workCooldown: newCooldown },
+			data: { wallet: { increment: money - tax }, workCooldown: newCooldown },
+		});
+
+		await this.container.prisma.client.update({
+			where: { id: this.container.client.id! },
+			data: { bankBalance: { increment: tax } },
 		});
 
 		const embed = new EmbedBuilder().setDescription(
-			`You worked and earned ${inlineCode(formatMoney(money)!)} 🤑🤑🤑`,
+			`You worked and earned ${inlineCode(formatMoney(money - tax)!)} after tax 🤑🤑🤑`,
 		);
 		await interaction.editReply({ embeds: [embed] });
 	}

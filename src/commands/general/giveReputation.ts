@@ -1,5 +1,6 @@
 import { Command, Result, UserError } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
+import { roundNumber } from '@sapphire/utilities';
 import { ApplicationCommandType, EmbedBuilder, TimestampStyles, time } from 'discord.js';
 import { getUser } from '#lib/database';
 
@@ -40,9 +41,8 @@ export class GiveReputationCommand extends Command {
 		const cooldown = giver.reputationCooldown.getTime();
 		const now = Date.now();
 		if (cooldown > now) {
-			return interaction.followUp(
-				`You can give reputation again in ${time(cooldown, TimestampStyles.RelativeTime)}.`,
-			);
+			const date = roundNumber(cooldown / Time.Second);
+			return interaction.followUp(`You can give reputation again ${time(date, TimestampStyles.RelativeTime)}.`);
 		}
 
 		const newCooldown = new Date(now + Time.Day);
