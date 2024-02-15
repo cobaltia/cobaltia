@@ -1,7 +1,7 @@
 import { type Guild as PrismaGuild } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Events, Listener, Result } from '@sapphire/framework';
-import { EmbedBuilder, bold, type GuildMember, TimestampStyles, time } from 'discord.js';
+import { EmbedBuilder, type GuildMember, TimestampStyles, time } from 'discord.js';
 import { getGuild } from '#lib/database';
 import { Colors } from '#util/constants';
 import { getTag } from '#util/discord-utilities';
@@ -41,13 +41,14 @@ export class GuildMemberRemoveListener extends Listener<typeof Events.GuildMembe
 	private buildEmbed(member: GuildMember) {
 		const icon = member.user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		const joined = member.joinedAt!;
+		const roles = [...member.roles.cache.values()];
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
 			.setTitle('Member Left')
-			.setDescription(
-				`Joined ${bold(time(joined, TimestampStyles.RelativeTime))} on ${bold(
-					time(joined, TimestampStyles.LongDate),
-				)}\nGuid Member Count: ${bold(member.guild.memberCount.toLocaleString())}`,
+			.setDescription(roles.join(' ') || 'No roles')
+			.setFields(
+				{ name: 'Members', value: member.guild.memberCount.toString(), inline: true },
+				{ name: 'Joined', value: time(joined, TimestampStyles.LongDate), inline: true },
 			)
 			.setFooter({ text: `User ID: ${member.id}` })
 			.setColor(Colors.Red)
