@@ -8,6 +8,7 @@ export class SocialCreditCommand extends Subcommand {
 		super(context, {
 			...options,
 			description: 'Social Credit System',
+			preconditions: [['OwnerOnly', 'ExecutiveOnly']],
 			requiredUserPermissions: [PermissionFlagsBits.ManageGuild],
 			subcommands: [
 				{ name: 'add', chatInputRun: 'chatInputAdd' },
