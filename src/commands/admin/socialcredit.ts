@@ -9,7 +9,6 @@ export class SocialCreditCommand extends Subcommand {
 			...options,
 			description: 'Social Credit System',
 			preconditions: [['OwnerOnly', 'ExecutiveOnly']],
-			requiredUserPermissions: [PermissionFlagsBits.ManageGuild],
 			subcommands: [
 				{ name: 'add', chatInputRun: 'chatInputAdd' },
 				{ name: 'remove', chatInputRun: 'chatInputRemove' },
@@ -22,6 +21,7 @@ export class SocialCreditCommand extends Subcommand {
 			builder
 				.setName(this.name)
 				.setDescription(this.description)
+				.setDefaultMemberPermissions(PermissionFlagsBits.ManageEvents)
 				.addSubcommand(command =>
 					command
 						.setName('add')
