@@ -33,7 +33,8 @@ export class WorkCommand extends Command {
 		const cooldown = data.workCooldown.getTime();
 		const now = Date.now();
 		if (cooldown > now) {
-			return interaction.followUp(`You can work again in ${time(cooldown, TimestampStyles.RelativeTime)}.`);
+			const date = roundNumber(cooldown / Time.Second);
+			return interaction.followUp(`You can work again in ${time(date, TimestampStyles.RelativeTime)}.`);
 		}
 
 		const money = roundNumber(200 + Math.random() * 150);
