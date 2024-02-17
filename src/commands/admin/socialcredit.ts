@@ -21,7 +21,7 @@ export class SocialCreditCommand extends Subcommand {
 			builder
 				.setName(this.name)
 				.setDescription(this.description)
-				.setDefaultMemberPermissions(PermissionFlagsBits.ManageEvents)
+				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 				.addSubcommand(command =>
 					command
 						.setName('add')

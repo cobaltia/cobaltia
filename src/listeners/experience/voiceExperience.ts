@@ -29,12 +29,13 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 
 	private async handleOk(member: GuildMember, previous: VoiceState, start: string | null, data: PrismaUser) {
 		const { guild } = member;
-		const guildResult = await Result.fromAsync(async () => getGuild(member.id));
+		const guildResult = await Result.fromAsync(async () => getGuild(member.guild.id));
 		if (guildResult.isErr()) throw guildResult.unwrapErr();
 		const { voiceChannelId } = guildResult.unwrap();
+		console.log(voiceChannelId);
 		if (!voiceChannelId) return;
 		const channel = guild.channels.cache.get(voiceChannelId);
-		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Welcome channel is not a text channel'));
+		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Voice channel is not a text channel'));
 
 		if (isNullish(start))
 			return channel.send(
