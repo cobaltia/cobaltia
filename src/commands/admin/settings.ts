@@ -5,6 +5,7 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
+	PermissionFlagsBits,
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { getGuild } from '#lib/database';
@@ -18,7 +19,12 @@ export class SettingsCommand extends Command {
 	}
 
 	public override registerApplicationCommands(registry: Command.Registry) {
-		registry.registerChatInputCommand(builder => builder.setName(this.name).setDescription(this.description));
+		registry.registerChatInputCommand(builder =>
+			builder
+				.setName(this.name)
+				.setDescription(this.description)
+				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+		);
 	}
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
