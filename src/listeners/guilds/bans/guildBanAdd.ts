@@ -33,7 +33,7 @@ export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 	}
 
 	private async handleOk(user: User, guild: Guild, reason: Nullish | string, { logChannelId }: PrismaGuild) {
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${guild.name}`));
+		if (!logChannelId) return;
 
 		let audit;
 		if (guild.members.me?.permissions.has(PermissionFlagsBits.ViewAuditLog)) {

@@ -2,8 +2,8 @@ import type { User as PrismaUser } from '@prisma/client';
 import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { Listener, Result } from '@sapphire/framework';
 import { DurationFormatter, Time } from '@sapphire/time-utilities';
-import { isNullish, roundNumber } from '@sapphire/utilities';
-import { bold, type GuildMember, type VoiceState } from 'discord.js';
+import { isNullish } from '@sapphire/utilities';
+import { bold, type Guild, type GuildMember, type VoiceState } from 'discord.js';
 import { getGuild, getUser } from '#lib/database';
 import { Events } from '#lib/types';
 import { addBonus, formatMoney } from '#util/common';
@@ -29,16 +29,10 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 
 	private async handleOk(member: GuildMember, previous: VoiceState, start: string | null, data: PrismaUser) {
 		const { guild } = member;
-		const guildResult = await Result.fromAsync(async () => getGuild(member.guild.id));
-		if (guildResult.isErr()) throw guildResult.unwrapErr();
-		const { voiceChannelId } = guildResult.unwrap();
-		console.log(voiceChannelId);
-		if (!voiceChannelId) return;
-		const channel = guild.channels.cache.get(voiceChannelId);
-		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Voice channel is not a text channel'));
 
 		if (isNullish(start))
-			return channel.send(
+			return this.sendMessage(
+				guild,
 				`${member}, I must have been restarted while you were in a voice channel. It's so over....`,
 			);
 
@@ -47,13 +41,11 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 		const end = Date.now();
 		const elapsed = end - Number.parseInt(start, 10);
 		const time = elapsed / Time.Minute;
-		const experience = roundNumber(Math.random() * 11 + time);
-
-		const amount = roundNumber(Math.random() * 11 + time);
+		const amount = Math.ceil(time * 1.5);
 		const bonus = await calculateBonus(member.user, member.guild);
 		const total = addBonus(amount, bonus);
 
-		const result = await handleExperience(experience, data);
+		const result = await handleExperience(amount, data);
 
 		await result.match({
 			ok: async data => {
@@ -81,10 +73,20 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 		message.push(
 			`${member}, You have earned ${bold(formatMoney(total)!)} for spending ${formatter.format(elapsed)} in VC.`,
 		);
-		await channel.send({ content: message.join('\n') });
+		await this.sendMessage(guild, message.join('\n'));
 	}
 
 	private async handleErr(error: unknown) {
 		this.container.logger.error(error);
+	}
+
+	private async sendMessage(guild: Guild, message: string) {
+		const guildResult = await Result.fromAsync(async () => getGuild(guild.id));
+		if (guildResult.isErr()) throw guildResult.unwrapErr();
+		const { voiceChannelId } = guildResult.unwrap();
+		if (!voiceChannelId) return;
+		const channel = guild.channels.cache.get(voiceChannelId);
+		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Voice channel is not a text channel'));
+		return channel.send({ content: message });
 	}
 }

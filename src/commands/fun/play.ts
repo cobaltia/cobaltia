@@ -73,7 +73,7 @@ export class PlayCommand extends Subcommand {
 			});
 		}
 
-		const houseRoll = roll('1d12');
+		const houseRoll = roll('3d4');
 		const userRoll = roll('1d12');
 
 		const embed = new EmbedBuilder().setFields(
@@ -105,6 +105,10 @@ export class PlayCommand extends Subcommand {
 			const next = await this.container.prisma.user.update({
 				where: { id: interaction.user.id },
 				data: { wallet: { decrement: amountToGamble } },
+			});
+			await this.container.prisma.client.update({
+				where: { id: this.container.client.id! },
+				data: { bankBalance: { increment: amountToGamble } },
 			});
 			embed
 				.setDescription(

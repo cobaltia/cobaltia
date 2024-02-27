@@ -26,7 +26,7 @@ export class VoiceMuteListener extends Listener<typeof Events.VoiceMute> {
 
 	private async handleOk(member: GuildMember, next: VoiceState, { logChannelId }: PrismaGuild) {
 		const { guild } = next;
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${next.guild.name}`));
+		if (!logChannelId) return;
 
 		const channel = guild.channels.cache.get(logChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));

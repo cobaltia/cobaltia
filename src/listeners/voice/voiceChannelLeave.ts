@@ -29,7 +29,7 @@ export class VoiceChannelLeaveListener extends Listener<typeof Events.VoiceChann
 		{ logChannelId }: PrismaGuild,
 	) {
 		const { guild } = member;
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${member.guild.name}`));
+		if (!logChannelId) return;
 
 		const channel = guild.channels.cache.get(logChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));

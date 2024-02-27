@@ -1,5 +1,6 @@
 import type { User as PrismaUser } from '@prisma/client';
 import { Command, Result, UserError } from '@sapphire/framework';
+import { Time } from '@sapphire/time-utilities';
 import { ApplicationCommandType, EmbedBuilder, type User } from 'discord.js';
 import { getUser } from '#lib/database';
 import { formatMoney, pickWeightedRandom } from '#util/common';
@@ -11,6 +12,7 @@ export class RobCommand extends Command {
 		super(context, {
 			...options,
 			description: 'Rob another user.',
+			cooldownDelay: 15 * Time.Second,
 		});
 	}
 

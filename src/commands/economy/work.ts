@@ -2,6 +2,7 @@ import { Command, Result } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
 import { EmbedBuilder, TimestampStyles, inlineCode, time } from 'discord.js';
+import { getClient } from '#lib/database';
 import { formatMoney } from '#util/common';
 
 export class WorkCommand extends Command {
@@ -24,9 +25,7 @@ export class WorkCommand extends Command {
 		const data = result.unwrap();
 
 		if (result.isErr()) throw result.unwrapErr();
-		const clientResult = await Result.fromAsync(async () =>
-			this.container.prisma.client.findUniqueOrThrow({ where: { id: this.container.client.id! } }),
-		);
+		const clientResult = await Result.fromAsync(async () => getClient(this.container.client.id!));
 		if (clientResult.isErr()) throw clientResult.unwrapErr();
 		const client = clientResult.unwrap();
 
@@ -34,7 +33,7 @@ export class WorkCommand extends Command {
 		const now = Date.now();
 		if (cooldown > now) {
 			const date = roundNumber(cooldown / Time.Second);
-			return interaction.followUp(`You can work again in ${time(date, TimestampStyles.RelativeTime)}.`);
+			return interaction.followUp(`You can work again ${time(date, TimestampStyles.RelativeTime)}.`);
 		}
 
 		const money = roundNumber(200 + Math.random() * 150);

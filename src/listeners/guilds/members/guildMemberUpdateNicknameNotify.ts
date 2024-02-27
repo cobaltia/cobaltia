@@ -24,7 +24,7 @@ export class GuildMemberUpdateNicknameNotifyListener extends Listener<typeof Eve
 	}
 
 	private async handleOk(previous: GuildMember, next: GuildMember, { logChannelId }: PrismaGuild) {
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${next.guild.name}`));
+		if (!logChannelId) return;
 
 		if (previous.nickname === next.nickname) return;
 		const prevNickname = previous.nickname;

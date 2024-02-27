@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import type { User as PrismaUser } from '@prisma/client';
 import { Events, Listener, Result } from '@sapphire/framework';
 import { type RateLimit, RateLimitManager } from '@sapphire/ratelimits';
@@ -41,7 +42,10 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 			ok: async data => {
 				ratelimit.consume();
 				if (data === false) return;
-				message.channel.send(`Congratulations ${message.author}, you have leveled up to level ${data.level}!`);
+				const msg = await message.channel.send(
+					`Congratulations ${message.author}, you have leveled up to level ${data.level}!`,
+				);
+				await setTimeout(30 * Time.Second, msg.delete());
 			},
 			err: async error => this.handleErr(error),
 		});
