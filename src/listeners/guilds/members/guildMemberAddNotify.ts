@@ -25,8 +25,7 @@ export class GuildMemberAddNotifyListener extends Listener<typeof Events.GuildMe
 
 	private async handleOk(member: GuildMember, { welcomeChannelId }: PrismaGuild) {
 		const { guild } = member;
-		if (!welcomeChannelId)
-			return this.handleErr(new Error(`Could not fine welcome channel set for ${member.guild.name}`));
+		if (!welcomeChannelId) return;
 
 		const channel = guild.channels.cache.get(welcomeChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Welcome channel is not a text channel'));

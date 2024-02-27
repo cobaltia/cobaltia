@@ -28,7 +28,7 @@ export class MessageDeleteListener extends Listener<typeof Events.MessageDelete>
 	}
 
 	private async handleOk(message: GuildMessage, { logChannelId }: PrismaGuild) {
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${message.guild.name}`));
+		if (!logChannelId) return;
 
 		const channel = message.guild.channels.cache.get(logChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));

@@ -24,7 +24,7 @@ export class GuildMemberUpdateRoleNotifyListener extends Listener<typeof Events.
 	}
 
 	private async handleOk(previous: GuildMember, next: GuildMember, { logChannelId }: PrismaGuild) {
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${next.guild.name}`));
+		if (!logChannelId) return;
 
 		const prevRoles = previous.roles.cache;
 		const nextRoles = next.roles.cache;

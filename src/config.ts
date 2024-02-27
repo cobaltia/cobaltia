@@ -40,7 +40,7 @@ export const CLIENT_OPTIONS: ClientOptions = {
 	loadDefaultErrorListeners: false,
 	loadSubcommandErrorListeners: false,
 	defaultCooldown: {
-		delay: 2 * Time.Second,
+		delay: 5 * Time.Second,
 		limit: 1,
 		scope: BucketScope.User,
 	},

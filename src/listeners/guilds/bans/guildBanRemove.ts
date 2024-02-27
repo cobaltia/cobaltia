@@ -23,7 +23,7 @@ export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemov
 	}
 
 	private async handleOk(user: User, guild: Guild, { logChannelId }: PrismaGuild) {
-		if (!logChannelId) return this.handleErr(new Error(`Could not fine log channel set for ${guild.name}`));
+		if (!logChannelId) return;
 
 		const channel = guild.channels.cache.get(logChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Log channel is not a text channel'));
