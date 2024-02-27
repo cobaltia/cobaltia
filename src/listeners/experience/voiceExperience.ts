@@ -41,6 +41,8 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 		const end = Date.now();
 		const elapsed = end - Number.parseInt(start, 10);
 		const time = elapsed / Time.Minute;
+		if (time < 1) return;
+
 		const amount = Math.ceil(time * 1.5);
 		const bonus = await calculateBonus(member.user, member.guild);
 		const total = addBonus(amount, bonus);
