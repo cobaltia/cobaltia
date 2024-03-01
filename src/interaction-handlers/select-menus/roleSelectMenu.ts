@@ -57,6 +57,10 @@ export class RoleSelectMenuHandler extends InteractionHandler {
 
 		await interaction.editReply({ components });
 
-		await interaction.followUp({ content: 'Updated Roles!', ephemeral: true });
+		const message = ['Updated Roles!'];
+		if (rolesToRemove.length) message.push(`Removed ${rolesToRemove.join(', ')}`);
+		if (rolesToAdd.length) message.push(`Added ${rolesToAdd.join(', ')}`);
+
+		await interaction.followUp({ content: message.join('\n'), ephemeral: true });
 	}
 }
