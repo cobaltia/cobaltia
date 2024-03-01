@@ -15,6 +15,7 @@ export class SettingsCommand extends Command {
 		super(context, {
 			...options,
 			description: 'Guild settings.',
+			preconditions: ['GuildOnly'],
 		});
 	}
 
