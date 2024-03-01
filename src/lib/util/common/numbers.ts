@@ -31,7 +31,7 @@ export function formatMoney(num: number | string, compact = false) {
 }
 
 export function addBonus(amount: number, bonus: number) {
-	return roundNumber(amount + amount * bonus);
+	return roundNumber(amount + amount * (bonus / 100));
 }
 
 export function getNumberWithSuffix(num: string) {

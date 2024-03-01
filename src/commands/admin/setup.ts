@@ -7,7 +7,7 @@ export class SetupCommand extends Subcommand {
 		super(context, {
 			...options,
 			description: 'Set Up',
-			preconditions: [['OwnerOnly', 'ExecutiveOnly']],
+			preconditions: [['OwnerOnly', 'ExecutiveOnly'], 'GuildOnly'],
 			subcommands: [
 				{ name: 'logchannel', chatInputRun: 'chatInputLog' },
 				{ name: 'welcomechannel', chatInputRun: 'chatInputWelcome' },
