@@ -1,9 +1,8 @@
 import '#lib/setup/all';
 import process from 'node:process';
-import { SapphireClient } from '@sapphire/framework';
-import { CLIENT_OPTIONS } from '#root/config';
+import { CobaltClient } from '#lib/CobaltClient';
 
-const client = new SapphireClient(CLIENT_OPTIONS);
+const client = new CobaltClient();
 
 try {
 	await client.login();
@@ -12,3 +11,8 @@ try {
 	await client.destroy();
 	process.exit(1);
 }
+
+process.on('SIGINT', async () => {
+	await client.destroy();
+	process.exit(0);
+});
