@@ -46,6 +46,7 @@ export class LeaderboardCommand extends Command {
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
 				]),
 			),
 		];

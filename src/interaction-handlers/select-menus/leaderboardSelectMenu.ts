@@ -1,4 +1,5 @@
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
+import { DurationFormatter } from '@sapphire/time-utilities';
 import {
 	ActionRowBuilder,
 	EmbedBuilder,
@@ -32,6 +33,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		if (value === 'reputation') return this.handleReputation(interaction);
 		if (value === 'networth') return this.handleNetWorth(interaction);
 		if (value === 'socialcredit') return this.handleSocialCredit(interaction);
+		if (value === 'vctime') return this.handleVcTime(interaction);
 	}
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
@@ -60,6 +62,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
 				]),
 			),
 		];
@@ -93,6 +96,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
 				]),
 			),
 		];
@@ -126,6 +130,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
 				]),
 			),
 		];
@@ -159,6 +164,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation', default: true },
 					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
 				]),
 			),
 		];
@@ -193,6 +199,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
 				]),
 			),
 		];
@@ -226,6 +233,46 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit', default: true },
+					{ label: 'VC Time', value: 'vctime' },
+				]),
+			),
+		];
+
+		await interaction.editReply({ embeds: [embed], components });
+	}
+
+	private async handleVcTime(interaction: StringSelectMenuInteraction) {
+		await interaction.deferUpdate();
+		const result = await Result.fromAsync(async () => this.container.prisma.voice.findMany());
+		if (result.isErr()) throw result.unwrapErr();
+
+		const data = result.unwrap();
+		const users = Array.from(new Set(data.map(entry => entry.userId)))
+			.map(userId => ({
+				userId,
+				duration: data.filter(entry => entry.userId === userId).reduce((acc, curr) => acc + curr.duration, 0),
+			}))
+			.sort((a, b) => b.duration - a.duration)
+			.slice(0, 10);
+		const description = [];
+
+		for (const [index, userData] of users.entries()) {
+			const user = await this.container.client.users.fetch(userData.userId);
+			const vcTime = new DurationFormatter().format(userData.duration);
+			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${vcTime} `)} - ${user}`);
+		}
+
+		const embed = new EmbedBuilder().setTitle('VC Time Leaderboard').setDescription(description.join('\n'));
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+					{ label: 'Wallet', value: 'wallet' },
+					{ label: 'Bank', value: 'bank' },
+					{ label: 'Net Worth', value: 'networth' },
+					{ label: 'Level', value: 'level' },
+					{ label: 'Reputation', value: 'reputation' },
+					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime', default: true },
 				]),
 			),
 		];

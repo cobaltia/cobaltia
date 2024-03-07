@@ -74,6 +74,7 @@ export class ProfileCommand extends Command {
 					.addOptions([
 						{ label: 'Main Profile', value: 'profile', default: true },
 						{ label: 'Experience Stats', value: 'experience' },
+						{ label: 'Cooldowns', value: 'cooldown' },
 					])
 					.setPlaceholder('Select a different profile view'),
 			),

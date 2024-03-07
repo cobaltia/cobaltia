@@ -39,7 +39,8 @@ export class WorkCommand extends Command {
 		const money = roundNumber(200 + Math.random() * 150);
 		const tax = roundNumber(money * (client.tax / 100));
 
-		const newCooldown = new Date(now + Time.Day);
+		const toAdd = Time.Hour * 12;
+		const newCooldown = new Date(now + toAdd);
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
 			data: { wallet: { increment: money - tax }, workCooldown: newCooldown },
