@@ -125,11 +125,11 @@ export async function handleTransfer(
 
 	const nextTransferor = await container.prisma.user.update({
 		where: { id: transferor.id },
-		data: { bankBalance: transferor.bankBalance - money },
+		data: { bankBalance: { decrement: money } },
 	});
 	const nextTransferee = await container.prisma.user.update({
 		where: { id: transferee.id },
-		data: { wallet: transferee.wallet + money },
+		data: { bankBalance: { increment: money } },
 	});
 
 	return ok({ transferor: nextTransferor, transferee: nextTransferee, money });
