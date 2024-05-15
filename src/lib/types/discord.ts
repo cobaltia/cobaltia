@@ -36,7 +36,7 @@ declare module 'discord.js' {
 			user: User,
 			receiver: User | null,
 			amount: number,
-			type: $Enums.Transaction,
+			transactionType: $Enums.Transaction,
 			description: string[],
 		];
 		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];

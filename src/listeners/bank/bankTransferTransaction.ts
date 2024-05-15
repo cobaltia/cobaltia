@@ -11,6 +11,7 @@ export class BankTransferTransaction extends Listener<typeof Events.BankTransfer
 	}
 
 	public async run(user: User, receiver: User, amount: number, description: string[]) {
+		console.log('TRANSFER is being emitted');
 		await this.container.prisma.bankTransaction.create({
 			data: {
 				amount,

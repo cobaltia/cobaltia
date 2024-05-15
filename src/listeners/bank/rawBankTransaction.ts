@@ -11,25 +11,31 @@ export class RawBankTransaction extends Listener<typeof Events.RawBankTransactio
 		});
 	}
 
-	public async run(
+	public run(
 		user: User,
 		receiver: User | null,
 		amount: number,
-		type: $Enums.Transaction,
+		transactionType: $Enums.Transaction,
 		description: string[],
 	) {
-		switch (type) {
-			case 'DEPOSIT':
-				this.container.client.emit(Events.BankDepositTransaction, user, amount, description);
-				break;
-			case 'WITHDRAW':
-				this.container.client.emit(Events.BankWithdrawTransaction, user, amount, description);
-				break;
-			case 'TRANSFER':
-				this.container.client.emit(Events.BankTransferTransaction, user, receiver!, amount, description);
-				break;
-			default:
-				throw new Error('Invalid transaction type');
+		console.log('DEPOSIT', transactionType === 'DEPOSIT');
+		console.log('WITHDRAW', transactionType === 'WITHDRAW');
+		console.log('TRANSFER', transactionType === 'TRANSFER');
+		if (transactionType === 'DEPOSIT') {
+			console.log('here1');
+			this.container.client.emit(Events.BankDepositTransaction, user, amount, description);
+			return;
+		}
+
+		if (transactionType === 'WITHDRAW') {
+			console.log('here2');
+			this.container.client.emit(Events.BankWithdrawTransaction, user, amount, description);
+			return;
+		}
+
+		if (transactionType === 'TRANSFER') {
+			console.log('here3');
+			this.container.client.emit(Events.BankTransferTransaction, user, receiver!, amount, description);
 		}
 	}
 }

@@ -11,7 +11,8 @@ export class BankDepositTransaction extends Listener<typeof Events.BankDepositTr
 	}
 
 	public async run(user: User, amount: number, description: string[]) {
-		await this.container.prisma.bankTransaction.create({
+		console.log('DEPOSIT is being emitted');
+		const data = await this.container.prisma.bankTransaction.create({
 			data: {
 				amount,
 				type: 'DEPOSIT',
@@ -19,5 +20,6 @@ export class BankDepositTransaction extends Listener<typeof Events.BankDepositTr
 				account: { connect: { id: user.id } },
 			},
 		});
+		console.log('Prisma', data);
 	}
 }

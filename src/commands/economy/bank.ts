@@ -8,7 +8,7 @@ import {
 	EmbedBuilder,
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { getUser } from '#lib/database';
+import { getBankStatement, getUser } from '#lib/database';
 import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
 import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
@@ -23,6 +23,7 @@ export class BankCommand extends Subcommand {
 				{ name: 'deposit', chatInputRun: 'chatInputDeposit' },
 				{ name: 'withdraw', chatInputRun: 'chatInputWithdraw' },
 				{ name: 'transfer', chatInputRun: 'chatInputTransfer' },
+				{ name: 'statement', chatInputRun: 'chatInputStatement' },
 			],
 		});
 	}
@@ -74,7 +75,8 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						),
-				),
+				)
+				.addSubcommand(command => command.setName('statement').setDescription('View your bank statement.')),
 		);
 	}
 
@@ -209,6 +211,27 @@ export class BankCommand extends Subcommand {
 		]);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
+
+		await interaction.editReply({ embeds: [embed] });
+	}
+
+	public async chatInputStatement(interaction: Subcommand.ChatInputCommandInteraction) {
+		await interaction.deferReply();
+
+		const result = await Result.fromAsync(async () => getBankStatement(interaction.user.id));
+		if (result.isErr()) {
+			throw result.unwrapErr();
+		}
+
+		const data = result.unwrap();
+		console.log(await this.container.prisma.bankTransaction.findMany());
+		const transactions = data.map(
+			transaction => `${transaction.amount > 0 ? '➕' : '➖'} ${formatMoney(transaction.amount)}`,
+		);
+
+		const embed = new EmbedBuilder()
+			.setTitle(`${interaction.user.tag}'s Bank Statement`)
+			.setDescription(transactions.length ? transactions.join('\n') : 'No transactions found.');
 
 		await interaction.editReply({ embeds: [embed] });
 	}

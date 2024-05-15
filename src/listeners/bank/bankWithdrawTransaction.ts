@@ -11,6 +11,7 @@ export class BankWithdrawTransaction extends Listener<typeof Events.BankWithdraw
 	}
 
 	public async run(user: User, amount: number, description: string[]) {
+		console.log('WITHDRAW is being emitted');
 		await this.container.prisma.bankTransaction.create({
 			data: {
 				amount,
