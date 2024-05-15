@@ -9,6 +9,7 @@ import {
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { getUser } from '#lib/database';
+import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
 import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
@@ -129,8 +130,10 @@ export class BankCommand extends Subcommand {
 			throw nextResult.unwrapErr();
 		}
 
-		const updated = nextResult.unwrap();
-		const { next, money } = updated;
+		const { next, money } = nextResult.unwrap();
+		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'DEPOSIT', [
+			'Bank Deposit',
+		]);
 
 		const embed = new EmbedBuilder()
 			.setTitle('Deposit Successful')
@@ -157,8 +160,10 @@ export class BankCommand extends Subcommand {
 			throw nextResult.unwrapErr();
 		}
 
-		const updated = nextResult.unwrap();
-		const { next, money } = updated;
+		const { next, money } = nextResult.unwrap();
+		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'WITHDRAW', [
+			'Bank Withdrawal',
+		]);
 
 		const embed = new EmbedBuilder()
 			.setTitle('Withdraw Successful')
@@ -199,6 +204,10 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { money } = result.unwrap();
+		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
+			'Bank Transfer',
+			`Debit from ${interaction.user.username}`,
+		]);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 

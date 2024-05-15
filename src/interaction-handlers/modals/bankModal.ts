@@ -8,6 +8,7 @@ import {
 	type ModalSubmitInteraction,
 } from 'discord.js';
 import { getUser } from '#lib/database';
+import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
 import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
@@ -45,7 +46,11 @@ export class BankModalHandler extends InteractionHandler {
 		const nextResult = await Result.fromAsync(async () => handleDeposit(data, amount));
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
-		const { next } = nextResult.unwrap();
+		const { next, money } = nextResult.unwrap();
+		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'DEPOSIT', [
+			'Bank Deposit',
+		]);
+
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
 			.setFields(
@@ -84,7 +89,11 @@ export class BankModalHandler extends InteractionHandler {
 		const nextResult = await Result.fromAsync(async () => handleWithdraw(data, amount));
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
-		const { next } = nextResult.unwrap();
+		const { next, money } = nextResult.unwrap();
+		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'WITHDRAW', [
+			'Bank Withdrawal',
+		]);
+
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
 			.setFields(
@@ -139,6 +148,10 @@ export class BankModalHandler extends InteractionHandler {
 		}
 
 		const { money } = result.unwrap();
+		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
+			'Bank Transfer',
+			`Debit from ${interaction.user.username}`,
+		]);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 

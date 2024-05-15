@@ -1,3 +1,4 @@
+import type { $Enums } from '@prisma/client';
 import type { GuildMember, Message } from 'discord.js';
 
 export type GuildMessage = Message<true> & { member: GuildMember };
@@ -12,6 +13,10 @@ export const Events = {
 	VoiceUndeaf: 'voiceUndeaf' as const,
 	VoiceStreamStart: 'voiceStreamStart' as const,
 	VoiceStreamStop: 'voiceStreamStop' as const,
+	RawBankTransaction: 'rawBankTransaction' as const,
+	BankDepositTransaction: 'bankDepositTransaction' as const,
+	BankWithdrawTransaction: 'bankWithdrawTransaction' as const,
+	BankTransferTransaction: 'bankTransferTransaction' as const,
 };
 
 declare const CobaltEvents: typeof Events;
@@ -27,5 +32,15 @@ declare module 'discord.js' {
 		[CobaltEvents.VoiceUndeaf]: [member: GuildMember, previous: VoiceState];
 		[CobaltEvents.VoiceStreamStart]: [member: GuildMember, next: VoiceState];
 		[CobaltEvents.VoiceStreamStop]: [member: GuildMember, previous: VoiceState];
+		[CobaltEvents.RawBankTransaction]: [
+			user: User,
+			receiver: User | null,
+			amount: number,
+			type: $Enums.Transaction,
+			description: string[],
+		];
+		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
+		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
+		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
 	}
 }

@@ -28,30 +28,48 @@ model Guild {
 }
 
 model User {
-  id                 String   @id @db.VarChar(20)
-  bankBalance        Int      @default(0) @map("bank_balance")
-  bankLimit          Int      @default(1000) @map("bank_limit")
-  wallet             Int      @default(0) @map("wallet")
-  bounty             Int      @default(0) @map("bounty")
-  experience         Int      @default(0) @map("experience")
-  level              Int      @default(0) @map("level")
-  socialCredit       Int      @default(1000) @map("social_credit")
-  reputation         Int      @default(0) @map("reputation")
-  reputationCooldown DateTime @default(now()) @map("reputation_cooldown")
-  workCooldown       DateTime @default(now()) @map("work_cooldown")
-  Voice              Voice[]
+  id              String            @id @db.VarChar(20)
+  bankBalance     Int               @default(0) @map("bank_balance")
+  bankLimit       Int               @default(1000) @map("bank_limit")
+  wallet          Int               @default(0) @map("wallet")
+  bounty          Int               @default(0) @map("bounty")
+  experience      Int               @default(0) @map("experience")
+  level           Int               @default(0) @map("level")
+  socialCredit    Int               @default(1000) @map("social_credit")
+  workCooldown    DateTime          @default(now()) @map("work_cooldown")
+  Voice           Voice[]
+  BankTransaction BankTransaction[]
 
   @@map("users")
 }
 
 model Voice {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @map("user_id") @db.VarChar(20)
   channelId String   @map("channel_id") @db.VarChar(20)
   guildId   String   @map("guild_id") @db.VarChar(20)
   date      DateTime @default(now()) @map("date")
   duration  Int      @default(0) @map("duration")
+  earned    Int?     @map("earned")
 
   @@map("voices")
+}
+
+model BankTransaction {
+  id          String      @id @default(cuid())
+  amount      Int         @map("amount")
+  type        Transaction @map("type")
+  description String[]    @map("description")
+  account     User        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId   String      @map("account_id")
+  date        DateTime    @default(now()) @map("date")
+
+  @@map("bank_transactions")
+}
+
+enum Transaction {
+  DEPOSIT
+  WITHDRAW
+  TRANSFER
 }
