@@ -18,23 +18,17 @@ export class RawBankTransaction extends Listener<typeof Events.RawBankTransactio
 		transactionType: $Enums.Transaction,
 		description: string[],
 	) {
-		console.log('DEPOSIT', transactionType === 'DEPOSIT');
-		console.log('WITHDRAW', transactionType === 'WITHDRAW');
-		console.log('TRANSFER', transactionType === 'TRANSFER');
 		if (transactionType === 'DEPOSIT') {
-			console.log('here1');
 			this.container.client.emit(Events.BankDepositTransaction, user, amount, description);
 			return;
 		}
 
 		if (transactionType === 'WITHDRAW') {
-			console.log('here2');
 			this.container.client.emit(Events.BankWithdrawTransaction, user, amount, description);
 			return;
 		}
 
 		if (transactionType === 'TRANSFER') {
-			console.log('here3');
 			this.container.client.emit(Events.BankTransferTransaction, user, receiver!, amount, description);
 		}
 	}

@@ -6,12 +6,11 @@ export class BankWithdrawTransaction extends Listener<typeof Events.BankWithdraw
 	public constructor(context: Listener.LoaderContext, options: Listener.Options) {
 		super(context, {
 			...options,
-			event: Events.RawBankTransaction,
+			event: Events.BankWithdrawTransaction,
 		});
 	}
 
 	public async run(user: User, amount: number, description: string[]) {
-		console.log('WITHDRAW is being emitted');
 		await this.container.prisma.bankTransaction.create({
 			data: {
 				amount,
