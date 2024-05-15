@@ -37,10 +37,7 @@ function getMoney(data: PrismaUser) {
 }
 
 function getOther(data: PrismaUser) {
-	const content = [
-		`Social Credit: ${inlineCode(`${data.socialCredit.toString()}/2000`)}`,
-		`Reputation: ${inlineCode(data.reputation.toString())}`,
-	];
+	const content = [`Social Credit: ${inlineCode(`${data.socialCredit.toString()}/2000`)}`];
 	return content.join('\n');
 }
 

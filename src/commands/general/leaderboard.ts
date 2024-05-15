@@ -44,7 +44,6 @@ export class LeaderboardCommand extends Command {
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level', default: true },
-					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
 				]),

@@ -137,11 +137,6 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 			description.push(`Work: ${time(date, TimestampStyles.ShortDateTime)}`);
 		}
 
-		if (data.reputationCooldown.getTime() > Date.now()) {
-			const date = roundNumber(data.reputationCooldown.getTime() / 1_000);
-			description.push(`Reputation: ${time(date, TimestampStyles.ShortDateTime)}`);
-		}
-
 		const embed = new EmbedBuilder()
 			.setTitle(`${user.tag}'s Cooldowns`)
 			.setDescription(description.join('\n') || 'No cooldowns active.');

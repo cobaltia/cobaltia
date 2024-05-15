@@ -30,7 +30,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		if (value === 'wallet') return this.handleWallet(interaction);
 		if (value === 'bank') return this.handleBank(interaction);
 		if (value === 'level') return this.handleLevel(interaction);
-		if (value === 'reputation') return this.handleReputation(interaction);
 		if (value === 'networth') return this.handleNetWorth(interaction);
 		if (value === 'socialcredit') return this.handleSocialCredit(interaction);
 		if (value === 'vctime') return this.handleVcTime(interaction);
@@ -60,7 +59,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
-					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
 				]),
@@ -94,7 +92,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Bank', value: 'bank', default: true },
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
-					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
 				]),
@@ -128,41 +125,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level', default: true },
-					{ label: 'Reputation', value: 'reputation' },
-					{ label: 'Social Credit', value: 'socialcredit' },
-					{ label: 'VC Time', value: 'vctime' },
-				]),
-			),
-		];
-
-		await interaction.editReply({ embeds: [embed], components });
-	}
-
-	private async handleReputation(interaction: StringSelectMenuInteraction) {
-		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { reputation: 'desc' } }),
-		);
-		if (result.isErr()) throw result.unwrapErr();
-
-		const data = result.unwrap();
-		const description = [];
-
-		for (const [index, userData] of data.entries()) {
-			const user = await this.container.client.users.fetch(userData.id);
-			const reputation = userData.reputation.toString();
-			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${reputation} `)} - ${user}`);
-		}
-
-		const embed = new EmbedBuilder().setTitle('Reputation Leaderboard').setDescription(description.join('\n'));
-		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
-			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
-					{ label: 'Wallet', value: 'wallet' },
-					{ label: 'Bank', value: 'bank' },
-					{ label: 'Net Worth', value: 'networth' },
-					{ label: 'Level', value: 'level' },
-					{ label: 'Reputation', value: 'reputation', default: true },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
 				]),
@@ -197,7 +159,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth', default: true },
 					{ label: 'Level', value: 'level' },
-					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
 				]),
@@ -231,7 +192,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
-					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit', default: true },
 					{ label: 'VC Time', value: 'vctime' },
 				]),
@@ -270,7 +230,6 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
 					{ label: 'Level', value: 'level' },
-					{ label: 'Reputation', value: 'reputation' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime', default: true },
 				]),
