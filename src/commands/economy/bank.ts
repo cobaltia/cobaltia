@@ -206,7 +206,6 @@ export class BankCommand extends Subcommand {
 		const { money } = result.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
 			'Bank Transfer',
-			`Debit from ${interaction.user.username}`,
 		]);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));

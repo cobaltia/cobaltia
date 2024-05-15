@@ -15,17 +15,16 @@ export class BankTransferTransaction extends Listener<typeof Events.BankTransfer
 			data: {
 				amount,
 				type: 'TRANSFER',
-				description,
+				description: [...description, `Transfer to ${receiver.username}`],
 				account: { connect: { id: user.id } },
 			},
 		});
 
-		// TODO(Isidro): Fix receiver bank transaction description
 		await this.container.prisma.bankTransaction.create({
 			data: {
 				amount,
 				type: 'DEPOSIT',
-				description,
+				description: [...description, `Transfer from ${user.username}`],
 				account: { connect: { id: receiver.id } },
 			},
 		});
