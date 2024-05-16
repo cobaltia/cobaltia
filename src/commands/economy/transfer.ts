@@ -23,15 +23,22 @@ export class TransferCommand extends Command {
 		const modal = new ModalBuilder()
 			.setCustomId(`modal:bank:transfer:${interaction.targetId}`)
 			.setTitle('Transfer');
-		const input = new TextInputBuilder()
+		const amount = new TextInputBuilder()
 			.setLabel('Amount')
 			.setCustomId('input:bank:transfer')
-			.setPlaceholder('A number such as "1234", "2k", "20%", or "max')
+			.setPlaceholder('A number such as "1234", "2k", "20%", or "max"')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short);
+		const reason = new TextInputBuilder()
+			.setLabel('Reason')
+			.setCustomId('input:bank:transfer-reason')
+			.setPlaceholder('Optional reason for the transfer')
+			.setRequired(false)
+			.setStyle(TextInputStyle.Short);
 
-		const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(input);
-		modal.addComponents(actionRow);
+		const amountRow = new ActionRowBuilder<TextInputBuilder>().addComponents(amount);
+		const reasonRow = new ActionRowBuilder<TextInputBuilder>().addComponents(reason);
+		modal.addComponents(amountRow, reasonRow);
 
 		await interaction.showModal(modal);
 	}

@@ -11,7 +11,7 @@ import {
 import { getBankStatement, getUser } from '#lib/database';
 import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
-import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
+import { getTransactionSymbol, handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
 export class BankCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -45,6 +45,9 @@ export class BankCommand extends Subcommand {
 									'A constant number like "1234", a shorthand like "2k" or a relative number like "20%" or "max".',
 								)
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the deposit.'),
 						),
 				)
 				.addSubcommand(command =>
@@ -58,6 +61,9 @@ export class BankCommand extends Subcommand {
 									'A constant number like "1234", a shorthand like "2k" or a relative number like "20%" or "max".',
 								)
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the withdrawal.'),
 						),
 				)
 				.addSubcommand(command =>
@@ -74,6 +80,9 @@ export class BankCommand extends Subcommand {
 									'A constant number like "1234", a shorthand like "2k" or a relative number like "20%" or "max".',
 								)
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the transfer.'),
 						),
 				)
 				.addSubcommand(command => command.setName('statement').setDescription('View your bank statement.')),
@@ -126,6 +135,7 @@ export class BankCommand extends Subcommand {
 		}
 
 		const amount = interaction.options.getString('amount', true);
+		const reason = interaction.options.getString('reason');
 		const data = result.unwrap();
 		const nextResult = await handleDeposit(data, amount);
 		if (nextResult.isErr()) {
@@ -135,6 +145,7 @@ export class BankCommand extends Subcommand {
 		const { next, money } = nextResult.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'DEPOSIT', [
 			'Bank Deposit',
+			reason ?? '',
 		]);
 
 		const embed = new EmbedBuilder()
@@ -156,6 +167,7 @@ export class BankCommand extends Subcommand {
 		}
 
 		const amount = interaction.options.getString('amount', true);
+		const reason = interaction.options.getString('reason');
 		const data = result.unwrap();
 		const nextResult = await handleWithdraw(data, amount);
 		if (nextResult.isErr()) {
@@ -165,6 +177,7 @@ export class BankCommand extends Subcommand {
 		const { next, money } = nextResult.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'WITHDRAW', [
 			'Bank Withdrawal',
+			reason ?? '',
 		]);
 
 		const embed = new EmbedBuilder()
@@ -197,6 +210,7 @@ export class BankCommand extends Subcommand {
 		}
 
 		const amount = interaction.options.getString('amount', true);
+		const reason = interaction.options.getString('reason');
 		const transferor = transferorResult.unwrap();
 		const transferee = transfereeResult.unwrap();
 
@@ -208,6 +222,7 @@ export class BankCommand extends Subcommand {
 		const { money } = result.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
 			'Bank Transfer',
+			reason ?? '',
 		]);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
@@ -226,12 +241,14 @@ export class BankCommand extends Subcommand {
 		const data = result.unwrap();
 		console.log(await this.container.prisma.bankTransaction.findMany());
 		const transactions = data.map(
-			transaction => `${transaction.amount > 0 ? '➕' : '➖'} ${formatMoney(transaction.amount)}`,
+			transaction =>
+				`${getTransactionSymbol(transaction.type)} ${formatMoney(transaction.amount)} - ${transaction.description.join('. ')}`,
 		);
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Statement`)
-			.setDescription(transactions.length ? transactions.join('\n') : 'No transactions found.');
+			.setDescription(transactions.length ? transactions.join('\n') : 'No transactions found.')
+			.setFooter({ text: 'For a more comprehensive list visit the website (coming soon)' });
 
 		await interaction.editReply({ embeds: [embed] });
 	}

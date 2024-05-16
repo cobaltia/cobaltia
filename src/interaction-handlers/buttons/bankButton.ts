@@ -33,28 +33,42 @@ export class BankButtonHandler extends InteractionHandler {
 
 	private async handleDeposit(interaction: ButtonInteraction) {
 		const modal = new ModalBuilder().setCustomId('modal:bank:deposit').setTitle('Deposit');
-		const input = new TextInputBuilder()
+		const amount = new TextInputBuilder()
 			.setLabel('Amount')
 			.setCustomId('input:bank:deposit')
 			.setPlaceholder('A number such as "1234", "2k", "20%", or "max"')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short);
-		const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(input);
-		modal.addComponents(actionRow);
+		const reason = new TextInputBuilder()
+			.setLabel('Reason')
+			.setCustomId('input:bank:deposit-reason')
+			.setPlaceholder('Optional reason for the deposit')
+			.setRequired(false)
+			.setStyle(TextInputStyle.Short);
+		const amountRow = new ActionRowBuilder<TextInputBuilder>().addComponents(amount);
+		const reasonRow = new ActionRowBuilder<TextInputBuilder>().addComponents(reason);
+		modal.addComponents(amountRow, reasonRow);
 
 		await interaction.showModal(modal);
 	}
 
 	private async handleWithdraw(interaction: ButtonInteraction) {
 		const modal = new ModalBuilder().setCustomId('modal:bank:withdraw').setTitle('Withdraw');
-		const input = new TextInputBuilder()
+		const amount = new TextInputBuilder()
 			.setLabel('Amount')
 			.setCustomId('input:bank:withdraw')
 			.setPlaceholder('A number such as "1234", "2k", "20%", or "max"')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short);
-		const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(input);
-		modal.addComponents(actionRow);
+		const reason = new TextInputBuilder()
+			.setLabel('Reason')
+			.setCustomId('input:bank:withdraw-reason')
+			.setPlaceholder('Optional reason for the withdrawal')
+			.setRequired(false)
+			.setStyle(TextInputStyle.Short);
+		const amountRow = new ActionRowBuilder<TextInputBuilder>().addComponents(amount);
+		const reasonRow = new ActionRowBuilder<TextInputBuilder>().addComponents(reason);
+		modal.addComponents(amountRow, reasonRow);
 
 		await interaction.showModal(modal);
 	}

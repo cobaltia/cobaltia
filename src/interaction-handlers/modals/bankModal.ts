@@ -42,6 +42,7 @@ export class BankModalHandler extends InteractionHandler {
 		if (result.isErr()) throw result.unwrapErr();
 
 		const amount = interaction.fields.getTextInputValue('input:bank:deposit');
+		const reason = interaction.fields.getTextInputValue('input:bank:deposit-reason');
 		const data = result.unwrap();
 		const nextResult = await Result.fromAsync(async () => handleDeposit(data, amount));
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
@@ -49,6 +50,7 @@ export class BankModalHandler extends InteractionHandler {
 		const { next, money } = nextResult.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'DEPOSIT', [
 			'Bank Deposit',
+			reason ?? '',
 		]);
 
 		const embed = new EmbedBuilder()
@@ -85,6 +87,7 @@ export class BankModalHandler extends InteractionHandler {
 		if (result.isErr()) throw result.unwrapErr();
 
 		const amount = interaction.fields.getTextInputValue('input:bank:withdraw');
+		const reason = interaction.fields.getTextInputValue('input:bank:withdraw-reason');
 		const data = result.unwrap();
 		const nextResult = await Result.fromAsync(async () => handleWithdraw(data, amount));
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
@@ -92,6 +95,7 @@ export class BankModalHandler extends InteractionHandler {
 		const { next, money } = nextResult.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'WITHDRAW', [
 			'Bank Withdrawal',
+			reason ?? '',
 		]);
 
 		const embed = new EmbedBuilder()
@@ -140,6 +144,7 @@ export class BankModalHandler extends InteractionHandler {
 		}
 
 		const amount = interaction.fields.getTextInputValue('input:bank:transfer');
+		const reason = interaction.fields.getTextInputValue('input:bank:transfer-reason');
 		const transferor = transferorResult.unwrap();
 		const transferee = transfereeResult.unwrap();
 		const result = await Result.fromAsync(async () => handleTransfer(transferor, transferee, amount));
@@ -150,6 +155,7 @@ export class BankModalHandler extends InteractionHandler {
 		const { money } = result.unwrap();
 		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
 			'Bank Transfer',
+			reason ?? '',
 		]);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));

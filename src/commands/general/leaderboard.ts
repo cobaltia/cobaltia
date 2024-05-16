@@ -36,7 +36,10 @@ export class LeaderboardCommand extends Command {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${level} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('Level Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('Level Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
