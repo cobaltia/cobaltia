@@ -46,9 +46,7 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						)
-						.addStringOption(option =>
-							option.setName('reason').setDescription('The reason for the deposit.'),
-						),
+						.addStringOption(option => option.setName('reason').setDescription('The reason for the deposit.')),
 				)
 				.addSubcommand(command =>
 					command
@@ -62,9 +60,7 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						)
-						.addStringOption(option =>
-							option.setName('reason').setDescription('The reason for the withdrawal.'),
-						),
+						.addStringOption(option => option.setName('reason').setDescription('The reason for the withdrawal.')),
 				)
 				.addSubcommand(command =>
 					command
@@ -81,9 +77,7 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						)
-						.addStringOption(option =>
-							option.setName('reason').setDescription('The reason for the transfer.'),
-						),
+						.addStringOption(option => option.setName('reason').setDescription('The reason for the transfer.')),
 				)
 				.addSubcommand(command => command.setName('statement').setDescription('View your bank statement.')),
 		);
@@ -239,7 +233,6 @@ export class BankCommand extends Subcommand {
 		}
 
 		const data = result.unwrap();
-		console.log(await this.container.prisma.bankTransaction.findMany());
 		const transactions = data.map(
 			transaction =>
 				`${getTransactionSymbol(transaction.type)} ${formatMoney(transaction.amount)} - ${transaction.description.join('. ')}`,
