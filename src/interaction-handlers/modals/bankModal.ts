@@ -8,6 +8,7 @@ import {
 	type ModalSubmitInteraction,
 } from 'discord.js';
 import { getUser } from '#lib/database';
+import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
 import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
@@ -41,11 +42,23 @@ export class BankModalHandler extends InteractionHandler {
 		if (result.isErr()) throw result.unwrapErr();
 
 		const amount = interaction.fields.getTextInputValue('input:bank:deposit');
+		const reason = interaction.fields.getTextInputValue('input:bank:deposit-reason');
 		const data = result.unwrap();
 		const nextResult = await Result.fromAsync(async () => handleDeposit(data, amount));
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
-		const { next } = nextResult.unwrap();
+		const { next, money } = nextResult.unwrap();
+		const description = ['Bank Depost'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'DEPOSIT',
+			description,
+		);
+
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
 			.setFields(
@@ -80,11 +93,23 @@ export class BankModalHandler extends InteractionHandler {
 		if (result.isErr()) throw result.unwrapErr();
 
 		const amount = interaction.fields.getTextInputValue('input:bank:withdraw');
+		const reason = interaction.fields.getTextInputValue('input:bank:withdraw-reason');
 		const data = result.unwrap();
 		const nextResult = await Result.fromAsync(async () => handleWithdraw(data, amount));
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
-		const { next } = nextResult.unwrap();
+		const { next, money } = nextResult.unwrap();
+		const description = ['Bank Withdrawal'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'WITHDRAW',
+			description,
+		);
+
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
 			.setFields(
@@ -131,6 +156,7 @@ export class BankModalHandler extends InteractionHandler {
 		}
 
 		const amount = interaction.fields.getTextInputValue('input:bank:transfer');
+		const reason = interaction.fields.getTextInputValue('input:bank:transfer-reason');
 		const transferor = transferorResult.unwrap();
 		const transferee = transfereeResult.unwrap();
 		const result = await Result.fromAsync(async () => handleTransfer(transferor, transferee, amount));
@@ -139,6 +165,16 @@ export class BankModalHandler extends InteractionHandler {
 		}
 
 		const { money } = result.unwrap();
+		const description = ['Bank Transfer'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			user,
+			money,
+			'TRANSFER',
+			description,
+		);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 

@@ -67,6 +67,7 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 						guildId: previous.guild.id,
 						date: new Date(),
 						duration: elapsed,
+						earned: total,
 					},
 				},
 			},

@@ -8,9 +8,10 @@ import {
 	EmbedBuilder,
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { getUser } from '#lib/database';
+import { getBankStatement, getUser } from '#lib/database';
+import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
-import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
+import { getTransactionSymbol, handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
 export class BankCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -22,6 +23,7 @@ export class BankCommand extends Subcommand {
 				{ name: 'deposit', chatInputRun: 'chatInputDeposit' },
 				{ name: 'withdraw', chatInputRun: 'chatInputWithdraw' },
 				{ name: 'transfer', chatInputRun: 'chatInputTransfer' },
+				{ name: 'statement', chatInputRun: 'chatInputStatement' },
 			],
 		});
 	}
@@ -43,6 +45,9 @@ export class BankCommand extends Subcommand {
 									'A constant number like "1234", a shorthand like "2k" or a relative number like "20%" or "max".',
 								)
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the deposit.'),
 						),
 				)
 				.addSubcommand(command =>
@@ -56,6 +61,9 @@ export class BankCommand extends Subcommand {
 									'A constant number like "1234", a shorthand like "2k" or a relative number like "20%" or "max".',
 								)
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the withdrawal.'),
 						),
 				)
 				.addSubcommand(command =>
@@ -72,8 +80,12 @@ export class BankCommand extends Subcommand {
 									'A constant number like "1234", a shorthand like "2k" or a relative number like "20%" or "max".',
 								)
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the transfer.'),
 						),
-				),
+				)
+				.addSubcommand(command => command.setName('statement').setDescription('View your bank statement.')),
 		);
 	}
 
@@ -123,14 +135,24 @@ export class BankCommand extends Subcommand {
 		}
 
 		const amount = interaction.options.getString('amount', true);
+		const reason = interaction.options.getString('reason');
 		const data = result.unwrap();
 		const nextResult = await handleDeposit(data, amount);
 		if (nextResult.isErr()) {
 			throw nextResult.unwrapErr();
 		}
 
-		const updated = nextResult.unwrap();
-		const { next, money } = updated;
+		const { next, money } = nextResult.unwrap();
+		const description = ['Bank Deposit'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'DEPOSIT',
+			description,
+		);
 
 		const embed = new EmbedBuilder()
 			.setTitle('Deposit Successful')
@@ -151,14 +173,24 @@ export class BankCommand extends Subcommand {
 		}
 
 		const amount = interaction.options.getString('amount', true);
+		const reason = interaction.options.getString('reason');
 		const data = result.unwrap();
 		const nextResult = await handleWithdraw(data, amount);
 		if (nextResult.isErr()) {
 			throw nextResult.unwrapErr();
 		}
 
-		const updated = nextResult.unwrap();
-		const { next, money } = updated;
+		const { next, money } = nextResult.unwrap();
+		const description = ['Bank Withdrawal'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'WITHDRAW',
+			description,
+		);
 
 		const embed = new EmbedBuilder()
 			.setTitle('Withdraw Successful')
@@ -190,6 +222,7 @@ export class BankCommand extends Subcommand {
 		}
 
 		const amount = interaction.options.getString('amount', true);
+		const reason = interaction.options.getString('reason');
 		const transferor = transferorResult.unwrap();
 		const transferee = transfereeResult.unwrap();
 
@@ -199,8 +232,40 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { money } = result.unwrap();
+		const description = ['Bank Transfer'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			user,
+			money,
+			'TRANSFER',
+			description,
+		);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
+
+		await interaction.editReply({ embeds: [embed] });
+	}
+
+	public async chatInputStatement(interaction: Subcommand.ChatInputCommandInteraction) {
+		await interaction.deferReply();
+
+		const result = await Result.fromAsync(async () => getBankStatement(interaction.user.id));
+		if (result.isErr()) {
+			throw result.unwrapErr();
+		}
+
+		const data = result.unwrap();
+		const transactions = data.map(
+			transaction =>
+				`${getTransactionSymbol(transaction.type)} ${formatMoney(transaction.amount)} - ${transaction.description.join('. ')}`,
+		);
+
+		const embed = new EmbedBuilder()
+			.setTitle(`${interaction.user.tag}'s Bank Statement`)
+			.setDescription(transactions.length ? transactions.join('\n') : 'No transactions found.')
+			.setFooter({ text: 'For a more comprehensive list visit the website (coming soon)' });
 
 		await interaction.editReply({ embeds: [embed] });
 	}

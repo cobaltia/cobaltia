@@ -1,8 +1,9 @@
 /* eslint-disable typescript-sort-keys/interface */
-import type { User as PrismaUser } from '@prisma/client';
+import type { $Enums, User as PrismaUser } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
+import { bold } from 'discord.js';
 import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
 
 export const options = new Set<string>(['all', 'half', 'max']);
@@ -133,4 +134,15 @@ export async function handleTransfer(
 	});
 
 	return ok({ transferor: nextTransferor, transferee: nextTransferee, money });
+}
+
+export function getTransactionSymbol(type: $Enums.Transaction) {
+	switch (type) {
+		case 'DEPOSIT':
+			return bold('+');
+		case 'WITHDRAW':
+			return bold('\\-');
+		case 'TRANSFER':
+			return bold('\\-');
+	}
 }
