@@ -48,10 +48,16 @@ export class BankModalHandler extends InteractionHandler {
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
 		const { next, money } = nextResult.unwrap();
-		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'DEPOSIT', [
-			'Bank Deposit',
-			reason ?? '',
-		]);
+		const description = ['Bank Depost'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'DEPOSIT',
+			description,
+		);
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
@@ -93,10 +99,16 @@ export class BankModalHandler extends InteractionHandler {
 		if (nextResult.isErr()) throw nextResult.unwrapErr();
 
 		const { next, money } = nextResult.unwrap();
-		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'WITHDRAW', [
-			'Bank Withdrawal',
-			reason ?? '',
-		]);
+		const description = ['Bank Withdrawal'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'WITHDRAW',
+			description,
+		);
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
@@ -153,10 +165,16 @@ export class BankModalHandler extends InteractionHandler {
 		}
 
 		const { money } = result.unwrap();
-		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
-			'Bank Transfer',
-			reason ?? '',
-		]);
+		const description = ['Bank Transfer'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			user,
+			money,
+			'TRANSFER',
+			description,
+		);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 

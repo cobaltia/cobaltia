@@ -46,7 +46,9 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						)
-						.addStringOption(option => option.setName('reason').setDescription('The reason for the deposit.')),
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the deposit.'),
+						),
 				)
 				.addSubcommand(command =>
 					command
@@ -60,7 +62,9 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						)
-						.addStringOption(option => option.setName('reason').setDescription('The reason for the withdrawal.')),
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the withdrawal.'),
+						),
 				)
 				.addSubcommand(command =>
 					command
@@ -77,7 +81,9 @@ export class BankCommand extends Subcommand {
 								)
 								.setRequired(true),
 						)
-						.addStringOption(option => option.setName('reason').setDescription('The reason for the transfer.')),
+						.addStringOption(option =>
+							option.setName('reason').setDescription('The reason for the transfer.'),
+						),
 				)
 				.addSubcommand(command => command.setName('statement').setDescription('View your bank statement.')),
 		);
@@ -137,10 +143,16 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { next, money } = nextResult.unwrap();
-		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'DEPOSIT', [
-			'Bank Deposit',
-			reason ?? '',
-		]);
+		const description = ['Bank Deposit'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'DEPOSIT',
+			description,
+		);
 
 		const embed = new EmbedBuilder()
 			.setTitle('Deposit Successful')
@@ -169,10 +181,16 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { next, money } = nextResult.unwrap();
-		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, null, money, 'WITHDRAW', [
-			'Bank Withdrawal',
-			reason ?? '',
-		]);
+		const description = ['Bank Withdrawal'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			null,
+			money,
+			'WITHDRAW',
+			description,
+		);
 
 		const embed = new EmbedBuilder()
 			.setTitle('Withdraw Successful')
@@ -214,10 +232,16 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { money } = result.unwrap();
-		this.container.client.emit(CobaltEvents.RawBankTransaction, interaction.user, user, money, 'TRANSFER', [
-			'Bank Transfer',
-			reason ?? '',
-		]);
+		const description = ['Bank Transfer'];
+		if (reason) description.push(reason);
+		this.container.client.emit(
+			CobaltEvents.RawBankTransaction,
+			interaction.user,
+			user,
+			money,
+			'TRANSFER',
+			description,
+		);
 
 		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
 
