@@ -49,3 +49,5 @@ export const ROLES: SelectMenuComponentOptionData[] = [
 	{ label: 'Zomboid', value: '1212543350931071076' },
 	{ label: 'Helldivers', value: '1212545695660376114' },
 ];
+
+export const mainGuildId = '322505254098698240';

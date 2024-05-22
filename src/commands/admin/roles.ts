@@ -1,4 +1,4 @@
-import { Command, UserError } from '@sapphire/framework';
+import { Command } from '@sapphire/framework';
 import {
 	ActionRowBuilder,
 	type MessageActionRowComponentBuilder,
@@ -13,7 +13,7 @@ export class RolesCommand extends Command {
 		super(context, {
 			...options,
 			description: 'Guild roles.',
-			preconditions: ['GuildOnly'],
+			preconditions: ['GuildOnly', 'CobaltOnly'],
 		});
 	}
 
@@ -27,9 +27,6 @@ export class RolesCommand extends Command {
 	}
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-		if (interaction.guild?.id !== '322505254098698240')
-			throw new UserError({ identifier: 'WrongGuild', message: 'Command can only be ran in Cobalt Network' });
-
 		await interaction.deferReply();
 
 		const embed = new EmbedBuilder()

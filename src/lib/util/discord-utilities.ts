@@ -1,7 +1,14 @@
 /* eslint-disable typescript-sort-keys/interface */
 import { setTimeout } from 'node:timers';
 import { isNullishOrEmpty } from '@sapphire/utilities';
-import type { Guild, Message, MessageCreateOptions, MessagePayload, User } from 'discord.js';
+import {
+	type Guild,
+	type Message,
+	type MessageCreateOptions,
+	type MessagePayload,
+	type User,
+	type PollData,
+} from 'discord.js';
 import type { GuildMessage } from '#lib/types';
 
 /**
@@ -110,4 +117,13 @@ export async function calculateBonus(user: User, guild: Guild) {
 	if (member.roles.cache.has(patriot)) bonus += 3; // 3%
 	if (member.roles.cache.has(booster)) bonus += 5; // 5%
 	return bonus;
+}
+
+export function generatePoll(prompt: string, duration: number): PollData {
+	return {
+		question: { text: prompt },
+		answers: [{ text: 'Aye' }, { text: 'Nay' }, { text: 'Abstain' }],
+		duration,
+		allowMultiselect: false,
+	};
 }
