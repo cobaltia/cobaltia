@@ -23,6 +23,7 @@ model Guild {
   logChannelId     String? @map("log_channel_id") @db.VarChar(20)
   welcomeChannelId String? @map("welcome_channel_id") @db.VarChar(20)
   voiceChannelId   String? @map("voice_channel_id") @db.VarChar(20)
+  welcomeMessage   String  @default("Welcome to {guild}, {member}!") @map("welcome_message")
 
   @@map("guilds")
 }
@@ -44,14 +45,14 @@ model User {
 }
 
 model Voice {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @map("user_id") @db.VarChar(20)
   channelId String   @map("channel_id") @db.VarChar(20)
   guildId   String   @map("guild_id") @db.VarChar(20)
   date      DateTime @default(now()) @map("date")
   duration  Int      @default(0) @map("duration")
-  earned    Int?     @map("earned")
+  earned    Int      @default(0) @map("earned")
 
   @@map("voices")
 }
