@@ -23,7 +23,7 @@ model Guild {
   logChannelId     String? @map("log_channel_id") @db.VarChar(20)
   welcomeChannelId String? @map("welcome_channel_id") @db.VarChar(20)
   voiceChannelId   String? @map("voice_channel_id") @db.VarChar(20)
-  welcomeMessage   String  @default("Welcome to {guild}, {member}!") @map("welcome_message")
+  welcomeMessage   String  @default("Welcome to {guild}, {user}!") @map("welcome_message")
 
   @@map("guilds")
 }
