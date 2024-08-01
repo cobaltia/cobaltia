@@ -51,7 +51,10 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${formatMoney(wallet)} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('Wallet Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('Wallet Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
@@ -84,7 +87,10 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${formatMoney(bank)} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('Bank Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('Bank Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
@@ -117,7 +123,10 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${level} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('Level Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('Level Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
@@ -151,7 +160,10 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${formatMoney(netWorth)} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('Net Worth Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('Net Worth Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
@@ -184,7 +196,10 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${socialCredit} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('Social Credit Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('Social Credit Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
@@ -222,7 +237,10 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${vcTime} `)} - ${user}`);
 		}
 
-		const embed = new EmbedBuilder().setTitle('VC Time Leaderboard').setDescription(description.join('\n'));
+		const embed = new EmbedBuilder()
+			.setTitle('VC Time Leaderboard')
+			.setDescription(description.join('\n'))
+			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([

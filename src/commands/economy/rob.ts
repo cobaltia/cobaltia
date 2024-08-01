@@ -134,8 +134,12 @@ export class RobCommand extends Command {
 
 		await this.container.prisma.user.update({
 			where: { id: victim.id },
-			data: { wallet: { increment: robber.bounty } },
+			data: { bankBalance: { increment: robber.bounty } },
 		});
+		this.container.client.emit('RawBankTransaction', victim, null, robber.bounty, 'DEPOSIT', [
+			`Bounty claim from ${interaction.user.username}`,
+		]);
+
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
 			data: { wallet: 0, bounty: 0 },

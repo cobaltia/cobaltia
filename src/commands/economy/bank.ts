@@ -231,7 +231,7 @@ export class BankCommand extends Subcommand {
 			throw result.unwrapErr();
 		}
 
-		const { money } = result.unwrap();
+		const { money, transferor: next } = result.unwrap();
 		const description = ['Bank Transfer'];
 		if (reason) description.push(reason);
 		this.container.client.emit(
@@ -243,7 +243,13 @@ export class BankCommand extends Subcommand {
 			description,
 		);
 
-		const embed = new EmbedBuilder().setTitle('Transfer Successful').setDescription(formatMoney(money));
+		const embed = new EmbedBuilder()
+			.setTitle('Transfer Successful')
+			.setDescription(formatMoney(money))
+			.setFields(
+				{ name: 'Current Wallet Balance', value: formatMoney(next.wallet)!, inline: true },
+				{ name: 'Current Bank Balance', value: formatMoney(next.bankBalance)!, inline: true },
+			);
 
 		await interaction.editReply({ embeds: [embed] });
 	}

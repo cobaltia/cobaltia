@@ -39,6 +39,13 @@ export class SetupCommand extends Subcommand {
 								.setName('channel')
 								.setDescription('The channel to welcome users into.')
 								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option
+								.setName('message')
+								.setDescription(
+									'The welcome message to send to new users. {user} and {guild} can be used as placeholders.',
+								),
 						),
 				)
 				.addSubcommand(command =>
@@ -70,12 +77,13 @@ export class SetupCommand extends Subcommand {
 
 	public async chatInputWelcome(interaction: Subcommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
+		const message = interaction.options.getString('message') ?? undefined;
 		await interaction.deferReply({ ephemeral: true });
 
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },
-			update: { welcomeChannelId: channel.id },
-			create: { id: interaction.guild!.id, welcomeChannelId: channel.id },
+			update: { welcomeChannelId: channel.id, welcomeMessage: message },
+			create: { id: interaction.guild!.id, welcomeChannelId: channel.id, welcomeMessage: message },
 		});
 
 		await interaction.editReply({ content: `Set ${channel} as new welcome channel` });

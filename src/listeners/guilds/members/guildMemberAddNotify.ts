@@ -23,14 +23,15 @@ export class GuildMemberAddNotifyListener extends Listener<typeof Events.GuildMe
 		});
 	}
 
-	private async handleOk(member: GuildMember, { welcomeChannelId }: PrismaGuild) {
+	private async handleOk(member: GuildMember, { welcomeChannelId, welcomeMessage }: PrismaGuild) {
 		const { guild } = member;
 		if (!welcomeChannelId) return;
 
 		const channel = guild.channels.cache.get(welcomeChannelId);
 		if (!isTextBasedChannel(channel)) return this.handleErr(new Error('Welcome channel is not a text channel'));
+		const message = welcomeMessage.replaceAll('{user}', `${member}`).replaceAll('{guild}', guild.name);
 
-		return channel.send(`Welcome to ${guild.name}, ${member}!\nPlease wait for a staff member to verify you.`);
+		return channel.send(message);
 	}
 
 	private async handleErr(error: unknown) {
