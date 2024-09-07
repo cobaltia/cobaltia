@@ -39,7 +39,7 @@ export class GuildBanRemoveListener extends Listener<typeof Events.GuildBanRemov
 		const icon = user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(user), iconURL: icon })
-			.setTitle('User unbanned')
+			.setTitle('User Unbanned')
 			.setFooter({ text: `User ID: ${user.id}` })
 			.setColor(Colors.Blue)
 			.setTimestamp();

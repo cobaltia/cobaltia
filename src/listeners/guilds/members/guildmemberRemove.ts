@@ -44,7 +44,7 @@ export class GuildMemberRemoveListener extends Listener<typeof Events.GuildMembe
 		const roles = [...member.roles.cache.values()];
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
-			.setTitle('Member Left')
+			.setTitle('Member Left Server')
 			.setDescription(roles.join(' ') || 'No roles')
 			.setFields(
 				{ name: 'Members', value: member.guild.memberCount.toString(), inline: true },

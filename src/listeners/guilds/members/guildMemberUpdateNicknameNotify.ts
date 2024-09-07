@@ -44,7 +44,7 @@ export class GuildMemberUpdateNicknameNotifyListener extends Listener<typeof Eve
 		const icon = member.user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
-			.setTitle('Nickname Update')
+			.setTitle('Member Nickname Update')
 			.setDescription(
 				`Old nickname: ${bold(prevNickname ?? 'None')}\nNew Nickname: ${bold(nextNickname ?? 'None')}`,
 			)
