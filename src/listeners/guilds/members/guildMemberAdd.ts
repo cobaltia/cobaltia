@@ -42,7 +42,7 @@ export class GuildMemberAddListener extends Listener<typeof Events.GuildMemberAd
 		const created = new Date(member.user.createdTimestamp);
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
-			.setTitle('New Member Joined')
+			.setTitle('Member Joined Server')
 			.setDescription(
 				`Registered ${bold(time(created, TimestampStyles.RelativeTime))} on ${bold(
 					time(created, TimestampStyles.LongDate),
