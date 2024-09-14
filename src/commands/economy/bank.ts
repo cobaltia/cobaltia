@@ -255,7 +255,7 @@ export class BankCommand extends Subcommand {
 	}
 
 	public async chatInputStatement(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply();
+		await interaction.deferReply({ ephemeral: true });
 
 		const result = await Result.fromAsync(async () => getBankStatement(interaction.user.id));
 		if (result.isErr()) {
