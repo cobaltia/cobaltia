@@ -11,7 +11,7 @@ import {
 import { formatMoney } from '#util/common';
 import { ONE_TO_TEN } from '#util/constants';
 
-export class LeaderboardSelectMenuHandler extends InteractionHandler {
+export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
 		super(context, {
 			...options,
@@ -21,7 +21,7 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 
 	public override parse(interaction: StringSelectMenuInteraction) {
 		const customId = interaction.customId;
-		if (customId === 'select-menu:leaderboard') return this.some();
+		if (customId === 'select-menu:leaderboard-global') return this.some();
 		return this.none();
 	}
 
@@ -52,12 +52,12 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('Wallet Leaderboard')
-			.setDescription(description.join('\n'))
+			.setTitle('Global Wallet Leaderboard')
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
 			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
 					{ label: 'Wallet', value: 'wallet', default: true },
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
@@ -88,12 +88,12 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('Bank Leaderboard')
-			.setDescription(description.join('\n'))
+			.setTitle('Global Bank Leaderboard')
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
 			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
 					{ label: 'Wallet', value: 'wallet' },
 					{ label: 'Bank', value: 'bank', default: true },
 					{ label: 'Net Worth', value: 'networth' },
@@ -124,12 +124,12 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('Level Leaderboard')
-			.setDescription(description.join('\n'))
+			.setTitle('Global Level Leaderboard')
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
 			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
 					{ label: 'Wallet', value: 'wallet' },
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
@@ -161,12 +161,12 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('Net Worth Leaderboard')
-			.setDescription(description.join('\n'))
+			.setTitle('Global Net Worth Leaderboard')
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
 			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
 					{ label: 'Wallet', value: 'wallet' },
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth', default: true },
@@ -197,12 +197,12 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('Social Credit Leaderboard')
-			.setDescription(description.join('\n'))
+			.setTitle('Global Social Credit Leaderboard')
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
 			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
 					{ label: 'Wallet', value: 'wallet' },
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
@@ -238,12 +238,12 @@ export class LeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('VC Time Leaderboard')
-			.setDescription(description.join('\n'))
+			.setTitle('Global VC Time Leaderboard')
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
 			.setFooter({ text: 'For a full list visit the website (coming soon)' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard`).addOptions([
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
 					{ label: 'Wallet', value: 'wallet' },
 					{ label: 'Bank', value: 'bank' },
 					{ label: 'Net Worth', value: 'networth' },
