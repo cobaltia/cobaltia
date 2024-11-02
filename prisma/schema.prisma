@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -31,10 +32,10 @@ model Guild {
 model User {
   id              String            @id @db.VarChar(20)
   guilds          String[]          @map("guilds")
-  bankBalance     Int               @default(0) @map("bank_balance")
-  bankLimit       Int               @default(1000) @map("bank_limit")
-  wallet          Int               @default(0) @map("wallet")
-  bounty          Int               @default(0) @map("bounty")
+  bankBalance     Float             @default(0) @map("bank_balance")
+  bankLimit       Float             @default(1000) @map("bank_limit")
+  wallet          Float             @default(0) @map("wallet")
+  bounty          Float             @default(0) @map("bounty")
   experience      Int               @default(0) @map("experience")
   level           Int               @default(0) @map("level")
   socialCredit    Int               @default(1000) @map("social_credit")

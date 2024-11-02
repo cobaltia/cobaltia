@@ -1,7 +1,8 @@
 /* eslint-disable typescript-sort-keys/interface */
 import { setTimeout } from 'node:timers';
+import { isTextBasedChannel } from '@sapphire/discord.js-utilities';
 import { isNullishOrEmpty } from '@sapphire/utilities';
-import type { Guild, Message, MessageCreateOptions, MessagePayload, User } from 'discord.js';
+import type { Guild, Message, MessageCreateOptions, MessagePayload, TextChannel, User } from 'discord.js';
 import type { GuildMessage } from '#lib/types';
 
 /**
@@ -82,13 +83,16 @@ export function getImage(message: Message) {
 	return null;
 }
 
+// TODO(Isidro): Remove the type wrapper
 export async function sendTemporaryMessage(
 	message: GuildMessage | Message,
 	options: MessageCreateOptions | MessagePayload | string,
 	timeout = 5_000,
 ) {
-	const msg = await message.channel.send(options);
-	setTimeout(async () => msg.delete(), timeout);
+	if (isTextBasedChannel(message.channel)) {
+		const msg = await (message.channel as TextChannel).send(options);
+		setTimeout(async () => msg.delete(), timeout);
+	}
 }
 
 export function isUniqueUsername(user: User) {

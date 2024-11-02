@@ -1,3 +1,11 @@
+import {
+	getLocalUserBankLeaderboard,
+	getLocalUserLevelLeaderboard,
+	getLocalUserNetworthLeaderboard,
+	getLocalUserSocialCreditLeaderboard,
+	getLocalUserVcTimeLeaderboard,
+	getLocalUserWalletLeaderboard,
+} from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import {
@@ -37,14 +45,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
+		const users = await interaction.guild?.members.fetch();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: {
-					guilds: { has: interaction.guild?.id },
-				},
-				take: 10,
-				orderBy: { wallet: 'desc' },
-			}),
+			this.container.prisma.$queryRawTyped(getLocalUserWalletLeaderboard(users!.map(user => user.id))),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -79,14 +82,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleBank(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
+		const users = await interaction.guild?.members.fetch();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: {
-					guilds: { has: interaction.guild?.id },
-				},
-				take: 10,
-				orderBy: { bankBalance: 'desc' },
-			}),
+			this.container.prisma.$queryRawTyped(getLocalUserBankLeaderboard(users!.map(user => user.id))),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -95,7 +93,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 		for (const [index, userData] of data.entries()) {
 			const user = await this.container.client.users.fetch(userData.id);
-			const bank = userData.bankBalance.toString();
+			const bank = userData.bank_balance.toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${formatMoney(bank)} `)} - ${user}`);
 		}
 
@@ -121,14 +119,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleLevel(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
+		const users = await interaction.guild?.members.fetch();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: {
-					guilds: { has: interaction.guild?.id },
-				},
-				take: 10,
-				orderBy: { level: 'desc' },
-			}),
+			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users!.map(user => user.id))),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -163,24 +156,18 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
+		const users = await interaction.guild?.members.fetch();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: {
-					guilds: { has: interaction.guild?.id },
-				},
-			}),
+			this.container.prisma.$queryRawTyped(getLocalUserNetworthLeaderboard(users!.map(user => user.id))),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
-		const data = result
-			.unwrap()
-			.sort((a, b) => b.netWorth - a.netWorth)
-			.slice(0, 10);
+		const data = result.unwrap();
 		const description = [];
 
 		for (const [index, userData] of data.entries()) {
 			const user = await this.container.client.users.fetch(userData.id);
-			const netWorth = userData.netWorth.toString();
+			const netWorth = (userData.net_worth ?? 0).toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${formatMoney(netWorth)} `)} - ${user}`);
 		}
 
@@ -206,14 +193,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleSocialCredit(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
+		const users = await interaction.guild?.members.fetch();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: {
-					guilds: { has: interaction.guild?.id },
-				},
-				take: 10,
-				orderBy: { socialCredit: 'desc' },
-			}),
+			this.container.prisma.$queryRawTyped(getLocalUserSocialCreditLeaderboard(users!.map(user => user.id))),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -222,7 +204,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 		for (const [index, userData] of data.entries()) {
 			const user = await this.container.client.users.fetch(userData.id);
-			const socialCredit = userData.socialCredit.toString();
+			const socialCredit = userData.social_credit.toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${socialCredit} `)} - ${user}`);
 		}
 
@@ -249,23 +231,16 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleVcTime(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.voice.findMany({ where: { guildId: interaction.guild?.id } }),
+			this.container.prisma.$queryRawTyped(getLocalUserVcTimeLeaderboard(interaction.guildId!)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
-		const users = Array.from(new Set(data.map(entry => entry.userId)))
-			.map(userId => ({
-				userId,
-				duration: data.filter(entry => entry.userId === userId).reduce((acc, curr) => acc + curr.duration, 0),
-			}))
-			.sort((a, b) => b.duration - a.duration)
-			.slice(0, 10);
 		const description = [];
 
-		for (const [index, userData] of users.entries()) {
-			const user = await this.container.client.users.fetch(userData.userId);
-			const vcTime = new DurationFormatter().format(userData.duration);
+		for (const [index, userData] of data.entries()) {
+			const user = await this.container.client.users.fetch(userData.user_id);
+			const vcTime = new DurationFormatter().format(Number(userData.total_duration));
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${vcTime} `)} - ${user}`);
 		}
 

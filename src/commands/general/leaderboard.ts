@@ -1,3 +1,4 @@
+import { getLocalUserLevelLeaderboard } from '@prisma/client/sql';
 import { Command, Result } from '@sapphire/framework';
 import {
 	ActionRowBuilder,
@@ -42,14 +43,9 @@ export class LeaderboardCommand extends Command {
 	}
 
 	private async localLeaderboard(interaction: Command.ChatInputCommandInteraction) {
+		const users = await interaction.guild?.members.fetch();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: {
-					guilds: { has: interaction.guild?.id },
-				},
-				orderBy: { level: 'desc' },
-				take: 10,
-			}),
+			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users!.map(user => user.id))),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 

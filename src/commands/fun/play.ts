@@ -59,9 +59,9 @@ export class PlayCommand extends Subcommand {
 		}
 
 		if (!raw && amount.toLowerCase() === 'all') amountToGamble = data.wallet;
-		if (!raw && amount.toLowerCase() === 'half') amountToGamble = roundNumber(data.wallet / 2);
+		if (!raw && amount.toLowerCase() === 'half') amountToGamble = roundNumber(data.wallet / 2, 2);
 		if (!raw && amount.toLowerCase() === 'max') amountToGamble = data.wallet;
-		if (raw?.suffix === '%') amountToGamble = roundNumber(data.wallet * (amountToGamble / 100));
+		if (raw?.suffix === '%') amountToGamble = roundNumber(data.wallet * (amountToGamble / 100), 2);
 		if (amountToGamble > data.wallet) {
 			throw new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to gamble.' });
 		}
@@ -82,8 +82,8 @@ export class PlayCommand extends Subcommand {
 		);
 
 		if (houseRoll < userRoll) {
-			const won = roundNumber(amountToGamble * 1.5);
-			const tax = roundNumber(won * (client.tax / 100));
+			const won = roundNumber(amountToGamble * 1.5, 2);
+			const tax = roundNumber(won * (client.tax / 100), 2);
 			await this.container.prisma.client.update({
 				where: { id: this.container.client.id! },
 				data: { bankBalance: { increment: tax } },

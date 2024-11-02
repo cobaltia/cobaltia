@@ -16,7 +16,7 @@ export class MessageDeleteListener extends Listener<typeof Events.MessageDelete>
 		});
 	}
 
-	public async run(message: Message) {
+	public async run(message: Message<true>) {
 		if (message.partial || !isGuildMessage(message)) return;
 
 		const result = await Result.fromAsync(async () => getGuild(message.guild.id));

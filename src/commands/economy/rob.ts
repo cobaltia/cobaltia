@@ -1,7 +1,7 @@
 import type { User as PrismaUser } from '@prisma/client';
 import { Command, Result, UserError } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
-import { ApplicationCommandType, EmbedBuilder, type User } from 'discord.js';
+import { ApplicationCommandType, type ContextMenuCommandType, EmbedBuilder, type User } from 'discord.js';
 import { getUser } from '#lib/database';
 import { formatMoney, pickWeightedRandom } from '#util/common';
 
@@ -24,7 +24,10 @@ export class RobCommand extends Command {
 				.addUserOption(option => option.setName('user').setDescription('The user to rob.').setRequired(true)),
 		);
 
-		registry.registerContextMenuCommand(builder => builder.setName('Rob').setType(ApplicationCommandType.User));
+		registry.registerContextMenuCommand(builder =>
+			// TODO(Isidro): remove the type assertion once the discord.js typings are updated
+			builder.setName('Rob').setType(ApplicationCommandType.User as ContextMenuCommandType),
+		);
 	}
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {

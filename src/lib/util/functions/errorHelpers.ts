@@ -8,7 +8,7 @@ import {
 	type Command,
 	Events,
 } from '@sapphire/framework';
-import type { ChatInputSubcommandErrorPayload } from '@sapphire/plugin-subcommands';
+import type { ChatInputSubcommandErrorPayload, Subcommand } from '@sapphire/plugin-subcommands';
 import {
 	codeBlock,
 	EmbedBuilder,
@@ -75,7 +75,7 @@ async function alert(interaction: CommandInteraction, content: string) {
 	});
 }
 
-async function sendErrorChannel(interaction: CommandInteraction, command: Command, error: Error) {
+async function sendErrorChannel(interaction: CommandInteraction, command: Command | Subcommand, error: Error) {
 	const webhook = container.webhookError;
 	if (!webhook) return;
 
@@ -102,7 +102,7 @@ export function getErrorLine(error: Error) {
 	return `**Error**: ${codeBlock('js', error)}`;
 }
 
-function getCommandLine(command: Command) {
+function getCommandLine(command: Command | Subcommand) {
 	return `**Command**: ${command.location.full}`;
 }
 
