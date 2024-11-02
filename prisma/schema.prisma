@@ -54,14 +54,14 @@ model Voice {
   guildId   String   @map("guild_id") @db.VarChar(20)
   date      DateTime @default(now()) @map("date")
   duration  Int      @default(0) @map("duration")
-  earned    Int      @default(0) @map("earned")
+  earned    Float    @default(0) @map("earned")
 
   @@map("voices")
 }
 
 model BankTransaction {
   id          String      @id @default(cuid())
-  amount      Int         @map("amount")
+  amount      Float       @map("amount")
   type        Transaction @map("type")
   description String[]    @map("description")
   account     User        @relation(fields: [accountId], references: [id], onDelete: Cascade)
