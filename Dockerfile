@@ -17,6 +17,7 @@ COPY --chown=node:node prisma/ prisma/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm exec prisma generate
+RUN pnpm exec prisma generate --sql
 RUN pnpm run build
 
 FROM builder as runner
