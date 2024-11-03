@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "tsc -b src",
-    "build:ci": "pnpm exec prisma generate && pnpm exec prisma generate && tsc -b src",
+    "build:ci": "pnpm exec prisma generate && pnpm exec prisma generate --sql && tsc -b src",
     "build:dev": "tsc -b src",
     "dev": "pnpm build:dev && pnpm start",
     "lint": "eslint --fix --ext ts src tests",
