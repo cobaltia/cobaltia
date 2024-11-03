@@ -47,6 +47,14 @@ jobs:
   Building:
     name: Building
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -62,6 +70,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build Code
         run: pnpm run build
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
   Testing:
     name: Unit Testing
