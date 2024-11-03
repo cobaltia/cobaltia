@@ -1,5 +1,12 @@
 import { Command, UserError } from '@sapphire/framework';
-import { ActionRowBuilder, ApplicationCommandType, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
+import {
+	ActionRowBuilder,
+	ApplicationCommandType,
+	type ContextMenuCommandType,
+	ModalBuilder,
+	TextInputBuilder,
+	TextInputStyle,
+} from 'discord.js';
 
 export class TransferCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -11,7 +18,8 @@ export class TransferCommand extends Command {
 
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerContextMenuCommand(builder =>
-			builder.setName('Transfer Money').setType(ApplicationCommandType.User),
+			// TODO(Isidro): remove the type assertion once the discord.js typings are updated
+			builder.setName('Transfer Money').setType(ApplicationCommandType.User as ContextMenuCommandType),
 		);
 	}
 

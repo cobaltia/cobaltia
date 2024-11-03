@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { URL } from 'node:url';
-import { BucketScope } from '@sapphire/framework';
+import type { Prisma } from '@prisma/client';
+import { BucketScope, LogLevel } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { envParseString, setup } from '@skyra/env-utilities';
 import { type ClientOptions, GatewayIntentBits, Partials, type WebhookClientData } from 'discord.js';
@@ -24,8 +25,13 @@ function parseRedisUri() {
 	return envParseString('REDIS_URI', 'redis://localhost:6379');
 }
 
+function parsePrismaLogging(): Prisma.LogLevel[] {
+	return process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'];
+}
+
 export const WEBHOOK_ERROR = parseWebhookError();
 export const REDIS_URI = parseRedisUri();
+export const PRISMA_LOGGING = parsePrismaLogging();
 
 export const CLIENT_OPTIONS: ClientOptions = {
 	intents: [
@@ -43,6 +49,9 @@ export const CLIENT_OPTIONS: ClientOptions = {
 		delay: 5 * Time.Second,
 		limit: 1,
 		scope: BucketScope.User,
+	},
+	logger: {
+		level: process.env.NODE_ENV === 'production' ? LogLevel.Info : LogLevel.Debug,
 	},
 };
 

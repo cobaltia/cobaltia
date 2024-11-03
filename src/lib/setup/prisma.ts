@@ -1,9 +1,9 @@
-import process from 'node:process';
 import { PrismaClient } from '@prisma/client';
 import { container } from '@sapphire/framework';
+import { PRISMA_LOGGING } from '#root/config';
 
 const prisma = new PrismaClient({
-	log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+	log: PRISMA_LOGGING,
 }).$extends({
 	result: {
 		user: {

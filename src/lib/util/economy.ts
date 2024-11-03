@@ -26,9 +26,9 @@ export async function handleDeposit(
 	}
 
 	if (!raw && amount.toLowerCase() === 'all') amountToDeposit = data.wallet;
-	if (!raw && amount.toLowerCase() === 'half') amountToDeposit = roundNumber(data.wallet / 2);
+	if (!raw && amount.toLowerCase() === 'half') amountToDeposit = roundNumber(data.wallet / 2, 2);
 	if (!raw && amount.toLowerCase() === 'max') amountToDeposit = data.wallet;
-	if (raw?.suffix === '%') amountToDeposit = roundNumber(data.wallet * (amountToDeposit / 100));
+	if (raw?.suffix === '%') amountToDeposit = roundNumber(data.wallet * (amountToDeposit / 100), 2);
 
 	const money = Math.min(amountToDeposit, canDeposit, data.wallet);
 	if (money <= 0) {
@@ -69,9 +69,9 @@ export async function handleWithdraw(
 	}
 
 	if (!raw && amount.toLowerCase() === 'all') amountToWithdraw = data.bankBalance;
-	if (!raw && amount.toLowerCase() === 'half') amountToWithdraw = roundNumber(data.bankBalance / 2);
+	if (!raw && amount.toLowerCase() === 'half') amountToWithdraw = roundNumber(data.bankBalance / 2, 2);
 	if (!raw && amount.toLowerCase() === 'max') amountToWithdraw = data.bankBalance;
-	if (raw?.suffix === '%') amountToWithdraw = roundNumber(data.bankBalance * (amountToWithdraw / 100));
+	if (raw?.suffix === '%') amountToWithdraw = roundNumber(data.bankBalance * (amountToWithdraw / 100), 2);
 
 	const money = Math.min(amountToWithdraw, canWithdraw, data.bankBalance);
 	if (money <= 0) {
@@ -110,9 +110,9 @@ export async function handleTransfer(
 	}
 
 	if (!raw && amount.toLowerCase() === 'all') amountToTransfer = transferor.bankBalance;
-	if (!raw && amount.toLowerCase() === 'half') amountToTransfer = roundNumber(transferor.bankBalance / 2);
+	if (!raw && amount.toLowerCase() === 'half') amountToTransfer = roundNumber(transferor.bankBalance / 2, 2);
 	if (!raw && amount.toLowerCase() === 'max') amountToTransfer = transferor.bankBalance;
-	if (raw?.suffix === '%') amountToTransfer = roundNumber(transferor.bankBalance * (amountToTransfer / 100));
+	if (raw?.suffix === '%') amountToTransfer = roundNumber(transferor.bankBalance * (amountToTransfer / 100), 2);
 
 	const money = Math.min(amountToTransfer, canTransfer, transferor.bankBalance);
 	if (money <= 0) {

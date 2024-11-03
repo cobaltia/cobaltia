@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -31,10 +32,10 @@ model Guild {
 model User {
   id              String            @id @db.VarChar(20)
   guilds          String[]          @map("guilds")
-  bankBalance     Int               @default(0) @map("bank_balance")
-  bankLimit       Int               @default(1000) @map("bank_limit")
-  wallet          Int               @default(0) @map("wallet")
-  bounty          Int               @default(0) @map("bounty")
+  bankBalance     Float             @default(0) @map("bank_balance")
+  bankLimit       Float             @default(1000) @map("bank_limit")
+  wallet          Float             @default(0) @map("wallet")
+  bounty          Float             @default(0) @map("bounty")
   experience      Int               @default(0) @map("experience")
   level           Int               @default(0) @map("level")
   socialCredit    Int               @default(1000) @map("social_credit")
@@ -53,14 +54,14 @@ model Voice {
   guildId   String   @map("guild_id") @db.VarChar(20)
   date      DateTime @default(now()) @map("date")
   duration  Int      @default(0) @map("duration")
-  earned    Int      @default(0) @map("earned")
+  earned    Float    @default(0) @map("earned")
 
   @@map("voices")
 }
 
 model BankTransaction {
   id          String      @id @default(cuid())
-  amount      Int         @map("amount")
+  amount      Float       @map("amount")
   type        Transaction @map("type")
   description String[]    @map("description")
   account     User        @relation(fields: [accountId], references: [id], onDelete: Cascade)
