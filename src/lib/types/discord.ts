@@ -1,5 +1,5 @@
 import type { $Enums } from '@prisma/client';
-import type { GuildMember, Message } from 'discord.js';
+import { type ChatInputCommandInteraction, type GuildMember, type Message } from 'discord.js';
 
 export type GuildMessage = Message<true> & { member: GuildMember };
 
@@ -17,9 +17,21 @@ export const Events = {
 	BankDepositTransaction: 'bankDepositTransaction' as const,
 	BankWithdrawTransaction: 'bankWithdrawTransaction' as const,
 	BankTransferTransaction: 'bankTransferTransaction' as const,
+	PossibleItem: 'possibleItem' as const,
+	UnknownItem: 'unknownItem' as const,
+	PreItemRun: 'preItemRun' as const,
 };
 
 declare const CobaltEvents: typeof Events;
+
+export interface ItemContext extends Record<PropertyKey, unknown> {
+	itemName: string;
+}
+
+export interface ItemPayload {
+	context: ItemContext;
+	interaction: ChatInputCommandInteraction;
+}
 
 declare module 'discord.js' {
 	interface ClientEvents {
@@ -42,5 +54,8 @@ declare module 'discord.js' {
 		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
+		[CobaltEvents.PossibleItem]: [item: string, interaction: ChatInputCommandInteraction];
+		[CobaltEvents.UnknownItem]: [payload: ItemPayload];
+		[CobaltEvents.PreItemRun]: [payload: ItemPayload];
 	}
 }
