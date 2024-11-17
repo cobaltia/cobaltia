@@ -1,10 +1,12 @@
 /* eslint-disable typescript-sort-keys/interface */
-import type { $Enums, User as PrismaUser } from '@prisma/client';
+import type { $Enums, Inventory, User as PrismaUser } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
 import { bold } from 'discord.js';
 import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
+import { Item } from '#lib/structures/Item';
+import { getUser } from '#lib/database';
 
 export const options = new Set<string>(['all', 'half', 'max']);
 
@@ -32,9 +34,7 @@ export async function handleDeposit(
 
 	const money = Math.min(amountToDeposit, canDeposit, data.wallet);
 	if (money <= 0) {
-		return err(
-			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }),
-		);
+		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }));
 	}
 
 	const next = await container.prisma.user.update({
@@ -75,9 +75,7 @@ export async function handleWithdraw(
 
 	const money = Math.min(amountToWithdraw, canWithdraw, data.bankBalance);
 	if (money <= 0) {
-		return err(
-			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }),
-		);
+		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }));
 	}
 
 	const next = await container.prisma.user.update({
@@ -145,4 +143,34 @@ export function getTransactionSymbol(type: $Enums.Transaction) {
 		case 'TRANSFER':
 			return bold('\\-');
 	}
+}
+
+export async function handleBuy(
+	item: Item,
+	userId: string,
+	amount = 1,
+): Promise<Result<Inventory, UserError | unknown>> {
+	const result = await getUser(userId);
+	if (result.isErr()) return err(result.unwrapErr());
+
+	const data = result.unwrap();
+
+	if (data.wallet < item.price * amount) {
+		return err(
+			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to buy this item.' }),
+		);
+	}
+
+	const next = await container.prisma.inventory.upsert({
+		where: { id: userId },
+		update: {
+			[item.name]: { increment: amount },
+		},
+		create: {
+			id: userId,
+			[item.name]: amount,
+		},
+	});
+
+	return ok(next);
 }
