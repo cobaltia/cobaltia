@@ -3,6 +3,7 @@ import {
 	type ChatInputCommandSuccessPayload,
 	type ContextMenuCommandSuccessPayload,
 } from '@sapphire/framework';
+import { type RunSuccessItemPayload } from '#lib/types';
 
 export function handleChatInputOrContextMenuCommandSuccess(
 	payload: ChatInputCommandSuccessPayload | ContextMenuCommandSuccessPayload,
@@ -27,4 +28,18 @@ function getSuccessData({
 	const runTime = getDuration(duration);
 
 	return { commandName, author, runTime };
+}
+
+function getSuccessItemData({ interaction, item, duration }: RunSuccessItemPayload) {
+	const itemName = item.name;
+	const author = `${interaction.user.username} [${interaction.user.id}]`;
+	const runTime = getDuration(duration);
+
+	return { itemName, author, runTime };
+}
+
+export function handleItemSuccess(payload: RunSuccessItemPayload) {
+	const { itemName, author, runTime } = getSuccessItemData(payload);
+
+	container.logger.info(`${author} - ${itemName} (${runTime})`);
 }

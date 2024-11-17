@@ -1,5 +1,6 @@
 import { AliasPiece } from '@sapphire/framework';
-import { roundNumber } from '@sapphire/utilities';
+import { Awaitable, roundNumber } from '@sapphire/utilities';
+import { type ChatInputCommandInteraction } from 'discord.js';
 
 export class Item<Options extends Item.Options = Item.Options> extends AliasPiece<ItemOptions, 'items'> {
 	public readonly collectible: boolean;
@@ -19,7 +20,7 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 		this.sellPrice = roundNumber(this.price * 0.7, 2);
 	}
 
-	public run?(): unknown;
+	public run?(interaction: ChatInputCommandInteraction): Awaitable<unknown>;
 
 	public override toJSON(): ItemJSON {
 		return {

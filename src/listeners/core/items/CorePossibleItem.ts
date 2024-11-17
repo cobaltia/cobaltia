@@ -7,20 +7,30 @@ export class CorePossibleItem extends Listener<typeof Events.PossibleItem> {
 		super(context, { event: Events.PossibleItem });
 	}
 
-	public run(item: string, interaction: ChatInputCommandInteraction) {
+	public run(itemName: string, interaction: ChatInputCommandInteraction) {
 		const { client, stores } = this.container;
 		const itemStore = stores.get('items');
 
-		const _item = itemStore.get(item);
+		const item = itemStore.get(itemName);
 
-		if (!_item) {
+		if (!item) {
 			client.emit(Events.UnknownItem, {
 				interaction,
-				context: { itemName: item },
+				context: { itemName },
 			});
 			return;
 		}
 
-		client.emit(Events.PreItemRun, { interaction, context: { itemName: item } });
+		if (!item.run) {
+			client.emit(Events.ItemError, new Error('Item has no run method'), {
+				item,
+				interaction,
+				context: { itemName },
+				duration: -1,
+			});
+			return;
+		}
+
+		client.emit(Events.PreItemRun, { item, interaction, context: { itemName } });
 	}
 }
