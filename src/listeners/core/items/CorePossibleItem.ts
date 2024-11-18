@@ -7,7 +7,7 @@ export class CorePossibleItem extends Listener<typeof Events.PossibleItem> {
 		super(context, { event: Events.PossibleItem });
 	}
 
-	public run(itemName: string, interaction: ChatInputCommandInteraction) {
+	public run(itemName: string, amount: number, interaction: ChatInputCommandInteraction) {
 		const { client, stores } = this.container;
 		const itemStore = stores.get('items');
 
@@ -16,7 +16,7 @@ export class CorePossibleItem extends Listener<typeof Events.PossibleItem> {
 		if (!item) {
 			client.emit(Events.UnknownItem, {
 				interaction,
-				context: { itemName },
+				context: { itemName, amount },
 			});
 			return;
 		}
@@ -25,12 +25,12 @@ export class CorePossibleItem extends Listener<typeof Events.PossibleItem> {
 			client.emit(Events.ItemError, new Error('Item has no run method'), {
 				item,
 				interaction,
-				context: { itemName },
+				context: { itemName, amount },
 				duration: -1,
 			});
 			return;
 		}
 
-		client.emit(Events.PreItemRun, { item, interaction, context: { itemName } });
+		client.emit(Events.PreItemRun, { item, interaction, context: { itemName, amount } });
 	}
 }

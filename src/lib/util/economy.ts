@@ -4,9 +4,9 @@ import { UserError, container } from '@sapphire/framework';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
 import { bold } from 'discord.js';
-import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
-import { Item } from '#lib/structures/Item';
 import { getUser } from '#lib/database';
+import { type Item } from '#lib/structures/Item';
+import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
 
 export const options = new Set<string>(['all', 'half', 'max']);
 
@@ -173,4 +173,18 @@ export async function handleBuy(
 	});
 
 	return ok(next);
+}
+
+export function getInventoryNetWorth(data: Inventory) {
+	const items = container.stores.get('items');
+	const inventoryMap = new Map(Object.entries(data));
+	let netWorth = 0;
+
+	for (const [key, value] of inventoryMap) {
+		const item = items.get(key);
+		if (!item) continue;
+		netWorth += item.sellPrice * Number.parseInt(value.toString(), 10);
+	}
+
+	return netWorth;
 }

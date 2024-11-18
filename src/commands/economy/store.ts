@@ -1,8 +1,8 @@
-import { getUser } from '#lib/database';
-import { handleBuy } from '#lib/util/economy';
 import { type ApplicationCommandRegistry } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { EmbedBuilder } from 'discord.js';
+import { getUser } from '#lib/database';
+import { handleBuy } from '#lib/util/economy';
 
 export class StoreCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {

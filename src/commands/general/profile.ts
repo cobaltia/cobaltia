@@ -1,4 +1,4 @@
-import { type User as PrismaUser } from '@prisma/client';
+import { type Inventory, type User as PrismaUser } from '@prisma/client';
 import { Command, Result } from '@sapphire/framework';
 import {
 	type User,
@@ -8,7 +8,7 @@ import {
 	StringSelectMenuBuilder,
 	type ContextMenuCommandType,
 } from 'discord.js';
-import { getUser } from '#lib/database';
+import { getInventory, getUser } from '#lib/database';
 import { profileEmbed } from '#util/discord-embeds';
 
 export class ProfileCommand extends Command {
@@ -38,14 +38,15 @@ export class ProfileCommand extends Command {
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		await interaction.deferReply();
 		const user = interaction.options.getUser('user') ?? interaction.user;
-		const result = await Result.fromAsync(async () => getUser(user.id));
 
-		await result.match({
-			ok: async data => this.handleOk(interaction, data, user),
-			err: async error => {
-				throw error;
-			},
-		});
+		const result = await Result.fromAsync(async () => getUser(user.id));
+		if (result.isErr()) throw result.unwrapErr();
+		const inventoryResult = await Result.fromAsync(async () => getInventory(user.id));
+		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
+		const data = result.unwrap();
+		const inventory = inventoryResult.unwrap();
+
+		return this.handleOk(interaction, data, inventory, user);
 	}
 
 	public async contextMenuRun(interaction: Command.ContextMenuCommandInteraction) {
@@ -53,21 +54,22 @@ export class ProfileCommand extends Command {
 		const user = await this.container.client.users.fetch(interaction.targetId);
 
 		const result = await Result.fromAsync(async () => getUser(user.id));
+		if (result.isErr()) throw result.unwrapErr();
+		const inventoryResult = await Result.fromAsync(async () => getInventory(user.id));
+		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
+		const data = result.unwrap();
+		const inventory = inventoryResult.unwrap();
 
-		await result.match({
-			ok: async data => this.handleOk(interaction, data, user),
-			err: async error => {
-				throw error;
-			},
-		});
+		return this.handleOk(interaction, data, inventory, user);
 	}
 
 	private async handleOk(
 		interaction: Command.ChatInputCommandInteraction | Command.ContextMenuCommandInteraction,
 		data: PrismaUser,
+		inventory: Inventory,
 		user: User,
 	) {
-		const embed = await profileEmbed(data, user);
+		const embed = await profileEmbed(data, inventory, user);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(

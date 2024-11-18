@@ -1,6 +1,8 @@
-import { type ApplicationCommandRegistry } from '@sapphire/framework';
+import { Result, type ApplicationCommandRegistry } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
+import { getInventory } from '#lib/database';
 import { Events } from '#lib/types';
+import { formatMoney } from '#util/common';
 
 export class ItemCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -38,11 +40,40 @@ export class ItemCommand extends Subcommand {
 
 	public async chatInputUse(interaction: Subcommand.ChatInputCommandInteraction) {
 		const item = interaction.options.getString('item', true);
+		const amount = interaction.options.getInteger('amount', false) ?? 1;
 
-		this.container.client.emit(Events.PossibleItem, item, interaction);
+		this.container.client.emit(Events.PossibleItem, item, amount, interaction);
 	}
 
 	public async chatInputSell(interaction: Subcommand.ChatInputCommandInteraction) {
-		return interaction.reply('This command is not yet implemented.');
+		await interaction.deferReply();
+		const itemName = interaction.options.getString('item', true);
+		const amount = interaction.options.getInteger('amount', false) ?? 1;
+		const items = this.container.stores.get('items');
+		const item = items.get(itemName);
+		// TODO(Isidro): Maybe make is the unknown item listener
+		if (!item) throw new Error('Item not found');
+
+		const result = await Result.fromAsync(() => getInventory(interaction.user.id));
+		if (result.isErr()) throw result.unwrapErr();
+
+		const inventory = result.unwrap();
+		const inventoryMap = new Map(Object.entries(inventory));
+		const inventoryItem = inventoryMap.get(item.name) as number;
+		if (inventoryItem < amount) {
+			return interaction.editReply('You do not have enough of that item to sell.');
+		}
+
+		await this.container.prisma.inventory.update({
+			where: { id: interaction.user.id },
+			data: { [item.name]: { decrement: amount } },
+		});
+
+		await this.container.prisma.user.update({
+			where: { id: interaction.user.id },
+			data: { wallet: { increment: item.sellPrice * amount } },
+		});
+
+		return interaction.editReply(`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`);
 	}
 }

@@ -1,6 +1,6 @@
 import { Listener, Result } from '@sapphire/framework';
-import { Events, type ItemPayload } from '#lib/types';
 import { Stopwatch } from '@sapphire/stopwatch';
+import { Events, type ItemPayload } from '#lib/types';
 
 export class CoreAcceptedItem extends Listener<typeof Events.ItemAccepted> {
 	public constructor(context: Listener.LoaderContext) {
@@ -12,7 +12,7 @@ export class CoreAcceptedItem extends Listener<typeof Events.ItemAccepted> {
 
 		const result = await Result.fromAsync(async () => {
 			const stopwatch = new Stopwatch();
-			await item.run!(interaction);
+			await item.run!(interaction, payload);
 			const { duration } = stopwatch.stop();
 
 			this.container.client.emit(Events.ItemRunSuccess, { ...payload, duration });

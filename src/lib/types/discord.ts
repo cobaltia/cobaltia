@@ -31,6 +31,7 @@ export const Events = {
 declare const CobaltEvents: typeof Events;
 
 export interface ItemContext extends Record<PropertyKey, unknown> {
+	amount: number;
 	itemName: string;
 }
 
@@ -78,7 +79,7 @@ declare module 'discord.js' {
 		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
-		[CobaltEvents.PossibleItem]: [itemName: string, interaction: ChatInputCommandInteraction];
+		[CobaltEvents.PossibleItem]: [itemName: string, amount: number, interaction: ChatInputCommandInteraction];
 		[CobaltEvents.UnknownItem]: [payload: UnknownItemPayload];
 		[CobaltEvents.PreItemRun]: [payload: ItemPayload];
 		[CobaltEvents.ItemDenied]: [error: string, Payload: ItemPayload];

@@ -10,7 +10,7 @@ import {
 	time,
 	TimestampStyles,
 } from 'discord.js';
-import { getUser } from '#lib/database';
+import { getInventory, getUser } from '#lib/database';
 import { formatNumber } from '#util/common';
 import { profileEmbed } from '#util/discord-embeds';
 import { nextLevel } from '#util/experience';
@@ -38,20 +38,19 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		if (value === 'cooldown') return this.handleCooldown(interaction, result);
 	}
 
-	private async handleProfile(
-		interaction: StringSelectMenuInteraction,
-		result: InteractionHandler.ParseResult<this>,
-	) {
+	private async handleProfile(interaction: StringSelectMenuInteraction, result: InteractionHandler.ParseResult<this>) {
 		await interaction.deferUpdate();
 		const userId = result.userId;
 		const user = await this.container.client.users.fetch(userId);
 
 		const dataResult = await Result.fromAsync(async () => getUser(userId));
-
 		if (dataResult.isErr()) throw dataResult.unwrapErr();
+		const inventoryResult = await Result.fromAsync(async () => getInventory(userId));
+		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
 
 		const data = dataResult.unwrap();
-		const embed = await profileEmbed(data, user);
+		const inventory = inventoryResult.unwrap();
+		const embed = await profileEmbed(data, inventory, user);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
@@ -119,10 +118,7 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		await interaction.editReply({ embeds: [embed], components });
 	}
 
-	private async handleCooldown(
-		interaction: StringSelectMenuInteraction,
-		result: InteractionHandler.ParseResult<this>,
-	) {
+	private async handleCooldown(interaction: StringSelectMenuInteraction, result: InteractionHandler.ParseResult<this>) {
 		await interaction.deferUpdate();
 		const userId = result.userId;
 		const user = await this.container.client.users.fetch(userId);
