@@ -10,7 +10,8 @@ export class BanknoteItem extends Item {
 		super(context, {
 			...options,
 			description: 'A banknote that can be exchanged for bank space.',
-			price: 1_000,
+			price: 999.99,
+			icon: '💰',
 		});
 	}
 

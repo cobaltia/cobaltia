@@ -34,7 +34,9 @@ export async function handleDeposit(
 
 	const money = Math.min(amountToDeposit, canDeposit, data.wallet);
 	if (money <= 0) {
-		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }));
+		return err(
+			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }),
+		);
 	}
 
 	const next = await container.prisma.user.update({
@@ -75,7 +77,9 @@ export async function handleWithdraw(
 
 	const money = Math.min(amountToWithdraw, canWithdraw, data.bankBalance);
 	if (money <= 0) {
-		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }));
+		return err(
+			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }),
+		);
 	}
 
 	const next = await container.prisma.user.update({
@@ -175,15 +179,29 @@ export async function handleBuy(
 	return ok(next);
 }
 
-export function getInventoryNetWorth(data: Inventory) {
+export function getInventoryMap(data: Inventory) {
 	const items = container.stores.get('items');
 	const inventoryMap = new Map(Object.entries(data));
-	let netWorth = 0;
+	const inventory = new Map<string, number>();
 
 	for (const [key, value] of inventoryMap) {
 		const item = items.get(key);
 		if (!item) continue;
-		netWorth += item.sellPrice * Number.parseInt(value.toString(), 10);
+		inventory.set(key, Number.parseInt(value.toString(), 10));
+	}
+
+	return inventory;
+}
+
+export function getInventoryNetWorth(data: Inventory) {
+	const items = container.stores.get('items');
+	const inventory = getInventoryMap(data);
+	let netWorth = 0;
+
+	for (const [key, value] of inventory) {
+		const item = items.get(key);
+		if (!item) continue;
+		netWorth += item.sellPrice * value;
 	}
 
 	return netWorth;

@@ -25,14 +25,18 @@ export class ItemCommand extends Subcommand {
 					command
 						.setName('use')
 						.setDescription('Use an Item')
-						.addStringOption(option => option.setName('item').setDescription('Item to use').setRequired(true))
+						.addStringOption(option =>
+							option.setName('item').setDescription('Item to use').setRequired(true),
+						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to use')),
 				)
 				.addSubcommand(command =>
 					command
 						.setName('sell')
 						.setDescription('Sell an Item')
-						.addStringOption(option => option.setName('item').setDescription('Item to sell').setRequired(true))
+						.addStringOption(option =>
+							option.setName('item').setDescription('Item to sell').setRequired(true),
+						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to sell')),
 				),
 		);
@@ -74,6 +78,8 @@ export class ItemCommand extends Subcommand {
 			data: { wallet: { increment: item.sellPrice * amount } },
 		});
 
-		return interaction.editReply(`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`);
+		return interaction.editReply(
+			`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`,
+		);
 	}
 }

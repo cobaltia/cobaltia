@@ -2,6 +2,7 @@ import { InteractionHandler, InteractionHandlerTypes, Result, container } from '
 import { roundNumber } from '@sapphire/utilities';
 import {
 	ActionRowBuilder,
+	bold,
 	EmbedBuilder,
 	inlineCode,
 	type MessageActionRowComponentBuilder,
@@ -11,6 +12,7 @@ import {
 	TimestampStyles,
 } from 'discord.js';
 import { getInventory, getUser } from '#lib/database';
+import { getInventoryMap } from '#lib/util/economy';
 import { formatNumber } from '#util/common';
 import { profileEmbed } from '#util/discord-embeds';
 import { nextLevel } from '#util/experience';
@@ -36,6 +38,7 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		if (value === 'profile') return this.handleProfile(interaction, result);
 		if (value === 'experience') return this.handleExperience(interaction, result);
 		if (value === 'cooldown') return this.handleCooldown(interaction, result);
+		if (value === 'inventory') return this.handleInventory(interaction, result);
 	}
 
 	private async handleProfile(interaction: StringSelectMenuInteraction, result: InteractionHandler.ParseResult<this>) {
@@ -60,6 +63,7 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 						{ label: 'Main Profile', value: 'profile', default: true },
 						{ label: 'Experience Stats', value: 'experience' },
 						{ label: 'Cooldowns', value: 'cooldown' },
+						{ label: 'Inventory', value: 'inventory' },
 					])
 					.setPlaceholder('Select a different profile view'),
 			),
@@ -110,6 +114,7 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 						{ label: 'Main Profile', value: 'profile' },
 						{ label: 'Experience Stats', value: 'experience', default: true },
 						{ label: 'Cooldowns', value: 'cooldown' },
+						{ label: 'Inventory', value: 'inventory' },
 					])
 					.setPlaceholder('Select a different profile view'),
 			),
@@ -145,6 +150,50 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 						{ label: 'Main Profile', value: 'profile' },
 						{ label: 'Experience Stats', value: 'experience' },
 						{ label: 'Cooldowns', value: 'cooldown', default: true },
+						{ label: 'Inventory', value: 'inventory' },
+					])
+					.setPlaceholder('Select a different profile view'),
+			),
+		];
+
+		await interaction.editReply({ embeds: [embed], components });
+	}
+
+	private async handleInventory(
+		interaction: StringSelectMenuInteraction,
+		result: InteractionHandler.ParseResult<this>,
+	) {
+		await interaction.deferUpdate();
+		const userId = result.userId;
+		const user = await this.container.client.users.fetch(userId);
+		const itemStore = this.container.client.stores.get('items');
+
+		const inventoryResult = await Result.fromAsync(async () => getInventory(userId));
+		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
+
+		const inventory = inventoryResult.unwrap();
+		const inventoryMap = getInventoryMap(inventory);
+		const description = [];
+
+		for (const [key, value] of inventoryMap) {
+			if (value === 0) continue;
+			const item = itemStore.get(key)!;
+			description.push(`${item.icon} ${bold(key)} - ${inlineCode(` ${formatNumber(value)!} `)}`);
+		}
+
+		const embed = new EmbedBuilder()
+			.setTitle(`${user.tag}'s Inventory`)
+			.setDescription(description.join('\n') || 'No items in inventory.');
+
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder()
+					.setCustomId(`select-menu:profile:${user.id}`)
+					.addOptions([
+						{ label: 'Main Profile', value: 'profile' },
+						{ label: 'Experience Stats', value: 'experience' },
+						{ label: 'Cooldowns', value: 'cooldown' },
+						{ label: 'Inventory', value: 'inventory', default: true },
 					])
 					.setPlaceholder('Select a different profile view'),
 			),

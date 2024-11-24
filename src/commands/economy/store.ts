@@ -1,8 +1,9 @@
 import { type ApplicationCommandRegistry } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, bold, inlineCode } from 'discord.js';
 import { getUser } from '#lib/database';
 import { handleBuy } from '#lib/util/economy';
+import { formatMoney } from '#util/common';
 
 export class StoreCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -26,8 +27,12 @@ export class StoreCommand extends Subcommand {
 					command
 						.setName('buy')
 						.setDescription('Buy an item')
-						.addStringOption(option => option.setName('item').setDescription('The item to buy').setRequired(true))
-						.addIntegerOption(option => option.setName('amount').setDescription('The amount of items to buy')),
+						.addStringOption(option =>
+							option.setName('item').setDescription('The item to buy').setRequired(true),
+						)
+						.addIntegerOption(option =>
+							option.setName('amount').setDescription('The amount of items to buy'),
+						),
 				),
 		);
 	}
@@ -37,7 +42,14 @@ export class StoreCommand extends Subcommand {
 
 		const embed = new EmbedBuilder()
 			.setTitle('Item Shop')
-			.setDescription(`You can buy the following items:\n- ${items.map(item => item.name).join('\n- ')}`);
+			.setDescription(
+				items
+					.map(
+						item =>
+							`${item.icon} ${bold(item.name)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
+					)
+					.join('\n'),
+			);
 
 		return interaction.reply({ embeds: [embed] });
 	}
@@ -61,7 +73,9 @@ export class StoreCommand extends Subcommand {
 		if (buyResult.isErr()) return interaction.reply((buyResult.unwrapErr() as Error).message);
 
 		return interaction.reply(
-			(amount ?? 1) >= 2 ? `You have bought ${amount} ${storeItem.name}s.` : `You have bought a ${storeItem.name}.`,
+			(amount ?? 1) >= 2
+				? `You have bought ${amount} ${storeItem.name}s.`
+				: `You have bought a ${storeItem.name}.`,
 		);
 	}
 }

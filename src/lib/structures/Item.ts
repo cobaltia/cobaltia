@@ -12,11 +12,14 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 
 	public readonly sellPrice: number;
 
+	public readonly icon: string;
+
 	public constructor(context: Item.LoaderContext, options: ItemOptions) {
 		super(context, options);
 
 		this.collectible = options.collectible ?? false;
 		this.description = options.description ?? this.name;
+		this.icon = options.icon ?? '';
 		this.price = options.price ?? 1;
 		this.sellPrice = roundNumber(this.price * 0.7, 2);
 	}
@@ -28,6 +31,7 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 			...super.toJSON(),
 			collectible: this.collectible,
 			description: this.description,
+			icon: this.icon,
 			price: this.price,
 			sellPrice: this.sellPrice,
 		};
@@ -37,6 +41,7 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 export interface ItemOptions extends AliasPiece.Options {
 	collectible?: boolean;
 	description?: string;
+	icon?: string;
 	price?: number;
 	sellPrice?: number;
 }
@@ -44,6 +49,7 @@ export interface ItemOptions extends AliasPiece.Options {
 export interface ItemJSON extends AliasPiece.JSON {
 	collectible: boolean;
 	description: string;
+	icon: string;
 	price: number;
 	sellPrice: number;
 }
