@@ -1,17 +1,18 @@
-import type { User as PrismaUser } from '@prisma/client';
+import type { Inventory, User as PrismaUser } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import { EmbedBuilder, inlineCode, time, TimestampStyles, type User } from 'discord.js';
 import { compactNumber, formatMoney, formatNumber } from '#util/common';
 import { getTag } from '#util/discord-utilities';
+import { getInventoryNetWorth } from '#util/economy';
 import { nextLevel } from '#util/experience';
 
-export async function profileEmbed(data: PrismaUser, user: User) {
+export async function profileEmbed(data: PrismaUser, inventory: Inventory, user: User) {
 	return new EmbedBuilder()
 		.setTitle(`${getTag(user)}'s Profile`)
 		.setFields(
 			{ name: 'Level', value: getLevel(data), inline: true },
-			{ name: 'Money', value: getMoney(data), inline: true },
+			{ name: 'Money', value: getMoney(data, inventory), inline: true },
 			{ name: 'Other', value: getOther(data), inline: true },
 			{ name: 'Voice Chat', value: await getVoice(data), inline: true },
 		);
@@ -26,11 +27,12 @@ function getLevel(data: PrismaUser) {
 	return content.join('\n');
 }
 
-function getMoney(data: PrismaUser) {
+function getMoney(data: PrismaUser, inventory: Inventory) {
 	const content = [
 		`Wallet: ${inlineCode(formatMoney(data.wallet, true)!)}`,
 		`Bank: ${inlineCode(formatMoney(data.bankBalance, true)!)}`,
-		`Net: ${inlineCode(formatMoney(data.wallet + data.bankBalance, true)!)}`,
+		`Inventory: ${inlineCode(formatMoney(getInventoryNetWorth(inventory), true)!)}`,
+		`Net: ${inlineCode(formatMoney(data.wallet + data.bankBalance + getInventoryNetWorth(inventory), true)!)}`,
 		`Bounty: ${inlineCode(formatMoney(data.bounty, true)!)}`,
 	];
 	return content.join('\n');

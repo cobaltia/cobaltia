@@ -1,9 +1,11 @@
 /* eslint-disable typescript-sort-keys/interface */
-import type { $Enums, User as PrismaUser } from '@prisma/client';
+import type { $Enums, Inventory, User as PrismaUser } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
 import { bold } from 'discord.js';
+import { getUser } from '#lib/database';
+import { type Item } from '#lib/structures/Item';
 import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
 
 export const options = new Set<string>(['all', 'half', 'max']);
@@ -145,4 +147,62 @@ export function getTransactionSymbol(type: $Enums.Transaction) {
 		case 'TRANSFER':
 			return bold('\\-');
 	}
+}
+
+export async function handleBuy(
+	item: Item,
+	userId: string,
+	amount = 1,
+): Promise<Result<Inventory, UserError | unknown>> {
+	const result = await getUser(userId);
+	if (result.isErr()) return err(result.unwrapErr());
+
+	const data = result.unwrap();
+
+	if (data.wallet < item.price * amount) {
+		return err(
+			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to buy this item.' }),
+		);
+	}
+
+	const next = await container.prisma.inventory.upsert({
+		where: { id: userId },
+		update: {
+			[item.name]: { increment: amount },
+		},
+		create: {
+			id: userId,
+			[item.name]: amount,
+		},
+	});
+
+	return ok(next);
+}
+
+export function getInventoryMap(data: Inventory) {
+	const items = container.stores.get('items');
+	const inventoryMap = new Map(Object.entries(data));
+	const inventory = new Map<string, number>();
+
+	for (const [key, value] of inventoryMap) {
+		const item = items.get(key);
+		if (!item) continue;
+		inventory.set(key, Number.parseInt(value.toString(), 10));
+	}
+
+	return inventory;
+}
+
+export function getInventoryNetWorth(data: Inventory) {
+	const items = container.stores.get('items');
+	const inventory = getInventoryMap(data);
+	let netWorth = 0;
+
+	for (const [key, value] of inventory) {
+		const item = items.get(key);
+		if (!item) continue;
+		netWorth += item.sellPrice * value;
+	}
+
+	return netWorth;
 }

@@ -19,6 +19,7 @@ import {
 	hyperlink,
 	hideLinkEmbed,
 } from 'discord.js';
+import type { ErrorItemPayload } from '#lib/types';
 import { OWNERS } from '#root/config';
 import { Colors } from '#util/constants';
 
@@ -123,4 +124,25 @@ export function getLinkLine(message: APIMessage | Message) {
 	if (isMessageInstance(message)) {
 		return bold(hyperlink('Jump to message', hideLinkEmbed(message.url)));
 	}
+}
+
+export async function handleItemRunError(error: Error, payload: ErrorItemPayload) {
+	const { client, logger } = container;
+	const { interaction, item } = payload;
+
+	if (error instanceof UserError) return userError(interaction, error);
+
+	if (error.name === 'AbortError' || error.message === 'Internal Server Error') {
+		return alert(interaction, 'I had a small network hiccup. Please try again.');
+	}
+
+	logger.fatal(`[ITEM] ${item.location.full}\n${error.stack ?? error.message}`);
+
+	try {
+		await alert(interaction, generateUnexpectedErrorMessage(interaction, error));
+	} catch (error) {
+		client.emit(Events.Error, error as Error);
+	}
+
+	return undefined;
 }

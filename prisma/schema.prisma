@@ -42,8 +42,18 @@ model User {
   workCooldown    DateTime          @default(now()) @map("work_cooldown")
   Voice           Voice[]
   BankTransaction BankTransaction[]
+  Inventory       Inventory?
 
   @@map("users")
+}
+
+model Inventory {
+  id        String @id @db.VarChar(20)
+  banknote  Int    @default(0) @map("bank_note")
+  cobuck    Int    @default(0) @map("cobuck")
+
+  user     User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  @@map("inventories")
 }
 
 model Voice {

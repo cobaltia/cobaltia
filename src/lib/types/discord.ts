@@ -1,5 +1,6 @@
 import type { $Enums } from '@prisma/client';
-import type { GuildMember, Message } from 'discord.js';
+import { type ChatInputCommandInteraction, type GuildMember, type Message } from 'discord.js';
+import type { Item } from '#lib/structures/Item';
 
 export type GuildMessage = Message<true> & { member: GuildMember };
 
@@ -17,9 +18,45 @@ export const Events = {
 	BankDepositTransaction: 'bankDepositTransaction' as const,
 	BankWithdrawTransaction: 'bankWithdrawTransaction' as const,
 	BankTransferTransaction: 'bankTransferTransaction' as const,
+	PossibleItem: 'possibleItem' as const,
+	UnknownItem: 'unknownItem' as const,
+	PreItemRun: 'preItemRun' as const,
+	ItemDenied: 'itemDenied' as const,
+	ItemAccepted: 'itemAccepted' as const,
+	ItemError: 'itemError' as const,
+	ItemRun: 'itemRun' as const,
+	ItemRunSuccess: 'itemRunSuccess' as const,
 };
 
 declare const CobaltEvents: typeof Events;
+
+export interface ItemContext extends Record<PropertyKey, unknown> {
+	amount: number;
+	itemName: string;
+}
+
+export interface ItemPayload {
+	context: ItemContext;
+	interaction: ChatInputCommandInteraction;
+	item: Item;
+}
+
+export interface UnknownItemPayload {
+	context: ItemContext;
+	interaction: ChatInputCommandInteraction;
+}
+
+export interface ErrorItemPayload extends ItemPayload {
+	duration: number;
+}
+
+export interface RunItemPayload extends ItemPayload {
+	duration: number;
+}
+
+export interface RunSuccessItemPayload extends RunItemPayload {
+	duration: number;
+}
 
 declare module 'discord.js' {
 	interface ClientEvents {
@@ -42,5 +79,13 @@ declare module 'discord.js' {
 		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
+		[CobaltEvents.PossibleItem]: [itemName: string, amount: number, interaction: ChatInputCommandInteraction];
+		[CobaltEvents.UnknownItem]: [payload: UnknownItemPayload];
+		[CobaltEvents.PreItemRun]: [payload: ItemPayload];
+		[CobaltEvents.ItemDenied]: [error: string, payload: ItemPayload];
+		[CobaltEvents.ItemAccepted]: [payload: ItemPayload];
+		[CobaltEvents.ItemError]: [error: unknown, payload: ErrorItemPayload];
+		[CobaltEvents.ItemRun]: [payload: RunItemPayload];
+		[CobaltEvents.ItemRunSuccess]: [payload: RunSuccessItemPayload];
 	}
 }
