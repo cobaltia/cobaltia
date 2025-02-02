@@ -1,9 +1,9 @@
-FROM node:22 as base
+FROM node:23 as base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN corepack prepare pnpm@10.0.0 --activate
+RUN corepack prepare pnpm@10.1.0 --activate
 
 WORKDIR /bot
 
