@@ -82,7 +82,7 @@ declare module 'discord.js' {
 		[CobaltEvents.PossibleItem]: [itemName: string, amount: number, interaction: ChatInputCommandInteraction];
 		[CobaltEvents.UnknownItem]: [payload: UnknownItemPayload];
 		[CobaltEvents.PreItemRun]: [payload: ItemPayload];
-		[CobaltEvents.ItemDenied]: [error: string, Payload: ItemPayload];
+		[CobaltEvents.ItemDenied]: [error: string, payload: ItemPayload];
 		[CobaltEvents.ItemAccepted]: [payload: ItemPayload];
 		[CobaltEvents.ItemError]: [error: unknown, payload: ErrorItemPayload];
 		[CobaltEvents.ItemRun]: [payload: RunItemPayload];

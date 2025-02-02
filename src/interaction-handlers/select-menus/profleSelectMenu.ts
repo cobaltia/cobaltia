@@ -41,7 +41,10 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		if (value === 'inventory') return this.handleInventory(interaction, result);
 	}
 
-	private async handleProfile(interaction: StringSelectMenuInteraction, result: InteractionHandler.ParseResult<this>) {
+	private async handleProfile(
+		interaction: StringSelectMenuInteraction,
+		result: InteractionHandler.ParseResult<this>,
+	) {
 		await interaction.deferUpdate();
 		const userId = result.userId;
 		const user = await this.container.client.users.fetch(userId);
@@ -123,7 +126,10 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		await interaction.editReply({ embeds: [embed], components });
 	}
 
-	private async handleCooldown(interaction: StringSelectMenuInteraction, result: InteractionHandler.ParseResult<this>) {
+	private async handleCooldown(
+		interaction: StringSelectMenuInteraction,
+		result: InteractionHandler.ParseResult<this>,
+	) {
 		await interaction.deferUpdate();
 		const userId = result.userId;
 		const user = await this.container.client.users.fetch(userId);

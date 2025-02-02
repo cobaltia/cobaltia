@@ -21,7 +21,7 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 		this.description = options.description ?? this.name;
 		this.icon = options.icon ?? '';
 		this.price = options.price ?? 1;
-		this.sellPrice = roundNumber(this.price * 0.7, 2);
+		this.sellPrice = options.sellPrice ?? roundNumber(this.price * 0.7, 2);
 	}
 
 	public run?(interaction: ChatInputCommandInteraction, payload: ItemPayload): Awaitable<unknown>;

@@ -21,7 +21,7 @@ export class CorePossibleItem extends Listener<typeof Events.PossibleItem> {
 			return;
 		}
 
-		if (!item.run) {
+		if (!item.run && !item.collectible) {
 			client.emit(Events.ItemError, new Error('Item has no run method'), {
 				item,
 				interaction,
