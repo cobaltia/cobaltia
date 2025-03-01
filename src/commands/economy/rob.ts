@@ -145,7 +145,7 @@ export class RobCommand extends Command {
 
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
-			data: { wallet: 0, bounty: 0 },
+			data: { wallet: robber.wallet < 0 ? robber.wallet : 0, bounty: 0 },
 		});
 
 		return `You tried to rob ${victim} but they fought back and killed you. They claimed your bounty of ${formatMoney(

@@ -52,10 +52,12 @@ export class GuildBanAddListener extends Listener<typeof Events.GuildBanAdd> {
 
 	private buildEmbed(user: User, reason: Nullish | string, audit: GuildAuditLogsEntry | Nullish): EmbedBuilder {
 		const icon = user.displayAvatarURL({ extension: 'png', forceStatic: false });
+		const description = [`**Reason:** ${reason ?? audit?.reason ?? 'No reason provided'}`];
+		if (audit?.executor) description.push(`**Executor:** ${audit.executor}`);
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(user), iconURL: icon })
 			.setTitle('Member Banned')
-			.setDescription(`**Reason:** ${reason ?? audit?.reason ?? 'No reason provided'}`)
+			.setDescription(description.join('\n'))
 			.setFooter({ text: `User ID: ${user.id}` })
 			.setColor(Colors.Red)
 			.setTimestamp();
