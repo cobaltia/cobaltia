@@ -1,9 +1,18 @@
+/* eslint-disable unicorn/numeric-separators-style */
 import process from 'node:process';
 import { URL } from 'node:url';
 import type { Prisma } from '@prisma/client';
 import { BucketScope, LogLevel } from '@sapphire/framework';
+import { type ServerOptions } from '@sapphire/plugin-api';
 import { Time } from '@sapphire/time-utilities';
-import { envParseString, setup } from '@skyra/env-utilities';
+import {
+	type BooleanString,
+	envParseBoolean,
+	envParseInteger,
+	envParseString,
+	type IntegerString,
+	setup,
+} from '@skyra/env-utilities';
 import { type ClientOptions, GatewayIntentBits, Partials, type WebhookClientData } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
@@ -27,6 +36,17 @@ function parseRedisUri() {
 
 function parsePrismaLogging(): Prisma.LogLevel[] {
 	return process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'];
+}
+
+function parseApi(): ServerOptions | undefined {
+	if (!envParseBoolean('API_ENABLED', false)) return undefined;
+
+	return {
+		prefix: envParseString('API_PREFIX', '/api'),
+		listenOptions: {
+			port: envParseInteger('API_PORT', 8080),
+		},
+	};
 }
 
 export const WEBHOOK_ERROR = parseWebhookError();
@@ -53,10 +73,14 @@ export const CLIENT_OPTIONS: ClientOptions = {
 	logger: {
 		level: process.env.NODE_ENV === 'production' ? LogLevel.Info : LogLevel.Debug,
 	},
+	api: parseApi(),
 };
 
 declare module '@skyra/env-utilities' {
 	interface Env {
+		API_ENABLED: BooleanString;
+		API_PORT: IntegerString;
+		API_PREFIX: string;
 		REDIS_URI: string;
 		WEBHOOK_ERROR_ID: string;
 		WEBHOOK_ERROR_TOKEN: string;
