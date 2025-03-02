@@ -7,7 +7,7 @@ services:
     expose:
       - 8080:8080
     depends_on:
-      - redis
+      - cobaltia-redis
     restart: unless-stopped
 
   cobaltia-redis:
