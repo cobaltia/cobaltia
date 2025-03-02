@@ -3,17 +3,17 @@ import process from 'node:process';
 import { URL } from 'node:url';
 import type { Prisma } from '@prisma/client';
 import { BucketScope, LogLevel } from '@sapphire/framework';
+import { type ServerOptions } from '@sapphire/plugin-api';
 import { Time } from '@sapphire/time-utilities';
 import {
-	BooleanString,
+	type BooleanString,
 	envParseBoolean,
 	envParseInteger,
 	envParseString,
-	IntegerString,
+	type IntegerString,
 	setup,
 } from '@skyra/env-utilities';
 import { type ClientOptions, GatewayIntentBits, Partials, type WebhookClientData } from 'discord.js';
-import { ServerOptions } from '@sapphire/plugin-api';
 
 process.env.NODE_ENV ??= 'development';
 export const OWNERS = ['288703114473635841'];
