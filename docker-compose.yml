@@ -4,8 +4,6 @@ services:
   cobaltia-bot:
     build: ./
     container_name: cobaltia-bot
-    expose:
-      - '8282:8282'
     depends_on:
       - cobaltia-redis
     restart: unless-stopped
