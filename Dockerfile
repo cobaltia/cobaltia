@@ -29,4 +29,6 @@ ENV NODe_OPTIONS="--enable-source-maps"
 
 USER node
 
+EXPOSE 8282
+
 CMD ["pnpm", "run", "start"]

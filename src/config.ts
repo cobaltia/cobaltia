@@ -5,14 +5,7 @@ import type { Prisma } from '@prisma/client';
 import { BucketScope, LogLevel } from '@sapphire/framework';
 import { type ServerOptions } from '@sapphire/plugin-api';
 import { Time } from '@sapphire/time-utilities';
-import {
-	type BooleanString,
-	envParseBoolean,
-	envParseInteger,
-	envParseString,
-	type IntegerString,
-	setup,
-} from '@skyra/env-utilities';
+import { type BooleanString, envParseBoolean, envParseString, setup } from '@skyra/env-utilities';
 import { type ClientOptions, GatewayIntentBits, Partials, type WebhookClientData } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
@@ -42,9 +35,9 @@ function parseApi(): ServerOptions | undefined {
 	if (!envParseBoolean('API_ENABLED', false)) return undefined;
 
 	return {
-		prefix: envParseString('API_PREFIX', '/api'),
+		prefix: envParseString('API_PREFIX', '/'),
 		listenOptions: {
-			port: envParseInteger('API_PORT', 8080),
+			port: 8282,
 		},
 	};
 }
@@ -79,7 +72,6 @@ export const CLIENT_OPTIONS: ClientOptions = {
 declare module '@skyra/env-utilities' {
 	interface Env {
 		API_ENABLED: BooleanString;
-		API_PORT: IntegerString;
 		API_PREFIX: string;
 		REDIS_URI: string;
 		WEBHOOK_ERROR_ID: string;

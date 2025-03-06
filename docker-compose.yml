@@ -5,7 +5,7 @@ services:
     build: ./
     container_name: cobaltia-bot
     expose:
-      - 8080:8080
+      - '8282:8282'
     depends_on:
       - cobaltia-redis
     restart: unless-stopped
