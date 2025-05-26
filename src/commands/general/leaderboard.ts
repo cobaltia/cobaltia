@@ -33,7 +33,7 @@ export class LeaderboardCommand extends Command {
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		await interaction.deferReply();
-		const scope = interaction.options.getString('scope') ?? 'global';
+		const scope = interaction.options.getString('scope') ?? 'local';
 
 		if (scope === 'local') {
 			await this.localLeaderboard(interaction);

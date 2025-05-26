@@ -25,7 +25,7 @@ RUN pnpm run build
 FROM builder as runner
 
 ENV NODE_ENV="production"
-ENV NODe_OPTIONS="--enable-source-maps"
+ENV NODE_OPTIONS="--enable-source-maps"
 
 USER node
 
