@@ -61,7 +61,8 @@ export class LeaderboardCommand extends Command {
 		const embed = new EmbedBuilder()
 			.setTitle('Local Level Leaderboard')
 			.setDescription(description.join('\n'))
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-local`).addOptions([
@@ -96,7 +97,8 @@ export class LeaderboardCommand extends Command {
 		const embed = new EmbedBuilder()
 			.setTitle('Global Level Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([

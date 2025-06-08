@@ -4,6 +4,8 @@ import { type ChatInputCommandInteraction } from 'discord.js';
 import { type ItemPayload } from '#lib/types';
 
 export class Item<Options extends Item.Options = Item.Options> extends AliasPiece<ItemOptions, 'items'> {
+	public readonly id: string;
+
 	public readonly collectible: boolean;
 
 	public readonly description: string;
@@ -17,8 +19,9 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 	public constructor(context: Item.LoaderContext, options: ItemOptions) {
 		super(context, options);
 
+		this.id = options.id;
 		this.collectible = options.collectible ?? false;
-		this.description = options.description ?? this.name;
+		this.description = options.description;
 		this.icon = options.icon ?? '';
 		this.price = options.price ?? 1;
 		this.sellPrice = options.sellPrice ?? roundNumber(this.price * 0.7, 2);
@@ -32,6 +35,7 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 			collectible: this.collectible,
 			description: this.description,
 			icon: this.icon,
+			id: this.id,
 			price: this.price,
 			sellPrice: this.sellPrice,
 		};
@@ -40,8 +44,9 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 
 export interface ItemOptions extends AliasPiece.Options {
 	collectible?: boolean;
-	description?: string;
+	description: string;
 	icon?: string;
+	id: string;
 	price?: number;
 	sellPrice?: number;
 }
@@ -50,6 +55,7 @@ export interface ItemJSON extends AliasPiece.JSON {
 	collectible: boolean;
 	description: string;
 	icon: string;
+	id: string;
 	price: number;
 	sellPrice: number;
 }

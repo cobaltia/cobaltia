@@ -26,7 +26,7 @@ export class ItemCommand extends Subcommand {
 						.setName('use')
 						.setDescription('Use an Item')
 						.addStringOption(option =>
-							option.setName('item').setDescription('Item to use').setRequired(true),
+							option.setName('item').setDescription('Item to use').setRequired(true).setAutocomplete(true),
 						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to use')),
 				)
@@ -35,7 +35,7 @@ export class ItemCommand extends Subcommand {
 						.setName('sell')
 						.setDescription('Sell an Item')
 						.addStringOption(option =>
-							option.setName('item').setDescription('Item to sell').setRequired(true),
+							option.setName('item').setDescription('Item to sell').setRequired(true).setAutocomplete(true),
 						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to sell')),
 				),
@@ -63,14 +63,14 @@ export class ItemCommand extends Subcommand {
 
 		const inventory = result.unwrap();
 		const inventoryMap = new Map(Object.entries(inventory));
-		const inventoryItem = inventoryMap.get(item.name) as number;
+		const inventoryItem = inventoryMap.get(item.id) as number;
 		if (inventoryItem < amount) {
 			return interaction.editReply('You do not have enough of that item to sell.');
 		}
 
 		await this.container.prisma.inventory.update({
 			where: { id: interaction.user.id },
-			data: { [item.name]: { decrement: amount } },
+			data: { [item.id]: { decrement: amount } },
 		});
 
 		await this.container.prisma.user.update({
@@ -78,8 +78,6 @@ export class ItemCommand extends Subcommand {
 			data: { wallet: { increment: item.sellPrice * amount } },
 		});
 
-		return interaction.editReply(
-			`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`,
-		);
+		return interaction.editReply(`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`);
 	}
 }
