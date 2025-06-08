@@ -54,7 +54,10 @@ export class ItemAutocomplete extends InteractionHandler {
 				return this.some(
 					Array.from(allItems)
 						.slice(0, 20)
-						.map<ApplicationCommandOptionChoiceData>(result => ({ name: `${result.name}`, value: result.id })),
+						.map<ApplicationCommandOptionChoiceData>(result => ({
+							name: `${result.name}`,
+							value: result.id,
+						})),
 				);
 			}
 
