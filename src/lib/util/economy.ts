@@ -1,5 +1,5 @@
 /* eslint-disable typescript-sort-keys/interface */
-import type { $Enums, Inventory, User as PrismaUser } from '@prisma/client';
+import type { $Enums, Inventory, User as PrismaUser, User } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
@@ -149,11 +149,7 @@ export function getTransactionSymbol(type: $Enums.Transaction) {
 	}
 }
 
-export async function handleBuy(
-	item: Item,
-	userId: string,
-	amount = 1,
-): Promise<Result<Inventory, UserError | unknown>> {
+export async function handleBuy(item: Item, userId: string, amount = 1): Promise<Result<User, UserError | unknown>> {
 	const result = await getUser(userId);
 	if (result.isErr()) return err(result.unwrapErr());
 
@@ -165,14 +161,14 @@ export async function handleBuy(
 		);
 	}
 
-	const next = await container.prisma.inventory.upsert({
+	const next = await container.prisma.user.update({
 		where: { id: userId },
-		update: {
-			[item.name]: { increment: amount },
-		},
-		create: {
-			id: userId,
-			[item.name]: amount,
+		data: {
+			wallet: { decrement: item.price * amount },
+			Inventory: {
+				connectOrCreate: { where: { id: userId }, create: { [item.id]: amount } },
+				update: { [item.id]: { increment: amount } },
+			},
 		},
 	});
 

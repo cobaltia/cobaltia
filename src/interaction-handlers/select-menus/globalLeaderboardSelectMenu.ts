@@ -55,7 +55,8 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const embed = new EmbedBuilder()
 			.setTitle('Global Wallet Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
@@ -91,7 +92,8 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const embed = new EmbedBuilder()
 			.setTitle('Global Bank Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
@@ -127,7 +129,8 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const embed = new EmbedBuilder()
 			.setTitle('Global Level Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
@@ -163,7 +166,8 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const embed = new EmbedBuilder()
 			.setTitle('Global Net Worth Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
@@ -199,7 +203,8 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const embed = new EmbedBuilder()
 			.setTitle('Global Social Credit Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
@@ -235,7 +240,8 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const embed = new EmbedBuilder()
 			.setTitle('Global VC Time Leaderboard')
 			.setDescription(description.length ? description.join('\n') : 'No users found.')
-			.setFooter({ text: 'For a full list visit the website (coming soon)' });
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([

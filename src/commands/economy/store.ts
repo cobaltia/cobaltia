@@ -28,7 +28,11 @@ export class StoreCommand extends Subcommand {
 						.setName('buy')
 						.setDescription('Buy an item')
 						.addStringOption(option =>
-							option.setName('item').setDescription('The item to buy').setRequired(true),
+							option
+								.setName('item')
+								.setDescription('The item to buy')
+								.setRequired(true)
+								.setAutocomplete(true),
 						)
 						.addIntegerOption(option =>
 							option.setName('amount').setDescription('The amount of items to buy'),
