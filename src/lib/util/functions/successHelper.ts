@@ -9,6 +9,13 @@ export function handleChatInputOrContextMenuCommandSuccess(
 	payload: ChatInputCommandSuccessPayload | ContextMenuCommandSuccessPayload,
 ) {
 	const { commandName, author, runTime } = getSuccessData(payload);
+	container.metrics.incrementCommand({
+		command: commandName,
+		user: payload.interaction.user.id,
+		channel: payload.interaction.channelId,
+		guild: payload.interaction.guildId ?? '',
+		success: true,
+	});
 	container.logger.info(`${author} - ${commandName} (${runTime})`);
 }
 
