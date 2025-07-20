@@ -7,6 +7,7 @@ export class CobaltClient extends SapphireClient {
 		super(CLIENT_OPTIONS);
 
 		container.stores.register(new ItemStore());
+		this.on('raw', (packet: any) => container.metrics.incrementEvent({ event: packet.t }));
 	}
 
 	public override async destroy() {

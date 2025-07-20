@@ -43,6 +43,14 @@ export async function handleChatInputOrContextMenuCommandError(
 
 	await sendErrorChannel(interaction, command, error);
 
+	container.metrics.incrementCommand({
+		command: interaction.commandName,
+		user: interaction.user.id,
+		guild: interaction.guildId ?? 'none',
+		channel: interaction.channelId,
+		success: false,
+	});
+
 	logger.fatal(`[COMMAND] ${command.location.full}\n${error.stack ?? error.message}`);
 	try {
 		await alert(interaction, generateUnexpectedErrorMessage(interaction, error));

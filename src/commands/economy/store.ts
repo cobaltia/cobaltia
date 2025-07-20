@@ -28,15 +28,9 @@ export class StoreCommand extends Subcommand {
 						.setName('buy')
 						.setDescription('Buy an item')
 						.addStringOption(option =>
-							option
-								.setName('item')
-								.setDescription('The item to buy')
-								.setRequired(true)
-								.setAutocomplete(true),
+							option.setName('item').setDescription('The item to buy').setRequired(true).setAutocomplete(true),
 						)
-						.addIntegerOption(option =>
-							option.setName('amount').setDescription('The amount of items to buy'),
-						),
+						.addIntegerOption(option => option.setName('amount').setDescription('The amount of items to buy')),
 				),
 		);
 	}
@@ -49,8 +43,7 @@ export class StoreCommand extends Subcommand {
 			.setDescription(
 				items
 					.map(
-						item =>
-							`${item.icon} ${bold(item.name)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
+						item => `${item.icon} ${bold(item.name)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
 					)
 					.join('\n'),
 			);
@@ -60,7 +53,7 @@ export class StoreCommand extends Subcommand {
 
 	public async chatInputBuy(interaction: Subcommand.ChatInputCommandInteraction) {
 		const item = interaction.options.getString('item', true);
-		const amount = interaction.options.getInteger('amount', false) ?? undefined;
+		const amount = interaction.options.getInteger('amount', false) ?? 1;
 		const items = this.container.stores.get('items');
 
 		const storeItem = items.get(item);
@@ -73,13 +66,20 @@ export class StoreCommand extends Subcommand {
 
 		if (data.wallet < storeItem.price) return interaction.reply('You do not have enough money to buy this item.');
 
+		this.container.metrics.updateItem({
+			item: storeItem.id,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			type: 'bought',
+			value: amount,
+		});
+
 		const buyResult = await handleBuy(storeItem, interaction.user.id, amount);
 		if (buyResult.isErr()) return interaction.reply((buyResult.unwrapErr() as Error).message);
 
 		return interaction.reply(
-			(amount ?? 1) >= 2
-				? `You have bought ${amount} ${storeItem.name}s.`
-				: `You have bought a ${storeItem.name}.`,
+			amount >= 2 ? `You have bought ${amount} ${storeItem.name}s.` : `You have bought a ${storeItem.name}.`,
 		);
 	}
 }

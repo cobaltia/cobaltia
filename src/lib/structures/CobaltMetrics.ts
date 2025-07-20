@@ -16,6 +16,14 @@ interface CobaltCounter {
 	item: Gauge;
 }
 
+type MoenyReason = 'bounty_claim' | 'daily' | 'death' | 'gambling' | 'rob' | 'store' | 'tax' | 'voice' | 'work';
+type MoneyType = 'earn' | 'lost';
+
+type ExperienceReason = 'message' | 'voice';
+
+type ItemReason = 'sell' | 'use';
+type ItemType = 'bought' | 'lost';
+
 export class CobaltMetrics {
 	private readonly counters: CobaltCounter;
 
@@ -39,19 +47,19 @@ export class CobaltMetrics {
 				name: 'cobalt_money_earned_total',
 				help: 'Total amount of money earned',
 				registers: [register],
-				labelNames: ['command', 'user', 'guild', 'channel'] as const,
+				labelNames: ['command', 'user', 'guild', 'channel', 'reason'] as const,
 			}),
 			moneyLost: new Counter({
 				name: 'cobalt_money_spent_total',
 				help: 'Total amount of money spent',
 				registers: [register],
-				labelNames: ['command', 'user', 'guild', 'channel'] as const,
+				labelNames: ['command', 'user', 'guild', 'channel', 'reason'] as const,
 			}),
 			money: new Gauge({
 				name: 'cobalt_money_total',
 				help: 'Total amount of money',
 				registers: [register],
-				labelNames: ['command', 'user', 'guild', 'channel'] as const,
+				labelNames: ['command', 'user', 'guild', 'channel', 'reason'] as const,
 			}),
 			message: new Counter({
 				name: 'cobalt_messages_total',
@@ -63,13 +71,13 @@ export class CobaltMetrics {
 				name: 'cobalt_events_total',
 				help: 'Total number of events emitted',
 				registers: [register],
-				labelNames: ['event', 'guild'] as const,
+				labelNames: ['event'] as const,
 			}),
 			experience: new Counter({
 				name: 'cobalt_experience_total',
 				help: 'Total amount of experience earned',
 				registers: [register],
-				labelNames: ['user', 'level_up'] as const,
+				labelNames: ['user', 'level_up', 'reason'] as const,
 			}),
 			item: new Gauge({
 				name: 'cobalt_items_total',
@@ -87,7 +95,7 @@ export class CobaltMetrics {
 				name: 'cobalt_items_lost_total',
 				help: 'Total amount of items used/sold',
 				registers: [register],
-				labelNames: ['item', 'user', 'guild', 'channel', 'type'] as const,
+				labelNames: ['item', 'user', 'guild', 'channel', 'reason'] as const,
 			}),
 		};
 	}
@@ -130,28 +138,38 @@ export class CobaltMetrics {
 		user: string;
 		guild: string;
 		channel: string;
+		reason: MoenyReason;
 		value?: number;
 	}) {
-		const { command, user, guild, channel, value = 1 } = data;
+		const { command, user, guild, channel, reason, value = 1 } = data;
 		this.counters.moneyEarned.inc(
 			{
 				command,
 				user,
 				guild,
 				channel,
+				reason,
 			},
 			value,
 		);
 	}
 
-	private incrementMoneyLost(data: { command: string; user: string; guild: string; channel: string; value?: number }) {
-		const { command, user, guild, channel, value = 1 } = data;
+	private incrementMoneyLost(data: {
+		command: string;
+		user: string;
+		guild: string;
+		channel: string;
+		reason: MoenyReason;
+		value?: number;
+	}) {
+		const { command, user, guild, channel, reason, value = 1 } = data;
 		this.counters.moneyLost.inc(
 			{
 				command,
 				user,
 				guild,
 				channel,
+				reason,
 			},
 			value,
 		);
@@ -162,16 +180,17 @@ export class CobaltMetrics {
 		user: string;
 		guild: string;
 		channel: string;
-		type: 'earn' | 'lose';
+		reason: MoenyReason;
+		type: MoneyType;
 		value: number;
 	}) {
-		const { command, user, guild, channel, type, value } = data;
+		const { command, user, guild, channel, reason, type, value } = data;
 
-		if (type === 'lose') {
-			this.incrementMoneyLost({ command, user, guild, channel, value });
+		if (type === 'lost') {
+			this.incrementMoneyLost({ command, user, guild, channel, reason });
 			this.counters.money.dec({ command, user, guild, channel }, value);
 		} else {
-			this.incrementMoneyEarned({ command, user, guild, channel, value });
+			this.incrementMoneyEarned({ command, user, guild, channel, reason, value });
 			this.counters.money.inc({ command, user, guild, channel }, value);
 		}
 	}
@@ -188,23 +207,23 @@ export class CobaltMetrics {
 		);
 	}
 
-	public incrementEvent(data: { event: string; guild: string; value?: number }) {
-		const { event, guild, value = 1 } = data;
+	public incrementEvent(data: { event: string; value?: number }) {
+		const { event, value = 1 } = data;
 		this.counters.events.inc(
 			{
 				event,
-				guild,
 			},
 			value,
 		);
 	}
 
-	public incrementExperience(data: { user: string; level_up: boolean; value: number }) {
-		const { user, level_up, value } = data;
+	public incrementExperience(data: { user: string; level_up: boolean; reason: ExperienceReason; value: number }) {
+		const { user, level_up, reason, value } = data;
 		this.counters.experience.inc(
 			{
 				user,
 				level_up: String(level_up),
+				reason,
 			},
 			value,
 		);
@@ -215,23 +234,14 @@ export class CobaltMetrics {
 		user: string;
 		guild: string;
 		channel: string;
-		type: 'lost';
-		lostType: 'sell' | 'use';
-		value?: number;
-	}): void;
-	public updateItem(data: {
-		item: string;
-		user: string;
-		guild: string;
-		channel: string;
-		type: 'bought' | 'lost';
-		lostType?: 'sell' | 'use';
+		type: ItemType;
+		reason?: ItemReason;
 		value?: number;
 	}): void {
-		const { item, user, guild, channel, type, lostType, value = 1 } = data;
+		const { item, user, guild, channel, type, reason, value = 1 } = data;
 
 		if (type === 'lost') {
-			this.incrementItemLost({ item, user, guild, channel, type: lostType!, value });
+			this.incrementItemLost({ item, user, guild, channel, reason: reason!, value });
 			this.counters.item.dec({ item, user, guild, channel }, value);
 		} else if (type === 'bought') {
 			this.incrementItemBought({ item, user, guild, channel, value });
@@ -244,17 +254,17 @@ export class CobaltMetrics {
 		user: string;
 		guild: string;
 		channel: string;
-		type: 'sell' | 'use';
+		reason: ItemReason;
 		value?: number;
 	}) {
-		const { item, user, guild, channel, type, value = 1 } = data;
+		const { item, user, guild, channel, reason, value = 1 } = data;
 		this.counters.itemLost.inc(
 			{
 				item,
 				user,
 				guild,
 				channel,
-				type,
+				reason,
 			},
 			value,
 		);

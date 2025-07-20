@@ -92,6 +92,26 @@ export class PlayCommand extends Subcommand {
 				where: { id: interaction.user.id },
 				data: { wallet: { increment: won - tax } },
 			});
+
+			this.container.metrics.updateMoney({
+				command: interaction.commandName,
+				user: interaction.user.id,
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'gambling',
+				type: 'earn',
+				value: won - tax,
+			});
+			this.container.metrics.updateMoney({
+				command: interaction.commandName,
+				user: 'none',
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'tax',
+				type: 'earn',
+				value: tax,
+			});
+
 			embed
 				.setDescription(
 					`You won ${formatMoney(won - tax)} after paying ${formatMoney(
@@ -111,9 +131,7 @@ export class PlayCommand extends Subcommand {
 				data: { bankBalance: { increment: amountToGamble } },
 			});
 			embed
-				.setDescription(
-					`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`,
-				)
+				.setDescription(`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`)
 				.setColor(Colors.Red);
 		}
 

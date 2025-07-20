@@ -26,11 +26,7 @@ export class ItemCommand extends Subcommand {
 						.setName('use')
 						.setDescription('Use an Item')
 						.addStringOption(option =>
-							option
-								.setName('item')
-								.setDescription('Item to use')
-								.setRequired(true)
-								.setAutocomplete(true),
+							option.setName('item').setDescription('Item to use').setRequired(true).setAutocomplete(true),
 						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to use')),
 				)
@@ -39,11 +35,7 @@ export class ItemCommand extends Subcommand {
 						.setName('sell')
 						.setDescription('Sell an Item')
 						.addStringOption(option =>
-							option
-								.setName('item')
-								.setDescription('Item to sell')
-								.setRequired(true)
-								.setAutocomplete(true),
+							option.setName('item').setDescription('Item to sell').setRequired(true).setAutocomplete(true),
 						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to sell')),
 				),
@@ -86,8 +78,25 @@ export class ItemCommand extends Subcommand {
 			data: { wallet: { increment: item.sellPrice * amount } },
 		});
 
-		return interaction.editReply(
-			`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`,
-		);
+		this.container.metrics.updateItem({
+			item: item.id,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			type: 'lost',
+			reason: 'sell',
+		});
+
+		this.container.metrics.updateMoney({
+			command: interaction.commandName,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'store',
+			type: 'earn',
+			value: item.sellPrice * amount,
+		});
+
+		return interaction.editReply(`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`);
 	}
 }

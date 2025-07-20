@@ -13,7 +13,7 @@ export function handleChatInputOrContextMenuCommandSuccess(
 		command: commandName,
 		user: payload.interaction.user.id,
 		channel: payload.interaction.channelId,
-		guild: payload.interaction.guildId ?? '',
+		guild: payload.interaction.guildId ?? 'none',
 		success: true,
 	});
 	container.logger.info(`${author} - ${commandName} (${runTime})`);
@@ -47,6 +47,15 @@ function getSuccessItemData({ interaction, item, duration }: RunSuccessItemPaylo
 
 export function handleItemSuccess(payload: RunSuccessItemPayload) {
 	const { itemName, author, runTime } = getSuccessItemData(payload);
+	const { interaction } = payload;
+	container.metrics.updateItem({
+		item: itemName,
+		user: interaction.user.id,
+		guild: interaction.guildId ?? 'none',
+		channel: interaction.channelId,
+		type: 'lost',
+		reason: 'use',
+	});
 
 	container.logger.info(`${author} - ${itemName} (${runTime})`);
 }
