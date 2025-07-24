@@ -145,7 +145,9 @@ export class PlayCommand extends Subcommand {
 				value: amountToGamble,
 			});
 			embed
-				.setDescription(`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`)
+				.setDescription(
+					`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`,
+				)
 				.setColor(Colors.Red);
 		}
 

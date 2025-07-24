@@ -28,9 +28,15 @@ export class StoreCommand extends Subcommand {
 						.setName('buy')
 						.setDescription('Buy an item')
 						.addStringOption(option =>
-							option.setName('item').setDescription('The item to buy').setRequired(true).setAutocomplete(true),
+							option
+								.setName('item')
+								.setDescription('The item to buy')
+								.setRequired(true)
+								.setAutocomplete(true),
 						)
-						.addIntegerOption(option => option.setName('amount').setDescription('The amount of items to buy')),
+						.addIntegerOption(option =>
+							option.setName('amount').setDescription('The amount of items to buy'),
+						),
 				),
 		);
 	}
@@ -43,7 +49,8 @@ export class StoreCommand extends Subcommand {
 			.setDescription(
 				items
 					.map(
-						item => `${item.icon} ${bold(item.name)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
+						item =>
+							`${item.icon} ${bold(item.name)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
 					)
 					.join('\n'),
 			);
