@@ -75,7 +75,7 @@ export class StoreCommand extends Subcommand {
 			value: amount,
 		});
 
-		const buyResult = await handleBuy(storeItem, interaction.user.id, amount);
+		const buyResult = await handleBuy(storeItem, interaction, amount);
 		if (buyResult.isErr()) return interaction.reply((buyResult.unwrapErr() as Error).message);
 
 		return interaction.reply(

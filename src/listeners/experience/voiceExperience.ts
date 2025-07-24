@@ -54,7 +54,7 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 				this.container.metrics.incrementExperience({
 					user: member.id,
 					level_up: Boolean(data),
-					type: 'message',
+					reason: 'message',
 					value: amount,
 				});
 				// TODO(Isidro): msg is deleted instantly fix it

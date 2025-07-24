@@ -1,6 +1,7 @@
 /* eslint-disable typescript-sort-keys/interface */
 import type { $Enums, Inventory, User as PrismaUser, User } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
+import { type Subcommand } from '@sapphire/plugin-subcommands';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
 import { bold } from 'discord.js';
@@ -34,9 +35,7 @@ export async function handleDeposit(
 
 	const money = Math.min(amountToDeposit, canDeposit, data.wallet);
 	if (money <= 0) {
-		return err(
-			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }),
-		);
+		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }));
 	}
 
 	const next = await container.prisma.user.update({
@@ -77,9 +76,7 @@ export async function handleWithdraw(
 
 	const money = Math.min(amountToWithdraw, canWithdraw, data.bankBalance);
 	if (money <= 0) {
-		return err(
-			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }),
-		);
+		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }));
 	}
 
 	const next = await container.prisma.user.update({
@@ -149,8 +146,12 @@ export function getTransactionSymbol(type: $Enums.Transaction) {
 	}
 }
 
-export async function handleBuy(item: Item, userId: string, amount = 1): Promise<Result<User, UserError | unknown>> {
-	const result = await getUser(userId);
+export async function handleBuy(
+	item: Item,
+	interaction: Subcommand.ChatInputCommandInteraction,
+	amount = 1,
+): Promise<Result<User, UserError | unknown>> {
+	const result = await getUser(interaction.user.id);
 	if (result.isErr()) return err(result.unwrapErr());
 
 	const data = result.unwrap();
@@ -162,14 +163,24 @@ export async function handleBuy(item: Item, userId: string, amount = 1): Promise
 	}
 
 	const next = await container.prisma.user.update({
-		where: { id: userId },
+		where: { id: interaction.user.id },
 		data: {
 			wallet: { decrement: item.price * amount },
 			Inventory: {
-				connectOrCreate: { where: { id: userId }, create: { [item.id]: amount } },
+				connectOrCreate: { where: { id: interaction.user.id }, create: { [item.id]: amount } },
 				update: { [item.id]: { increment: amount } },
 			},
 		},
+	});
+
+	container.metrics.updateMoney({
+		command: interaction.commandName,
+		user: interaction.user.id,
+		guild: interaction.guildId ?? 'none',
+		channel: interaction.channelId,
+		reason: 'store',
+		type: 'lost',
+		value: item.price * amount,
 	});
 
 	return ok(next);

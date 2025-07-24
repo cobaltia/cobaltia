@@ -1,4 +1,5 @@
 /* eslint-disable typescript-sort-keys/interface */
+import { getTotalMoneyUsers } from '@prisma/client/sql';
 import { container } from '@sapphire/framework';
 import { Counter, Gauge, register } from 'prom-client';
 
@@ -59,7 +60,16 @@ export class CobaltMetrics {
 				name: 'cobalt_money_total',
 				help: 'Total amount of money',
 				registers: [register],
-				labelNames: ['command', 'user', 'guild', 'channel', 'reason'] as const,
+				async collect() {
+					const result = await container.prisma.$queryRawTyped(getTotalMoneyUsers());
+					const clientResult = await container.prisma.client.findUnique({
+						where: {
+							id: container.client.user!.id,
+						},
+					});
+					const total = (result[0].total_money ?? 0) + (clientResult?.bankBalance ?? 0);
+					this.set(total);
+				},
 			}),
 			message: new Counter({
 				name: 'cobalt_messages_total',
@@ -83,7 +93,18 @@ export class CobaltMetrics {
 				name: 'cobalt_items_total',
 				help: 'Total amount of items',
 				registers: [register],
-				labelNames: ['item', 'user', 'guild', 'channel'] as const,
+				labelNames: ['item'] as const,
+				async collect() {
+					const items = container.stores.get('items');
+					for (const [_, item] of items) {
+						const result = await container.prisma.inventory.aggregate({
+							_sum: {
+								[item.id]: true,
+							},
+						});
+						this.set({ item: item.id }, Number(result._sum[item.id]) ?? 0);
+					}
+				},
 			}),
 			itemBought: new Counter({
 				name: 'cobalt_items_bought_total',
@@ -187,11 +208,11 @@ export class CobaltMetrics {
 		const { command, user, guild, channel, reason, type, value } = data;
 
 		if (type === 'lost') {
-			this.incrementMoneyLost({ command, user, guild, channel, reason });
-			this.counters.money.dec({ command, user, guild, channel }, value);
+			this.incrementMoneyLost({ command, user, guild, channel, reason, value });
+			this.counters.money.dec(value);
 		} else {
 			this.incrementMoneyEarned({ command, user, guild, channel, reason, value });
-			this.counters.money.inc({ command, user, guild, channel }, value);
+			this.counters.money.inc(value);
 		}
 	}
 
@@ -242,10 +263,10 @@ export class CobaltMetrics {
 
 		if (type === 'lost') {
 			this.incrementItemLost({ item, user, guild, channel, reason: reason!, value });
-			this.counters.item.dec({ item, user, guild, channel }, value);
+			this.counters.item.dec({ item }, value);
 		} else if (type === 'bought') {
 			this.incrementItemBought({ item, user, guild, channel, value });
-			this.counters.item.inc({ item, user, guild, channel }, value);
+			this.counters.item.inc({ item }, value);
 		}
 	}
 

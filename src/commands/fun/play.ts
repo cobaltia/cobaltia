@@ -130,6 +130,24 @@ export class PlayCommand extends Subcommand {
 				where: { id: this.container.client.id! },
 				data: { bankBalance: { increment: amountToGamble } },
 			});
+			this.container.metrics.updateMoney({
+				command: interaction.commandName,
+				user: interaction.user.id,
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'gambling',
+				type: 'lost',
+				value: amountToGamble,
+			});
+			this.container.metrics.updateMoney({
+				command: interaction.commandName,
+				user: 'none',
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'gambling',
+				type: 'earn',
+				value: amountToGamble,
+			});
 			embed
 				.setDescription(`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`)
 				.setColor(Colors.Red);
