@@ -12,7 +12,7 @@ export class UserRoute extends Route {
 				.respond(prismaMetrics + metrics);
 		} catch (error) {
 			this.container.logger.error(error);
-			response.status(500).respond({ error: 'An error occurred' });
+			response.status(500).respond({ error: 'Failed to retrieve metrics data' });
 		}
 	}
 }

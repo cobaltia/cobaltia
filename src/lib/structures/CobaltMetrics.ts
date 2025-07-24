@@ -15,7 +15,7 @@ interface CobaltCounter {
 	itemLost: Counter;
 }
 
-type MoenyReason = 'bounty_claim' | 'daily' | 'death' | 'gambling' | 'rob' | 'store' | 'tax' | 'voice' | 'work';
+type MoneyReason = 'bounty_claim' | 'daily' | 'death' | 'gambling' | 'rob' | 'store' | 'tax' | 'voice' | 'work';
 type ExperienceReason = 'message' | 'voice';
 type ItemReason = 'sell' | 'use';
 
@@ -121,7 +121,7 @@ export class CobaltMetrics {
 		user: string;
 		guild: string;
 		channel: string;
-		reason: MoenyReason;
+		reason: MoneyReason;
 		value?: number;
 	}) {
 		const { command, user, guild, channel, reason, value = 1 } = data;
@@ -142,7 +142,7 @@ export class CobaltMetrics {
 		user: string;
 		guild: string;
 		channel: string;
-		reason: MoenyReason;
+		reason: MoneyReason;
 		value?: number;
 	}) {
 		const { command, user, guild, channel, reason, value = 1 } = data;
@@ -228,7 +228,7 @@ export class CobaltMetrics {
 
 	private setupGauges() {
 		new Gauge({
-			name: 'cobalt_guid',
+			name: 'cobalt_guild_total',
 			help: 'Total number of guilds',
 			registers: [register],
 			collect() {

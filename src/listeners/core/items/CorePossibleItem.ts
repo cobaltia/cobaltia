@@ -12,8 +12,6 @@ export class CorePossibleItem extends Listener<typeof Events.PossibleItem> {
 		const itemStore = stores.get('items');
 
 		const item = itemStore.get(itemName);
-		console.log(itemName);
-		console.log(item);
 
 		if (!item) {
 			client.emit(Events.UnknownItem, {
