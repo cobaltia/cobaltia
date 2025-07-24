@@ -51,10 +51,33 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 
 		await result.match({
 			ok: async data => {
+				this.container.metrics.incrementExperience({
+					user: member.id,
+					level_up: Boolean(data),
+					reason: 'voice',
+					value: amount,
+				});
+				// TODO(Isidro): msg is deleted instantly fix it
 				if (data === false) return;
 				message.push(`Congratulations ${member}, you have leveled up to level ${data.level}!`);
 			},
 			err: async error => this.handleErr(error),
+		});
+
+		this.container.metrics.incrementVoiceTime({
+			user: member.id,
+			guild: member.guild.id,
+			channel: previous.channelId ?? 'none',
+			value: elapsed,
+		});
+
+		this.container.metrics.incrementMoneyEarned({
+			command: 'none',
+			user: member.id,
+			guild: member.guild.id,
+			channel: previous.channelId ?? 'none',
+			reason: 'voice',
+			value: total,
 		});
 
 		await this.container.prisma.user.update({

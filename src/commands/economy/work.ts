@@ -51,6 +51,24 @@ export class WorkCommand extends Command {
 			data: { bankBalance: { increment: tax } },
 		});
 
+		this.container.metrics.incrementMoneyEarned({
+			command: interaction.commandName,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'work',
+			value: money - tax,
+		});
+
+		this.container.metrics.incrementMoneyEarned({
+			command: interaction.commandName,
+			user: 'none',
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'tax',
+			value: tax,
+		});
+
 		const embed = new EmbedBuilder().setDescription(
 			`You worked and earned ${inlineCode(formatMoney(money - tax)!)} after tax 🤑🤑🤑`,
 		);

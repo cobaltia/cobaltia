@@ -60,7 +60,7 @@ export class StoreCommand extends Subcommand {
 
 	public async chatInputBuy(interaction: Subcommand.ChatInputCommandInteraction) {
 		const item = interaction.options.getString('item', true);
-		const amount = interaction.options.getInteger('amount', false) ?? undefined;
+		const amount = interaction.options.getInteger('amount', false) ?? 1;
 		const items = this.container.stores.get('items');
 
 		const storeItem = items.get(item);
@@ -73,13 +73,19 @@ export class StoreCommand extends Subcommand {
 
 		if (data.wallet < storeItem.price) return interaction.reply('You do not have enough money to buy this item.');
 
-		const buyResult = await handleBuy(storeItem, interaction.user.id, amount);
+		this.container.metrics.incrementItemBought({
+			item: storeItem.id,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			value: amount,
+		});
+
+		const buyResult = await handleBuy(storeItem, interaction, amount);
 		if (buyResult.isErr()) return interaction.reply((buyResult.unwrapErr() as Error).message);
 
 		return interaction.reply(
-			(amount ?? 1) >= 2
-				? `You have bought ${amount} ${storeItem.name}s.`
-				: `You have bought a ${storeItem.name}.`,
+			amount >= 2 ? `You have bought ${amount} ${storeItem.name}s.` : `You have bought a ${storeItem.name}.`,
 		);
 	}
 }

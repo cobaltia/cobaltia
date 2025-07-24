@@ -41,7 +41,14 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 		await result.match({
 			ok: async data => {
 				ratelimit.consume();
+				this.container.metrics.incrementExperience({
+					user: message.author.id,
+					level_up: Boolean(data),
+					reason: 'message',
+					value: experience,
+				});
 				if (data === false) return;
+				// TODO(Isidro): msg is deleted instantly fix it
 				const msg = await message.channel.send(
 					`Congratulations ${message.author}, you have leveled up to level ${data.level}!`,
 				);

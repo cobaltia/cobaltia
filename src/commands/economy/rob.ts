@@ -115,6 +115,24 @@ export class RobCommand extends Command {
 			data: { wallet: { increment: amount }, bounty: { increment: bounty } },
 		});
 
+		this.container.metrics.incrementMoneyEarned({
+			command: interaction.commandName,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'rob',
+			value: amount,
+		});
+
+		this.container.metrics.incrementMoneyLost({
+			command: interaction.commandName,
+			user: victim.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'rob',
+			value: amount,
+		});
+
 		const message = [
 			`You successfully robbed ${victim} and got away with ${formatMoney(amount)}.`,
 			`You now have a bounty of ${formatMoney(next.bounty)}.`,
@@ -148,6 +166,24 @@ export class RobCommand extends Command {
 			data: { wallet: robber.wallet < 0 ? robber.wallet : 0, bounty: 0 },
 		});
 
+		this.container.metrics.incrementMoneyEarned({
+			command: interaction.commandName,
+			user: victim.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'bounty_claim',
+			value: robber.bounty,
+		});
+
+		this.container.metrics.incrementMoneyLost({
+			command: interaction.commandName,
+			user: robber.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'death',
+			value: robber.wallet < 0 ? robber.wallet : 0,
+		});
+
 		return `You tried to rob ${victim} but they fought back and killed you. They claimed your bounty of ${formatMoney(
 			robber.bounty,
 		)}. You lost all your money.`;
@@ -162,6 +198,15 @@ export class RobCommand extends Command {
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
 			data: { wallet: { decrement: fine }, bounty: 0 },
+		});
+
+		this.container.metrics.incrementMoneyLost({
+			command: interaction.commandName,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'death',
+			value: fine,
 		});
 
 		return `You were caught by the police and had to pay a fine of ${formatMoney(
@@ -184,6 +229,24 @@ export class RobCommand extends Command {
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
 			data: { wallet: 0 },
+		});
+
+		this.container.metrics.incrementMoneyLost({
+			command: interaction.commandName,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'rob',
+			value: robber.wallet,
+		});
+
+		this.container.metrics.incrementMoneyEarned({
+			command: interaction.commandName,
+			user: victim.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'rob',
+			value: robber.wallet,
 		});
 
 		return `${victim} took advantage of your attempt to rob them and took all your money. You lost all your money.`;

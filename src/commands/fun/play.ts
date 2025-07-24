@@ -92,6 +92,24 @@ export class PlayCommand extends Subcommand {
 				where: { id: interaction.user.id },
 				data: { wallet: { increment: won - tax } },
 			});
+
+			this.container.metrics.incrementMoneyEarned({
+				command: interaction.commandName,
+				user: interaction.user.id,
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'gambling',
+				value: won - tax,
+			});
+			this.container.metrics.incrementMoneyEarned({
+				command: interaction.commandName,
+				user: 'none',
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'tax',
+				value: tax,
+			});
+
 			embed
 				.setDescription(
 					`You won ${formatMoney(won - tax)} after paying ${formatMoney(
@@ -109,6 +127,22 @@ export class PlayCommand extends Subcommand {
 			await this.container.prisma.client.update({
 				where: { id: this.container.client.id! },
 				data: { bankBalance: { increment: amountToGamble } },
+			});
+			this.container.metrics.incrementMoneyLost({
+				command: interaction.commandName,
+				user: interaction.user.id,
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'gambling',
+				value: amountToGamble,
+			});
+			this.container.metrics.incrementMoneyEarned({
+				command: interaction.commandName,
+				user: 'none',
+				guild: interaction.guildId ?? 'none',
+				channel: interaction.channelId,
+				reason: 'gambling',
+				value: amountToGamble,
 			});
 			embed
 				.setDescription(

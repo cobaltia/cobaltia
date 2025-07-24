@@ -86,6 +86,23 @@ export class ItemCommand extends Subcommand {
 			data: { wallet: { increment: item.sellPrice * amount } },
 		});
 
+		this.container.metrics.incrementItemLost({
+			item: item.id,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'sell',
+		});
+
+		this.container.metrics.incrementMoneyEarned({
+			command: interaction.commandName,
+			user: interaction.user.id,
+			guild: interaction.guildId ?? 'none',
+			channel: interaction.channelId,
+			reason: 'store',
+			value: item.sellPrice * amount,
+		});
+
 		return interaction.editReply(
 			`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`,
 		);
