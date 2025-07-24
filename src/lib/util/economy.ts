@@ -173,13 +173,12 @@ export async function handleBuy(
 		},
 	});
 
-	container.metrics.updateMoney({
+	container.metrics.incrementMoneyLost({
 		command: interaction.commandName,
 		user: interaction.user.id,
 		guild: interaction.guildId ?? 'none',
 		channel: interaction.channelId,
 		reason: 'store',
-		type: 'lost',
 		value: item.price * amount,
 	});
 

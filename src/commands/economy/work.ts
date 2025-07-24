@@ -51,23 +51,21 @@ export class WorkCommand extends Command {
 			data: { bankBalance: { increment: tax } },
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyEarned({
 			command: interaction.commandName,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'work',
-			type: 'earn',
 			value: money - tax,
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyEarned({
 			command: interaction.commandName,
 			user: 'none',
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'tax',
-			type: 'earn',
 			value: tax,
 		});
 

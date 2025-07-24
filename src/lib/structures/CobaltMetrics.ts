@@ -8,22 +8,16 @@ interface CobaltCounter {
 	voiceTime: Counter;
 	moneyEarned: Counter;
 	moneyLost: Counter;
-	money: Gauge;
 	message: Counter;
 	events: Counter;
 	experience: Counter;
 	itemBought: Counter;
 	itemLost: Counter;
-	item: Gauge;
 }
 
 type MoenyReason = 'bounty_claim' | 'daily' | 'death' | 'gambling' | 'rob' | 'store' | 'tax' | 'voice' | 'work';
-type MoneyType = 'earn' | 'lost';
-
 type ExperienceReason = 'message' | 'voice';
-
 type ItemReason = 'sell' | 'use';
-type ItemType = 'bought' | 'lost';
 
 export class CobaltMetrics {
 	private readonly counters: CobaltCounter;
@@ -56,21 +50,6 @@ export class CobaltMetrics {
 				registers: [register],
 				labelNames: ['command', 'user', 'guild', 'channel', 'reason'] as const,
 			}),
-			money: new Gauge({
-				name: 'cobalt_money_total',
-				help: 'Total amount of money',
-				registers: [register],
-				async collect() {
-					const result = await container.prisma.$queryRawTyped(getTotalMoneyUsers());
-					const clientResult = await container.prisma.client.findUnique({
-						where: {
-							id: container.client.user!.id,
-						},
-					});
-					const total = (result[0].total_money ?? 0) + (clientResult?.bankBalance ?? 0);
-					this.set(total);
-				},
-			}),
 			message: new Counter({
 				name: 'cobalt_messages_total',
 				help: 'Total number of messages sent',
@@ -88,23 +67,6 @@ export class CobaltMetrics {
 				help: 'Total amount of experience earned',
 				registers: [register],
 				labelNames: ['user', 'level_up', 'reason'] as const,
-			}),
-			item: new Gauge({
-				name: 'cobalt_items_total',
-				help: 'Total amount of items',
-				registers: [register],
-				labelNames: ['item'] as const,
-				async collect() {
-					const items = container.stores.get('items');
-					for (const [_, item] of items) {
-						const result = await container.prisma.inventory.aggregate({
-							_sum: {
-								[item.id]: true,
-							},
-						});
-						this.set({ item: item.id }, Number(result._sum[item.id]) ?? 0);
-					}
-				},
 			}),
 			itemBought: new Counter({
 				name: 'cobalt_items_bought_total',
@@ -154,7 +116,7 @@ export class CobaltMetrics {
 		);
 	}
 
-	private incrementMoneyEarned(data: {
+	public incrementMoneyEarned(data: {
 		command: string;
 		user: string;
 		guild: string;
@@ -175,7 +137,7 @@ export class CobaltMetrics {
 		);
 	}
 
-	private incrementMoneyLost(data: {
+	public incrementMoneyLost(data: {
 		command: string;
 		user: string;
 		guild: string;
@@ -194,26 +156,6 @@ export class CobaltMetrics {
 			},
 			value,
 		);
-	}
-
-	public updateMoney(data: {
-		command: string;
-		user: string;
-		guild: string;
-		channel: string;
-		reason: MoenyReason;
-		type: MoneyType;
-		value: number;
-	}) {
-		const { command, user, guild, channel, reason, type, value } = data;
-
-		if (type === 'lost') {
-			this.incrementMoneyLost({ command, user, guild, channel, reason, value });
-			this.counters.money.dec(value);
-		} else {
-			this.incrementMoneyEarned({ command, user, guild, channel, reason, value });
-			this.counters.money.inc(value);
-		}
 	}
 
 	public incrementMessage(data: { user: string; guild: string; channel: string; value?: number }) {
@@ -250,27 +192,7 @@ export class CobaltMetrics {
 		);
 	}
 
-	public updateItem(data: {
-		item: string;
-		user: string;
-		guild: string;
-		channel: string;
-		type: ItemType;
-		reason?: ItemReason;
-		value?: number;
-	}): void {
-		const { item, user, guild, channel, type, reason, value = 1 } = data;
-
-		if (type === 'lost') {
-			this.incrementItemLost({ item, user, guild, channel, reason: reason!, value });
-			this.counters.item.dec({ item }, value);
-		} else if (type === 'bought') {
-			this.incrementItemBought({ item, user, guild, channel, value });
-			this.counters.item.inc({ item }, value);
-		}
-	}
-
-	private incrementItemLost(data: {
+	public incrementItemLost(data: {
 		item: string;
 		user: string;
 		guild: string;
@@ -291,7 +213,7 @@ export class CobaltMetrics {
 		);
 	}
 
-	private incrementItemBought(data: { item: string; user: string; guild: string; channel: string; value?: number }) {
+	public incrementItemBought(data: { item: string; user: string; guild: string; channel: string; value?: number }) {
 		const { item, user, guild, channel, value = 1 } = data;
 		this.counters.itemBought.inc(
 			{
@@ -323,6 +245,40 @@ export class CobaltMetrics {
 			collect() {
 				if (container.client.isReady()) {
 					this.set(container.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0));
+				}
+			},
+		});
+
+		new Gauge({
+			name: 'cobalt_money_total',
+			help: 'Total amount of money',
+			registers: [register],
+			async collect() {
+				const result = await container.prisma.$queryRawTyped(getTotalMoneyUsers());
+				const clientResult = await container.prisma.client.findUnique({
+					where: {
+						id: container.client.user!.id,
+					},
+				});
+				const total = (result[0].total_money ?? 0) + (clientResult?.bankBalance ?? 0);
+				this.set(total);
+			},
+		});
+
+		new Gauge({
+			name: 'cobalt_items_total',
+			help: 'Total amount of items',
+			registers: [register],
+			labelNames: ['item'] as const,
+			async collect() {
+				const items = container.stores.get('items');
+				for (const [_, item] of items) {
+					const result = await container.prisma.inventory.aggregate({
+						_sum: {
+							[item.id]: true,
+						},
+					});
+					this.set({ item: item.id }, Number(result._sum[item.id]) ?? 0);
 				}
 			},
 		});

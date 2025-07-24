@@ -48,12 +48,11 @@ function getSuccessItemData({ interaction, item, duration }: RunSuccessItemPaylo
 export function handleItemSuccess(payload: RunSuccessItemPayload) {
 	const { itemName, author, runTime } = getSuccessItemData(payload);
 	const { interaction } = payload;
-	container.metrics.updateItem({
+	container.metrics.incrementItemLost({
 		item: itemName,
 		user: interaction.user.id,
 		guild: interaction.guildId ?? 'none',
 		channel: interaction.channelId,
-		type: 'lost',
 		reason: 'use',
 	});
 

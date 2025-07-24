@@ -93,22 +93,20 @@ export class PlayCommand extends Subcommand {
 				data: { wallet: { increment: won - tax } },
 			});
 
-			this.container.metrics.updateMoney({
+			this.container.metrics.incrementMoneyEarned({
 				command: interaction.commandName,
 				user: interaction.user.id,
 				guild: interaction.guildId ?? 'none',
 				channel: interaction.channelId,
 				reason: 'gambling',
-				type: 'earn',
 				value: won - tax,
 			});
-			this.container.metrics.updateMoney({
+			this.container.metrics.incrementMoneyEarned({
 				command: interaction.commandName,
 				user: 'none',
 				guild: interaction.guildId ?? 'none',
 				channel: interaction.channelId,
 				reason: 'tax',
-				type: 'earn',
 				value: tax,
 			});
 
@@ -130,22 +128,20 @@ export class PlayCommand extends Subcommand {
 				where: { id: this.container.client.id! },
 				data: { bankBalance: { increment: amountToGamble } },
 			});
-			this.container.metrics.updateMoney({
+			this.container.metrics.incrementMoneyLost({
 				command: interaction.commandName,
 				user: interaction.user.id,
 				guild: interaction.guildId ?? 'none',
 				channel: interaction.channelId,
 				reason: 'gambling',
-				type: 'lost',
 				value: amountToGamble,
 			});
-			this.container.metrics.updateMoney({
+			this.container.metrics.incrementMoneyEarned({
 				command: interaction.commandName,
 				user: 'none',
 				guild: interaction.guildId ?? 'none',
 				channel: interaction.channelId,
 				reason: 'gambling',
-				type: 'earn',
 				value: amountToGamble,
 			});
 			embed

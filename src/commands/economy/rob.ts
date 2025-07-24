@@ -115,23 +115,21 @@ export class RobCommand extends Command {
 			data: { wallet: { increment: amount }, bounty: { increment: bounty } },
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyEarned({
 			command: interaction.commandName,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'rob',
-			type: 'earn',
 			value: amount,
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyLost({
 			command: interaction.commandName,
 			user: victim.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'rob',
-			type: 'lost',
 			value: amount,
 		});
 
@@ -168,23 +166,21 @@ export class RobCommand extends Command {
 			data: { wallet: robber.wallet < 0 ? robber.wallet : 0, bounty: 0 },
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyEarned({
 			command: interaction.commandName,
 			user: victim.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'bounty_claim',
-			type: 'earn',
 			value: robber.bounty,
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyLost({
 			command: interaction.commandName,
 			user: robber.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'death',
-			type: 'lost',
 			value: robber.wallet < 0 ? robber.wallet : 0,
 		});
 
@@ -204,13 +200,12 @@ export class RobCommand extends Command {
 			data: { wallet: { decrement: fine }, bounty: 0 },
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyLost({
 			command: interaction.commandName,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'death',
-			type: 'lost',
 			value: fine,
 		});
 
@@ -236,23 +231,21 @@ export class RobCommand extends Command {
 			data: { wallet: 0 },
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyLost({
 			command: interaction.commandName,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'rob',
-			type: 'lost',
 			value: robber.wallet,
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyEarned({
 			command: interaction.commandName,
 			user: victim.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'rob',
-			type: 'earn',
 			value: robber.wallet,
 		});
 

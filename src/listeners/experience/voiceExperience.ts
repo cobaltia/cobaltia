@@ -71,13 +71,12 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 			value: elapsed,
 		});
 
-		this.container.metrics.updateMoney({
+		this.container.metrics.incrementMoneyEarned({
 			command: 'none',
 			user: member.id,
 			guild: member.guild.id,
 			channel: previous.channelId ?? 'none',
 			reason: 'voice',
-			type: 'earn',
 			value: total,
 		});
 

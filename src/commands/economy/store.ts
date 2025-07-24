@@ -66,12 +66,11 @@ export class StoreCommand extends Subcommand {
 
 		if (data.wallet < storeItem.price) return interaction.reply('You do not have enough money to buy this item.');
 
-		this.container.metrics.updateItem({
+		this.container.metrics.incrementItemBought({
 			item: storeItem.id,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
-			type: 'bought',
 			value: amount,
 		});
 
