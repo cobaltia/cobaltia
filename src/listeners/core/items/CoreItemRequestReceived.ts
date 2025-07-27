@@ -27,7 +27,11 @@ export class CoreItemRequestReceived extends Listener<typeof Events.ItemRequestR
 		}
 
 		if (typeof item.run !== 'function') {
-			client.emit(Events.ItemDenied, 'This item cannot be used', { item, interaction, context: { itemName, amount } });
+			client.emit(Events.ItemDenied, 'This item cannot be used', {
+				item,
+				interaction,
+				context: { itemName, amount },
+			});
 			return;
 		}
 

@@ -78,7 +78,11 @@ declare module 'discord.js' {
 		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
-		[CobaltEvents.ItemRequestReceived]: [itemName: string, amount: number, interaction: ChatInputCommandInteraction];
+		[CobaltEvents.ItemRequestReceived]: [
+			itemName: string,
+			amount: number,
+			interaction: ChatInputCommandInteraction,
+		];
 		[CobaltEvents.UnknownItem]: [payload: UnknownItemPayload];
 		[CobaltEvents.ItemDenied]: [error: string, payload: ItemPayload];
 		[CobaltEvents.ItemAccepted]: [payload: ItemPayload];
