@@ -18,9 +18,8 @@ export const Events = {
 	BankDepositTransaction: 'bankDepositTransaction' as const,
 	BankWithdrawTransaction: 'bankWithdrawTransaction' as const,
 	BankTransferTransaction: 'bankTransferTransaction' as const,
-	PossibleItem: 'possibleItem' as const,
+	ItemRequestReceived: 'itemRequestReceived' as const,
 	UnknownItem: 'unknownItem' as const,
-	PreItemRun: 'preItemRun' as const,
 	ItemDenied: 'itemDenied' as const,
 	ItemAccepted: 'itemAccepted' as const,
 	ItemError: 'itemError' as const,
@@ -79,9 +78,8 @@ declare module 'discord.js' {
 		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
 		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
-		[CobaltEvents.PossibleItem]: [itemName: string, amount: number, interaction: ChatInputCommandInteraction];
+		[CobaltEvents.ItemRequestReceived]: [itemName: string, amount: number, interaction: ChatInputCommandInteraction];
 		[CobaltEvents.UnknownItem]: [payload: UnknownItemPayload];
-		[CobaltEvents.PreItemRun]: [payload: ItemPayload];
 		[CobaltEvents.ItemDenied]: [error: string, payload: ItemPayload];
 		[CobaltEvents.ItemAccepted]: [payload: ItemPayload];
 		[CobaltEvents.ItemError]: [error: unknown, payload: ErrorItemPayload];
