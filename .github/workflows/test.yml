@@ -8,7 +8,7 @@ on:
 jobs:
   Linting:
     name: Linting
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -27,7 +27,7 @@ jobs:
 
   Format:
     name: Format
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -46,7 +46,7 @@ jobs:
 
   Building:
     name: Building
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     services:
       postgres:
         image: postgres
@@ -75,7 +75,7 @@ jobs:
 
   Testing:
     name: Unit Testing
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -100,7 +100,7 @@ jobs:
   Codecov:
     name: CodeCov
     needs: [Testing]
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
