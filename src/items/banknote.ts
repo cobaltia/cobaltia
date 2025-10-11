@@ -1,7 +1,7 @@
 import { Result } from '@sapphire/result';
 import { type ChatInputCommandInteraction } from 'discord.js';
-import { getInventory } from '#lib/database';
 import { type ItemPayload } from '#lib/types';
+import { getInventory } from '#lib/util/functions/inventoryHelper';
 import { Item } from '#structures/Item';
 import { formatMoney } from '#util/common';
 
@@ -22,9 +22,13 @@ export class BanknoteItem extends Item {
 		const result = await Result.fromAsync(() => getInventory(interaction.user.id));
 		if (result.isErr()) throw new Error('Failed to get inventory data');
 
-		const data = result.unwrap();
+		const resultData = result.unwrap();
 
-		if (data.banknote < context.amount) {
+		if (resultData.isNone()) return interaction.followUp('You do not have enough banknotes to exchange.');
+
+		const data = resultData.unwrap();
+
+		if ((data.get('banknote') ?? 0) < context.amount) {
 			return interaction.followUp('You do not have enough banknotes to exchange.');
 		}
 
@@ -36,8 +40,8 @@ export class BanknoteItem extends Item {
 		});
 
 		await this.container.prisma.inventory.update({
-			where: { id: interaction.user.id },
-			data: { banknote: { decrement: context.amount } },
+			where: { userId_itemId: { userId: interaction.user.id, itemId: 'banknote' } },
+			data: { quantity: { decrement: context.amount } },
 		});
 
 		return interaction.followUp(

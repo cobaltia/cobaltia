@@ -2,8 +2,8 @@ import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework
 import { isNullishOrEmpty } from '@sapphire/utilities';
 import { jaroWinkler } from '@skyra/jaro-winkler';
 import { type ApplicationCommandOptionChoiceData, type AutocompleteInteraction } from 'discord.js';
-import { getInventory } from '#lib/database';
 import { type Item } from '#lib/structures/Item';
+import { getInventory } from '#lib/util/functions/inventoryHelper';
 
 export class ItemAutocomplete extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
@@ -38,10 +38,9 @@ export class ItemAutocomplete extends InteractionHandler {
 			if (validSubcommands.includes(subcommand)) {
 				if (subcommand === 'use') allItems = allItems.filter(item => !item.collectible);
 				const result = await getInventory(interaction.member.id);
-				if (result.isOk()) {
+				if (result.isSome()) {
 					const inventory = result.unwrap();
-					const inventoryMap = new Map(Object.entries(inventory));
-					for (const [id, quantity] of inventoryMap) {
+					for (const [id, quantity] of inventory) {
 						const item = allItems.find(item => item.id === id);
 						if (item && quantity === 0) {
 							allItems = allItems.filter(item => item.id !== id);

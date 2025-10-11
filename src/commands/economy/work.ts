@@ -2,7 +2,7 @@ import { Command, Result } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
 import { EmbedBuilder, TimestampStyles, inlineCode, time } from 'discord.js';
-import { getClient } from '#lib/database';
+import { getClient, getUser } from '#lib/database';
 import { formatMoney } from '#util/common';
 
 export class WorkCommand extends Command {
@@ -19,12 +19,10 @@ export class WorkCommand extends Command {
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		await interaction.deferReply();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findUniqueOrThrow({ where: { id: interaction.user.id } }),
-		);
+		const result = await Result.fromAsync(async () => getUser(interaction.user.id));
+		if (result.isErr()) throw result.unwrapErr();
 		const data = result.unwrap();
 
-		if (result.isErr()) throw result.unwrapErr();
 		const clientResult = await Result.fromAsync(async () => getClient(this.container.client.id!));
 		if (clientResult.isErr()) throw clientResult.unwrapErr();
 		const client = clientResult.unwrap();

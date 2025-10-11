@@ -42,17 +42,20 @@ model User {
   workCooldown    DateTime          @default(now()) @map("work_cooldown")
   Voice           Voice[]
   BankTransaction BankTransaction[]
-  Inventory       Inventory?
+  Inventory       Inventory[]
 
   @@map("users")
 }
 
 model Inventory {
-  id        String @id @db.VarChar(20)
-  banknote  Int    @default(0) @map("bank_note")
-  cobuck    Int    @default(0) @map("cobuck")
+  id       String @id @default(cuid())
+  userId   String @map("user_id") @db.VarChar(20)
+  itemId   String @map("item_id") @db.VarChar(20)
+  quantity Int    @default(0) @map("quantity")
 
-  user     User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
   @@map("inventories")
 }
 

@@ -1,5 +1,5 @@
 /* eslint-disable typescript-sort-keys/interface */
-import type { $Enums, Inventory, User as PrismaUser, User } from '@prisma/client';
+import type { $Enums, User as PrismaUser, User } from '@prisma/client';
 import { UserError, container } from '@sapphire/framework';
 import { type Subcommand } from '@sapphire/plugin-subcommands';
 import { type Result, err, ok } from '@sapphire/result';
@@ -171,8 +171,11 @@ export async function handleBuy(
 		data: {
 			wallet: { decrement: item.price * amount },
 			Inventory: {
-				connectOrCreate: { where: { id: interaction.user.id }, create: { [item.id]: amount } },
-				update: { [item.id]: { increment: amount } },
+				upsert: {
+					where: { userId_itemId: { userId: interaction.user.id, itemId: item.id } },
+					create: { itemId: item.id, quantity: amount },
+					update: { quantity: { increment: amount } },
+				},
 			},
 		},
 	});
@@ -187,32 +190,4 @@ export async function handleBuy(
 	});
 
 	return ok(next);
-}
-
-export function getInventoryMap(data: Inventory) {
-	const items = container.stores.get('items');
-	const inventoryMap = new Map(Object.entries(data));
-	const inventory = new Map<string, number>();
-
-	for (const [key, value] of inventoryMap) {
-		const item = items.get(key);
-		if (!item) continue;
-		inventory.set(key, Number.parseInt(value.toString(), 10));
-	}
-
-	return inventory;
-}
-
-export function getInventoryNetWorth(data: Inventory) {
-	const items = container.stores.get('items');
-	const inventory = getInventoryMap(data);
-	let netWorth = 0;
-
-	for (const [key, value] of inventory) {
-		const item = items.get(key);
-		if (!item) continue;
-		netWorth += item.sellPrice * value;
-	}
-
-	return netWorth;
 }

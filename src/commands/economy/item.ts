@@ -1,7 +1,7 @@
 import { Result, type ApplicationCommandRegistry } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { getInventory } from '#lib/database';
 import { Events } from '#lib/types';
+import { getInventory } from '#lib/util/functions/inventoryHelper';
 import { formatMoney } from '#util/common';
 
 export class ItemCommand extends Subcommand {
@@ -69,16 +69,17 @@ export class ItemCommand extends Subcommand {
 		const result = await Result.fromAsync(() => getInventory(interaction.user.id));
 		if (result.isErr()) throw result.unwrapErr();
 
-		const inventory = result.unwrap();
-		const inventoryMap = new Map(Object.entries(inventory));
-		const inventoryItem = inventoryMap.get(item.id) as number;
-		if (inventoryItem < amount) {
+		const dataResult = result.unwrap();
+		if (dataResult.isNone()) return interaction.editReply('You do not have any items.');
+		const inventory = dataResult.unwrap();
+		const inventoryItem = inventory.get(item.id);
+		if (!inventoryItem || inventoryItem < amount) {
 			return interaction.editReply('You do not have enough of that item to sell.');
 		}
 
 		await this.container.prisma.inventory.update({
-			where: { id: interaction.user.id },
-			data: { [item.id]: { decrement: amount } },
+			where: { userId_itemId: { userId: interaction.user.id, itemId: item.id } },
+			data: { quantity: { decrement: amount } },
 		});
 
 		await this.container.prisma.user.update({
