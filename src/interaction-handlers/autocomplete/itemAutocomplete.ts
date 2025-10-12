@@ -2,8 +2,8 @@ import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework
 import { isNullishOrEmpty } from '@sapphire/utilities';
 import { jaroWinkler } from '@skyra/jaro-winkler';
 import { type ApplicationCommandOptionChoiceData, type AutocompleteInteraction } from 'discord.js';
-import { getInventory } from '#lib/database';
 import { type Item } from '#lib/structures/Item';
+import { getInventory } from '#lib/util/functions/inventoryHelper';
 
 export class ItemAutocomplete extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
@@ -38,13 +38,12 @@ export class ItemAutocomplete extends InteractionHandler {
 			if (validSubcommands.includes(subcommand)) {
 				if (subcommand === 'use') allItems = allItems.filter(item => !item.collectible);
 				const result = await getInventory(interaction.member.id);
-				if (result.isOk()) {
+				if (result.isSome()) {
 					const inventory = result.unwrap();
-					const inventoryMap = new Map(Object.entries(inventory));
-					for (const [id, quantity] of inventoryMap) {
-						const item = allItems.find(item => item.id === id);
+					for (const [name, quantity] of inventory) {
+						const item = allItems.find(item => item.name === name);
 						if (item && quantity === 0) {
-							allItems = allItems.filter(item => item.id !== id);
+							allItems = allItems.filter(item => item.name !== name);
 						}
 					}
 				}
@@ -55,8 +54,8 @@ export class ItemAutocomplete extends InteractionHandler {
 					Array.from(allItems)
 						.slice(0, 20)
 						.map<ApplicationCommandOptionChoiceData>(result => ({
-							name: `${result.name}`,
-							value: result.id,
+							name: `${result.displayName}`,
+							value: result.name,
 						})),
 				);
 			}
@@ -76,7 +75,7 @@ export class ItemAutocomplete extends InteractionHandler {
 		let almostExacts = 0;
 
 		for (const value of values) {
-			const lowerCaseName = value.name.toLowerCase();
+			const lowerCaseName = value.displayName.toLowerCase();
 
 			if (lowerCaseName === lowerCaseQuery) {
 				similarity = 1;
@@ -96,6 +95,6 @@ export class ItemAutocomplete extends InteractionHandler {
 		return results
 			.toSorted((a, b) => b.similarity - a.similarity)
 			.slice(0, 20)
-			.map<ApplicationCommandOptionChoiceData>(result => ({ name: `${result.name}`, value: result.id }));
+			.map<ApplicationCommandOptionChoiceData>(result => ({ name: `${result.displayName}`, value: result.name }));
 	}
 }

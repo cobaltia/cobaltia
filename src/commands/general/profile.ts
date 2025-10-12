@@ -1,4 +1,4 @@
-import { type Inventory, type User as PrismaUser } from '@prisma/client';
+import { type User as PrismaUser } from '@prisma/client';
 import { Command, Result } from '@sapphire/framework';
 import {
 	type User,
@@ -8,7 +8,7 @@ import {
 	StringSelectMenuBuilder,
 	type ContextMenuCommandType,
 } from 'discord.js';
-import { getInventory, getUser } from '#lib/database';
+import { getUser } from '#lib/database';
 import { profileEmbed } from '#util/discord-embeds';
 
 export class ProfileCommand extends Command {
@@ -41,12 +41,8 @@ export class ProfileCommand extends Command {
 
 		const result = await Result.fromAsync(async () => getUser(user.id));
 		if (result.isErr()) throw result.unwrapErr();
-		const inventoryResult = await Result.fromAsync(async () => getInventory(user.id));
-		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
 		const data = result.unwrap();
-		const inventory = inventoryResult.unwrap();
-
-		return this.handleOk(interaction, data, inventory, user);
+		return this.handleOk(interaction, data, user);
 	}
 
 	public async contextMenuRun(interaction: Command.ContextMenuCommandInteraction) {
@@ -55,21 +51,17 @@ export class ProfileCommand extends Command {
 
 		const result = await Result.fromAsync(async () => getUser(user.id));
 		if (result.isErr()) throw result.unwrapErr();
-		const inventoryResult = await Result.fromAsync(async () => getInventory(user.id));
-		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
 		const data = result.unwrap();
-		const inventory = inventoryResult.unwrap();
 
-		return this.handleOk(interaction, data, inventory, user);
+		return this.handleOk(interaction, data, user);
 	}
 
 	private async handleOk(
 		interaction: Command.ChatInputCommandInteraction | Command.ContextMenuCommandInteraction,
 		data: PrismaUser,
-		inventory: Inventory,
 		user: User,
 	) {
-		const embed = await profileEmbed(data, inventory, user);
+		const embed = await profileEmbed(data, user);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(

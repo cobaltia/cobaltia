@@ -50,7 +50,7 @@ export class StoreCommand extends Subcommand {
 				items
 					.map(
 						item =>
-							`${item.icon} ${bold(item.name)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
+							`${item.icon} ${bold(item.displayName)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
 					)
 					.join('\n'),
 			);
@@ -74,7 +74,7 @@ export class StoreCommand extends Subcommand {
 		if (data.wallet < storeItem.price) return interaction.reply('You do not have enough money to buy this item.');
 
 		this.container.metrics.incrementItemBought({
-			item: storeItem.id,
+			item: storeItem.name,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
@@ -85,7 +85,9 @@ export class StoreCommand extends Subcommand {
 		if (buyResult.isErr()) return interaction.reply((buyResult.unwrapErr() as Error).message);
 
 		return interaction.reply(
-			amount >= 2 ? `You have bought ${amount} ${storeItem.name}s.` : `You have bought a ${storeItem.name}.`,
+			amount >= 2
+				? `You have bought ${amount} ${storeItem.displayName}s.`
+				: `You have bought a ${storeItem.displayName}.`,
 		);
 	}
 }

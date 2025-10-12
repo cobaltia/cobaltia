@@ -274,11 +274,14 @@ export class CobaltMetrics {
 				const items = container.stores.get('items');
 				for (const [_, item] of items) {
 					const result = await container.prisma.inventory.aggregate({
+						where: {
+							itemId: item.name,
+						},
 						_sum: {
-							[item.id]: true,
+							quantity: true,
 						},
 					});
-					this.set({ item: item.id }, Number(result._sum[item.id]) ?? 0);
+					this.set({ item: item.name }, Number(result._sum?.quantity) ?? 0);
 				}
 			},
 		});

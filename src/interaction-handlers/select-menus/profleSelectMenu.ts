@@ -11,11 +11,11 @@ import {
 	time,
 	TimestampStyles,
 } from 'discord.js';
-import { getInventory, getUser } from '#lib/database';
-import { getInventoryMap } from '#lib/util/economy';
+import { getUser } from '#lib/database';
 import { formatNumber } from '#util/common';
 import { profileEmbed } from '#util/discord-embeds';
 import { nextLevel } from '#util/experience';
+import { getInventory } from '#util/functions/inventoryHelper';
 
 export class ProfileSelectMenuHandler extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
@@ -51,12 +51,9 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 
 		const dataResult = await Result.fromAsync(async () => getUser(userId));
 		if (dataResult.isErr()) throw dataResult.unwrapErr();
-		const inventoryResult = await Result.fromAsync(async () => getInventory(userId));
-		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
 
 		const data = dataResult.unwrap();
-		const inventory = inventoryResult.unwrap();
-		const embed = await profileEmbed(data, inventory, user);
+		const embed = await profileEmbed(data, user);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
@@ -177,14 +174,16 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 		const inventoryResult = await Result.fromAsync(async () => getInventory(userId));
 		if (inventoryResult.isErr()) throw inventoryResult.unwrapErr();
 
-		const inventory = inventoryResult.unwrap();
-		const inventoryMap = getInventoryMap(inventory);
+		const inventoryOption = inventoryResult.unwrap();
 		const description = [];
 
-		for (const [key, value] of inventoryMap) {
-			if (value === 0) continue;
-			const item = itemStore.get(key)!;
-			description.push(`${item.icon} ${bold(key)} - ${inlineCode(` ${formatNumber(value)!} `)}`);
+		if (inventoryOption.isSome()) {
+			const inventoryMap = inventoryOption.unwrap();
+			for (const [key, value] of inventoryMap) {
+				if (value === 0) continue;
+				const item = itemStore.get(key)!;
+				description.push(`${item.icon} ${bold(key)} - ${inlineCode(` ${formatNumber(value)!} `)}`);
+			}
 		}
 
 		const embed = new EmbedBuilder()

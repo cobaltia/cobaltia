@@ -4,7 +4,7 @@ export class CobuckItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
 		super(context, {
 			...options,
-			id: 'cobuck',
+			displayName: 'cobuck',
 			collectible: true,
 			description: 'Wait what physical cobuck money?',
 			price: 1,
