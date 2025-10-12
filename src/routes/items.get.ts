@@ -5,7 +5,7 @@ export class UserRoute extends Route {
 		const itemStore = this.container.stores.get('items');
 		const items = itemStore.map(item => {
 			return {
-				id: item.id,
+				displayName: item.displayName,
 				name: item.name,
 				description: item.description,
 				collectible: item.collectible,

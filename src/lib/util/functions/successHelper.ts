@@ -38,7 +38,7 @@ function getSuccessData({
 }
 
 function getSuccessItemData({ interaction, item, duration }: RunSuccessItemPayload) {
-	const itemName = item.name;
+	const itemName = item.displayName;
 	const author = `${interaction.user.username} [${interaction.user.id}]`;
 	const runTime = getDuration(duration);
 

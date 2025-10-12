@@ -275,13 +275,13 @@ export class CobaltMetrics {
 				for (const [_, item] of items) {
 					const result = await container.prisma.inventory.aggregate({
 						where: {
-							itemId: item.id,
+							itemId: item.name,
 						},
 						_sum: {
 							quantity: true,
 						},
 					});
-					this.set({ item: item.id }, Number(result._sum?.quantity) ?? 0);
+					this.set({ item: item.name }, Number(result._sum?.quantity) ?? 0);
 				}
 			},
 		});

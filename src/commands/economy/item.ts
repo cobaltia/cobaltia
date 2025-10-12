@@ -26,11 +26,7 @@ export class ItemCommand extends Subcommand {
 						.setName('use')
 						.setDescription('Use an Item')
 						.addStringOption(option =>
-							option
-								.setName('item')
-								.setDescription('Item to use')
-								.setRequired(true)
-								.setAutocomplete(true),
+							option.setName('item').setDescription('Item to use').setRequired(true).setAutocomplete(true),
 						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to use')),
 				)
@@ -39,11 +35,7 @@ export class ItemCommand extends Subcommand {
 						.setName('sell')
 						.setDescription('Sell an Item')
 						.addStringOption(option =>
-							option
-								.setName('item')
-								.setDescription('Item to sell')
-								.setRequired(true)
-								.setAutocomplete(true),
+							option.setName('item').setDescription('Item to sell').setRequired(true).setAutocomplete(true),
 						)
 						.addIntegerOption(option => option.setName('amount').setDescription('Amount of items to sell')),
 				),
@@ -72,13 +64,13 @@ export class ItemCommand extends Subcommand {
 		const dataResult = result.unwrap();
 		if (dataResult.isNone()) return interaction.editReply('You do not have any items.');
 		const inventory = dataResult.unwrap();
-		const inventoryItem = inventory.get(item.id);
+		const inventoryItem = inventory.get(item.name);
 		if (!inventoryItem || inventoryItem < amount) {
 			return interaction.editReply('You do not have enough of that item to sell.');
 		}
 
 		await this.container.prisma.inventory.update({
-			where: { userId_itemId: { userId: interaction.user.id, itemId: item.id } },
+			where: { userId_itemId: { userId: interaction.user.id, itemId: item.name } },
 			data: { quantity: { decrement: amount } },
 		});
 
@@ -88,7 +80,7 @@ export class ItemCommand extends Subcommand {
 		});
 
 		this.container.metrics.incrementItemLost({
-			item: item.id,
+			item: item.name,
 			user: interaction.user.id,
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
@@ -105,7 +97,7 @@ export class ItemCommand extends Subcommand {
 		});
 
 		return interaction.editReply(
-			`You have sold ${amount} ${item.name} for ${formatMoney(item.sellPrice * amount)}.`,
+			`You have sold ${amount} ${item.displayName} for ${formatMoney(item.sellPrice * amount)}.`,
 		);
 	}
 }

@@ -40,10 +40,10 @@ export class ItemAutocomplete extends InteractionHandler {
 				const result = await getInventory(interaction.member.id);
 				if (result.isSome()) {
 					const inventory = result.unwrap();
-					for (const [id, quantity] of inventory) {
-						const item = allItems.find(item => item.id === id);
+					for (const [name, quantity] of inventory) {
+						const item = allItems.find(item => item.name === name);
 						if (item && quantity === 0) {
-							allItems = allItems.filter(item => item.id !== id);
+							allItems = allItems.filter(item => item.name !== name);
 						}
 					}
 				}
@@ -54,8 +54,8 @@ export class ItemAutocomplete extends InteractionHandler {
 					Array.from(allItems)
 						.slice(0, 20)
 						.map<ApplicationCommandOptionChoiceData>(result => ({
-							name: `${result.name}`,
-							value: result.id,
+							name: `${result.displayName}`,
+							value: result.name,
 						})),
 				);
 			}
@@ -75,7 +75,7 @@ export class ItemAutocomplete extends InteractionHandler {
 		let almostExacts = 0;
 
 		for (const value of values) {
-			const lowerCaseName = value.name.toLowerCase();
+			const lowerCaseName = value.displayName.toLowerCase();
 
 			if (lowerCaseName === lowerCaseQuery) {
 				similarity = 1;
@@ -95,6 +95,6 @@ export class ItemAutocomplete extends InteractionHandler {
 		return results
 			.toSorted((a, b) => b.similarity - a.similarity)
 			.slice(0, 20)
-			.map<ApplicationCommandOptionChoiceData>(result => ({ name: `${result.name}`, value: result.id }));
+			.map<ApplicationCommandOptionChoiceData>(result => ({ name: `${result.displayName}`, value: result.name }));
 	}
 }

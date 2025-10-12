@@ -35,9 +35,7 @@ export async function handleDeposit(
 
 	const money = Math.min(amountToDeposit, canDeposit, data.wallet);
 	if (money <= 0) {
-		return err(
-			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }),
-		);
+		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to deposit.' }));
 	}
 
 	const next = await container.prisma.user.update({
@@ -78,9 +76,7 @@ export async function handleWithdraw(
 
 	const money = Math.min(amountToWithdraw, canWithdraw, data.bankBalance);
 	if (money <= 0) {
-		return err(
-			new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }),
-		);
+		return err(new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to withdraw.' }));
 	}
 
 	const next = await container.prisma.user.update({
@@ -172,8 +168,8 @@ export async function handleBuy(
 			wallet: { decrement: item.price * amount },
 			Inventory: {
 				upsert: {
-					where: { userId_itemId: { userId: interaction.user.id, itemId: item.id } },
-					create: { itemId: item.id, quantity: amount },
+					where: { userId_itemId: { userId: interaction.user.id, itemId: item.name } },
+					create: { itemId: item.name, quantity: amount },
 					update: { quantity: { increment: amount } },
 				},
 			},
