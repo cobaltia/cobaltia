@@ -69,11 +69,11 @@ export class RobCommand extends Command {
 		victim: PrismaUser,
 		user: User,
 	) {
-		if (victim.wallet <= 0) {
+		if (victim.wallet.lessThanOrEqualTo(0)) {
 			throw new UserError({ identifier: 'NoMoney', message: 'You cannot rob someone with no money.' });
 		}
 
-		const amount = Math.floor(Math.random() * victim.wallet);
+		const amount = Math.floor(Math.random() * victim.wallet.toNumber());
 		const bounty = Math.floor(amount * 0.2);
 
 		const embed = new EmbedBuilder();
@@ -163,7 +163,7 @@ export class RobCommand extends Command {
 
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
-			data: { wallet: robber.wallet < 0 ? robber.wallet : 0, bounty: 0 },
+			data: { wallet: robber.wallet.lessThan(0) ? robber.wallet : 0, bounty: 0 },
 		});
 
 		this.container.metrics.incrementMoneyEarned({
@@ -172,7 +172,7 @@ export class RobCommand extends Command {
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'bounty_claim',
-			value: robber.bounty,
+			value: robber.bounty.toNumber(),
 		});
 
 		this.container.metrics.incrementMoneyLost({
@@ -181,7 +181,7 @@ export class RobCommand extends Command {
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'death',
-			value: robber.wallet < 0 ? robber.wallet : 0,
+			value: robber.wallet.lessThan(0) ? robber.wallet.toNumber() : 0,
 		});
 
 		return `You tried to rob ${victim} but they fought back and killed you. They claimed your bounty of ${formatMoney(
@@ -194,7 +194,7 @@ export class RobCommand extends Command {
 		if (robberResult.isErr()) throw robberResult.unwrapErr();
 		const robber = robberResult.unwrap();
 
-		const fine = Math.floor(robber.bounty * 0.2);
+		const fine = Math.floor(robber.bounty.mul(0.2).toNumber());
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
 			data: { wallet: { decrement: fine }, bounty: 0 },
@@ -237,7 +237,7 @@ export class RobCommand extends Command {
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'rob',
-			value: robber.wallet,
+			value: robber.wallet.toNumber(),
 		});
 
 		this.container.metrics.incrementMoneyEarned({
@@ -246,7 +246,7 @@ export class RobCommand extends Command {
 			guild: interaction.guildId ?? 'none',
 			channel: interaction.channelId,
 			reason: 'rob',
-			value: robber.wallet,
+			value: robber.wallet.toNumber(),
 		});
 
 		return `${victim} took advantage of your attempt to rob them and took all your money. You lost all your money.`;

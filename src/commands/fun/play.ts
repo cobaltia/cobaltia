@@ -1,3 +1,4 @@
+import { Decimal } from '@prisma/client/runtime/library';
 import { Result, UserError } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { roundNumber } from '@sapphire/utilities';
@@ -52,21 +53,23 @@ export class PlayCommand extends Subcommand {
 		if (clientResult.isErr()) throw clientResult.unwrapErr();
 		const client = clientResult.unwrap();
 
-		let amountToGamble = raw ? parseNumberWithSuffix(raw.number, raw.suffix) : 0;
+		let amountToGamble = raw ? new Decimal(parseNumberWithSuffix(raw.number, raw.suffix)) : new Decimal(0);
 		const canGamble = data.wallet;
-		if (canGamble === 0) {
+		if (canGamble.equals(0)) {
 			throw new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to gamble.' });
 		}
 
 		if (!raw && amount.toLowerCase() === 'all') amountToGamble = data.wallet;
-		if (!raw && amount.toLowerCase() === 'half') amountToGamble = roundNumber(data.wallet / 2, 2);
+		if (!raw && amount.toLowerCase() === 'half')
+			amountToGamble = new Decimal(roundNumber(data.wallet.div(2).toNumber(), 2));
 		if (!raw && amount.toLowerCase() === 'max') amountToGamble = data.wallet;
-		if (raw?.suffix === '%') amountToGamble = roundNumber(data.wallet * (amountToGamble / 100), 2);
-		if (amountToGamble > data.wallet) {
+		if (raw?.suffix === '%')
+			amountToGamble = new Decimal(roundNumber(data.wallet.mul(amountToGamble.div(100)).toNumber(), 2));
+		if (amountToGamble.lessThan(data.wallet)) {
 			throw new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to gamble.' });
 		}
 
-		if (amountToGamble < 50) {
+		if (amountToGamble.lessThan(50)) {
 			throw new UserError({
 				identifier: 'InvalidAmount',
 				message: 'I need a valid amount greater than 50 to gamble.',
@@ -82,8 +85,8 @@ export class PlayCommand extends Subcommand {
 		);
 
 		if (houseRoll < userRoll) {
-			const won = roundNumber(amountToGamble * 1.5, 2);
-			const tax = roundNumber(won * (client.tax / 100), 2);
+			const won = roundNumber(amountToGamble.mul(1.5).toNumber(), 2);
+			const tax = roundNumber(won * client.tax.div(100).toNumber(), 2);
 			await this.container.prisma.client.update({
 				where: { id: this.container.client.id! },
 				data: { bankBalance: { increment: tax } },
@@ -134,7 +137,7 @@ export class PlayCommand extends Subcommand {
 				guild: interaction.guildId ?? 'none',
 				channel: interaction.channelId,
 				reason: 'gambling',
-				value: amountToGamble,
+				value: amountToGamble.toNumber(),
 			});
 			this.container.metrics.incrementMoneyEarned({
 				command: interaction.commandName,
@@ -142,7 +145,7 @@ export class PlayCommand extends Subcommand {
 				guild: interaction.guildId ?? 'none',
 				channel: interaction.channelId,
 				reason: 'gambling',
-				value: amountToGamble,
+				value: amountToGamble.toNumber(),
 			});
 			embed
 				.setDescription(

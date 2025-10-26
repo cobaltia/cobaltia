@@ -1,4 +1,5 @@
 /* eslint-disable id-length */
+import { type Decimal } from '@prisma/client/runtime/library';
 import { isNumber, roundNumber } from '@sapphire/utilities';
 
 const suffixes = {
@@ -14,18 +15,18 @@ export type suffix = keyof typeof suffixes | '';
 // eslint-disable-next-line prefer-named-capture-group
 const NUMBER_SUFFIX = /^([\d.]+)([%bkmt]?)$/i;
 
-export function formatNumber(num: number | string) {
+export function formatNumber(num: Decimal | number | string) {
 	if (!isNumber(num)) return null;
 	return Number.parseFloat(num.toString()).toLocaleString('en-US');
 }
 
-export function compactNumber(num: number | string) {
+export function compactNumber(num: Decimal | number | string) {
 	if (!isNumber(num)) return null;
 	const number = Number.parseFloat(num.toString());
 	return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(number);
 }
 
-export function formatMoney(num: number | string, compact = false) {
+export function formatMoney(num: Decimal | number | string, compact = false) {
 	const result = compact ? compactNumber(num) : formatNumber(num);
 	return result === null ? null : `₡ ${result}`;
 }

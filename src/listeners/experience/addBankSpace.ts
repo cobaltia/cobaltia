@@ -39,7 +39,7 @@ export class AddBankSpaceListener extends Listener<typeof Events.MessageCreate> 
 
 		await this.container.prisma.user.update({
 			where: { id: message.author.id },
-			data: { bankLimit: data.bankLimit + total },
+			data: { bankLimit: data.bankLimit.add(total) },
 		});
 
 		ratelimit.consume();
