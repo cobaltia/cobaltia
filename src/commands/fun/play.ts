@@ -65,7 +65,7 @@ export class PlayCommand extends Subcommand {
 		if (!raw && amount.toLowerCase() === 'max') amountToGamble = data.wallet;
 		if (raw?.suffix === '%')
 			amountToGamble = new Decimal(roundNumber(data.wallet.mul(amountToGamble.div(100)).toNumber(), 2));
-		if (amountToGamble > data.wallet) {
+		if (amountToGamble.lessThan(data.wallet)) {
 			throw new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to gamble.' });
 		}
 
@@ -148,9 +148,7 @@ export class PlayCommand extends Subcommand {
 				value: amountToGamble.toNumber(),
 			});
 			embed
-				.setDescription(
-					`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`,
-				)
+				.setDescription(`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`)
 				.setColor(Colors.Red);
 		}
 
