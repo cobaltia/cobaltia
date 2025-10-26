@@ -37,6 +37,7 @@ export class PlayCommand extends Subcommand {
 	public async chatInputGamble(interaction: Subcommand.ChatInputCommandInteraction) {
 		const amount = interaction.options.getString('amount', true);
 		const raw = getNumberWithSuffix(amount);
+		// TODO(Isidro): bug with sending a number
 		if ((!options.has(amount.toLowerCase()) && raw === null) || (raw && raw.suffix !== '%' && raw.number < 50)) {
 			throw new UserError({
 				identifier: 'InvalidAmount',
@@ -148,9 +149,7 @@ export class PlayCommand extends Subcommand {
 				value: amountToGamble.toNumber(),
 			});
 			embed
-				.setDescription(
-					`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`,
-				)
+				.setDescription(`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`)
 				.setColor(Colors.Red);
 		}
 

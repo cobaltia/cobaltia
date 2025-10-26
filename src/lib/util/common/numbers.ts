@@ -16,11 +16,15 @@ export type suffix = keyof typeof suffixes | '';
 const NUMBER_SUFFIX = /^([\d.]+)([%bkmt]?)$/i;
 
 export function formatNumber(num: Decimal | number | string) {
+	// eslint-disable-next-line no-param-reassign
+	if (isPrismaDecimal(num)) num = num.toNumber();
 	if (!isNumber(num)) return null;
 	return Number.parseFloat(num.toString()).toLocaleString('en-US');
 }
 
 export function compactNumber(num: Decimal | number | string) {
+	// eslint-disable-next-line no-param-reassign
+	if (isPrismaDecimal(num)) num = num.toNumber();
 	if (!isNumber(num)) return null;
 	const number = Number.parseFloat(num.toString());
 	return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(number);
@@ -56,4 +60,8 @@ export function pickWeightedRandom(weights: number[]) {
 	}
 
 	return list[Math.floor(Math.random() * list.length)];
+}
+
+function isPrismaDecimal(val: unknown): val is Decimal {
+	return val !== null && typeof val === 'object' && 'toNumber' in val && typeof (val as any).toNumber === 'function';
 }
