@@ -31,7 +31,6 @@ model Guild {
 
 model User {
   id              String            @id @db.VarChar(20)
-  guilds          String[]          @map("guilds")
   bankBalance     Decimal           @default(0) @map("bank_balance")
   bankLimit       Decimal           @default(1000) @map("bank_limit")
   wallet          Decimal           @default(0) @map("wallet")
