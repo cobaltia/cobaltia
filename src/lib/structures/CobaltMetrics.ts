@@ -1,4 +1,5 @@
 /* eslint-disable typescript-sort-keys/interface */
+import { Decimal } from '@prisma/client/runtime/library';
 import { getTotalMoneyUsers } from '@prisma/client/sql';
 import { container } from '@sapphire/framework';
 import { Counter, Gauge, register } from 'prom-client';
@@ -260,10 +261,11 @@ export class CobaltMetrics {
 						id: container.client.user!.id,
 					},
 				});
-				const total =
-					(result[0].total_money ? result[0].total_money : 0) +
-					(clientResult?.bankBalance ? clientResult.bankBalance.toNumber() : 0);
-				this.set(total);
+
+				const totalMoney = result[0].total_money ? new Decimal(result[0].total_money) : new Decimal(0);
+				const clientMoney = clientResult?.bankBalance ? clientResult.bankBalance : new Decimal(0);
+				const total = totalMoney.add(clientMoney);
+				this.set(total.toNumber());
 			},
 		});
 
