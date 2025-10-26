@@ -38,7 +38,10 @@ export class PlayCommand extends Subcommand {
 		const amount = interaction.options.getString('amount', true);
 		const raw = getNumberWithSuffix(amount);
 		// TODO(Isidro): bug with sending a number
-		if ((!options.has(amount.toLowerCase()) && raw === null) || (raw && raw.suffix !== '%' && raw.number < 50)) {
+		if (
+			(!options.has(amount.toLowerCase()) && raw === null) ||
+			(raw && raw.suffix !== '%' && parseNumberWithSuffix(raw.number, raw.suffix) < 50)
+		) {
 			throw new UserError({
 				identifier: 'InvalidAmount',
 				message: 'I need a valid amount greater than or equal to 50 to gamble.',
@@ -66,7 +69,7 @@ export class PlayCommand extends Subcommand {
 		if (!raw && amount.toLowerCase() === 'max') amountToGamble = data.wallet;
 		if (raw?.suffix === '%')
 			amountToGamble = new Decimal(roundNumber(data.wallet.mul(amountToGamble.div(100)).toNumber(), 2));
-		if (amountToGamble.lessThan(data.wallet)) {
+		if (amountToGamble.greaterThan(data.wallet)) {
 			throw new UserError({ identifier: 'NotEnoughMoney', message: 'You do not have enough money to gamble.' });
 		}
 
@@ -149,7 +152,9 @@ export class PlayCommand extends Subcommand {
 				value: amountToGamble.toNumber(),
 			});
 			embed
-				.setDescription(`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`)
+				.setDescription(
+					`You lost ${formatMoney(amountToGamble)}.\n\nYour new balance is ${formatMoney(next.wallet)}.`,
+				)
 				.setColor(Colors.Red);
 		}
 
