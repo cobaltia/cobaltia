@@ -33,7 +33,7 @@ async function getMoney(data: PrismaUser) {
 		`Wallet: ${inlineCode(formatMoney(data.wallet, true)!)}`,
 		`Bank: ${inlineCode(formatMoney(data.bankBalance, true)!)}`,
 		`Inventory: ${inlineCode(formatMoney(inventoryNetwork, true)!)}`,
-		`Net: ${inlineCode(formatMoney(data.wallet + data.bankBalance + inventoryNetwork, true)!)}`,
+		`Net: ${inlineCode(formatMoney(data.wallet.add(data.bankBalance).add(inventoryNetwork), true)!)}`,
 		`Bounty: ${inlineCode(formatMoney(data.bounty, true)!)}`,
 	];
 	return content.join('\n');

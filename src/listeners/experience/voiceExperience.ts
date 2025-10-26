@@ -83,7 +83,7 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 		await this.container.prisma.user.update({
 			where: { id: data.id },
 			data: {
-				wallet: data.wallet + total,
+				wallet: data.wallet.add(total),
 				Voice: {
 					create: {
 						channelId: previous.channelId!,

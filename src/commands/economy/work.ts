@@ -35,7 +35,7 @@ export class WorkCommand extends Command {
 		}
 
 		const money = roundNumber(200 + Math.random() * 150, 2);
-		const tax = roundNumber(money * (client.tax / 100), 2);
+		const tax = roundNumber(money * client.tax.div(100).toNumber(), 2);
 
 		const toAdd = Time.Hour * 12;
 		const newCooldown = new Date(now + toAdd);

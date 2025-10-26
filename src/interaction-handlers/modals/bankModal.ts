@@ -65,7 +65,7 @@ export class BankModalHandler extends InteractionHandler {
 				{ name: 'Wallet', value: formatMoney(next.wallet)!, inline: true },
 				{ name: 'Bank', value: formatMoney(next.bankBalance)!, inline: true },
 				{ name: 'Bank Space', value: formatMoney(next.bankLimit)!, inline: true },
-				{ name: 'Total Net', value: formatMoney(next.wallet + next.bankBalance)!, inline: true },
+				{ name: 'Total Net', value: formatMoney(next.wallet.add(next.bankBalance))!, inline: true },
 			);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
@@ -74,12 +74,12 @@ export class BankModalHandler extends InteractionHandler {
 					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Deposit')
 					.setCustomId(`button:bank:deposit:${interaction.user.id}`)
-					.setDisabled(next.wallet === 0),
+					.setDisabled(next.wallet.equals(0)),
 				new ButtonBuilder()
 					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Withdraw')
 					.setCustomId(`button:bank:withdraw:${interaction.user.id}`)
-					.setDisabled(next.bankBalance === 0),
+					.setDisabled(next.bankBalance.equals(0)),
 			),
 		];
 
@@ -116,7 +116,7 @@ export class BankModalHandler extends InteractionHandler {
 				{ name: 'Wallet', value: formatMoney(next.wallet)!, inline: true },
 				{ name: 'Bank', value: formatMoney(next.bankBalance)!, inline: true },
 				{ name: 'Bank Space', value: formatMoney(next.bankLimit)!, inline: true },
-				{ name: 'Total Net', value: formatMoney(next.wallet + next.bankBalance)!, inline: true },
+				{ name: 'Total Net', value: formatMoney(next.wallet.add(next.bankBalance))!, inline: true },
 			);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
@@ -125,12 +125,12 @@ export class BankModalHandler extends InteractionHandler {
 					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Deposit')
 					.setCustomId(`button:bank:deposit:${interaction.user.id}`)
-					.setDisabled(next.wallet === 0),
+					.setDisabled(next.wallet.equals(0)),
 				new ButtonBuilder()
 					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Withdraw')
 					.setCustomId(`button:bank:withdraw:${interaction.user.id}`)
-					.setDisabled(next.bankBalance === 0),
+					.setDisabled(next.bankBalance.equals(0)),
 			),
 		];
 

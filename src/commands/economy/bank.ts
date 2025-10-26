@@ -105,7 +105,7 @@ export class BankCommand extends Subcommand {
 				{ name: 'Wallet', value: formatMoney(data.wallet)!, inline: true },
 				{ name: 'Bank', value: formatMoney(data.bankBalance)!, inline: true },
 				{ name: 'Bank Space', value: formatMoney(data.bankLimit)!, inline: true },
-				{ name: 'Total Net', value: formatMoney(data.wallet + data.bankBalance)!, inline: true },
+				{ name: 'Total Net', value: formatMoney(data.wallet.add(data.bankBalance))!, inline: true },
 			);
 
 		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
@@ -114,12 +114,12 @@ export class BankCommand extends Subcommand {
 					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Deposit')
 					.setCustomId(`button:bank:deposit:${interaction.user.id}`)
-					.setDisabled(data.wallet === 0),
+					.setDisabled(data.wallet.equals(0)),
 				new ButtonBuilder()
 					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Withdraw')
 					.setCustomId(`button:bank:withdraw:${interaction.user.id}`)
-					.setDisabled(data.bankBalance === 0),
+					.setDisabled(data.bankBalance.equals(0)),
 			),
 		];
 

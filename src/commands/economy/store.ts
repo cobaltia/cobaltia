@@ -71,7 +71,8 @@ export class StoreCommand extends Subcommand {
 
 		if (result.isErr()) throw result.unwrapErr();
 
-		if (data.wallet < storeItem.price) return interaction.reply('You do not have enough money to buy this item.');
+		if (data.wallet.lessThan(storeItem.price))
+			return interaction.reply('You do not have enough money to buy this item.');
 
 		this.container.metrics.incrementItemBought({
 			item: storeItem.name,
