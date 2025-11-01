@@ -9,7 +9,6 @@ WORKDIR /bot
 
 COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node package.json .
-COPY ./.env ./.env
 
 FROM base as builder
 
