@@ -26,7 +26,6 @@ RUN pnpm run build
 
 FROM builder as runner
 
-FROM root
 RUN apt-get update && apt-get install -y curl
 
 ENV NODE_ENV="production"
