@@ -34,3 +34,5 @@ jobs:
           tags: |
             ghcr.io/cobaltia/cobaltia:latest
             ghcr.io/cobaltia/cobaltia:${{ github.sha }}
+          build-args: |
+            DATABASE_URL=${{ secrets.BUILD_DATABASE_URL }}
