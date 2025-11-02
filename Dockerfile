@@ -16,6 +16,9 @@ COPY --chown=node:node tsconfig.base.json .
 COPY --chown=node:node src/ src/
 COPY --chown=node:node prisma/ prisma/
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm exec prisma generate
 RUN pnpm exec prisma generate --sql
