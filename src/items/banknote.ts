@@ -9,7 +9,7 @@ export class BanknoteItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
 		super(context, {
 			...options,
-			displayName: 'banknote',
+			displayName: 'Banknote',
 			description: 'A banknote that can be exchanged for bank space.',
 			price: 999.99,
 			icon: '💰',
