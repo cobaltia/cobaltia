@@ -1,15 +1,15 @@
 import { Item } from '#lib/structures/Item';
 
-export class CobuckItem extends Item {
+export class CandyCaneItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
 		super(context, {
 			...options,
-			displayName: 'Cobuck',
+			displayName: 'Candy Cane',
 			collectible: true,
-			description: 'Wait what physical cobuck money?',
-			price: 1,
-			sellPrice: 1,
-			icon: '💵',
+			description: 'A sweet peppermint treat for the holidays!',
+			price: -1,
+			sellPrice: 10,
+			icon: '🍭',
 		});
 	}
 }

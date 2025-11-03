@@ -1,6 +1,6 @@
 import { type ApplicationCommandRegistry } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { EmbedBuilder, bold, inlineCode } from 'discord.js';
+import { EmbedBuilder, MessageFlags, bold, inlineCode } from 'discord.js';
 import { getUser } from '#lib/database';
 import { handleBuy } from '#lib/util/economy';
 import { formatMoney } from '#util/common';
@@ -44,16 +44,15 @@ export class StoreCommand extends Subcommand {
 	public async chatInputView(interaction: Subcommand.ChatInputCommandInteraction) {
 		const items = this.container.stores.get('items');
 
-		const embed = new EmbedBuilder()
-			.setTitle('Item Shop')
-			.setDescription(
-				items
-					.map(
-						item =>
-							`${item.icon} ${bold(item.displayName)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
-					)
-					.join('\n'),
-			);
+		const embed = new EmbedBuilder().setTitle('Item Shop').setDescription(
+			items
+				.filter(item => item.price > 0)
+				.map(
+					item =>
+						`${item.icon} ${bold(item.displayName)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
+				)
+				.join('\n'),
+		);
 
 		return interaction.reply({ embeds: [embed] });
 	}
@@ -64,7 +63,10 @@ export class StoreCommand extends Subcommand {
 		const items = this.container.stores.get('items');
 
 		const storeItem = items.get(item);
-		if (!storeItem) return interaction.reply('That item does not exist.');
+		if (!storeItem)
+			return interaction.reply({ content: 'That item does not exist.', flags: MessageFlags.Ephemeral });
+		if (storeItem.price <= 0)
+			return interaction.reply({ content: 'This item cannot be bought.', flags: MessageFlags.Ephemeral });
 
 		const result = await getUser(interaction.user.id);
 		const data = result.unwrap();
