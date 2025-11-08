@@ -6,19 +6,19 @@ const port = 3000;
 const activityFeed = [
   {
     id: 1000,
-    title: 'New Photo Uploaded',
-    body: 'Alice uploaded a new photo to her album.'
+    title: "New Photo Uploaded",
+    body: "Alice uploaded a new photo to her album.",
   },
   {
     id: 2000,
-    title: 'Comment on Post',
-    body: "Bob commented on Charlie's post."
+    title: "Comment on Post",
+    body: "Bob commented on Charlie's post.",
   },
   {
     id: 13,
-    title: 'Status Update',
-    body: 'Charlie updated their status: "Excited about the new project!"'
-  }
+    title: "Status Update",
+    body: 'Charlie updated their status: "Excited about the new project!"',
+  },
 ];
 
 app.get('/feed', (req, res) => {
