@@ -46,7 +46,10 @@ export class GovernmentCommand extends Subcommand {
 								.setName('executive')
 								.setDescription('Add user to the executive group.')
 								.addUserOption(option =>
-									option.setName('user').setDescription('The user to add to the executive group').setRequired(true),
+									option
+										.setName('user')
+										.setDescription('The user to add to the executive group')
+										.setRequired(true),
 								),
 						)
 						.addSubcommand(command =>
@@ -54,7 +57,10 @@ export class GovernmentCommand extends Subcommand {
 								.setName('minister')
 								.setDescription('Add user to the minister group.')
 								.addUserOption(option =>
-									option.setName('user').setDescription('The user to add to the minister group').setRequired(true),
+									option
+										.setName('user')
+										.setDescription('The user to add to the minister group')
+										.setRequired(true),
 								),
 						),
 				)
@@ -78,7 +84,10 @@ export class GovernmentCommand extends Subcommand {
 								.setName('minister')
 								.setDescription('Remove user from the minister group')
 								.addUserOption(option =>
-									option.setName('user').setDescription('The user to remove from the minister group').setRequired(true),
+									option
+										.setName('user')
+										.setDescription('The user to remove from the minister group')
+										.setRequired(true),
 								),
 						),
 				)
