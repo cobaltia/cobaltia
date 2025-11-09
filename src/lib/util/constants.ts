@@ -51,3 +51,4 @@ export const ROLES: SelectMenuComponentOptionData[] = [
 ];
 
 export const COBALT_GUILD_ID = '322505254098698240';
+export const CONTROL_GUILD_ID = '823300821994569748';

@@ -8,7 +8,7 @@ export class SocialCreditCommand extends Subcommand {
 		super(context, {
 			...options,
 			description: 'Social Credit System',
-			preconditions: [['OwnerOnly', 'ExecutiveOnly']],
+			preconditions: [['ExecutiveOnly', 'MinisterOnly']],
 			subcommands: [
 				{ name: 'add', chatInputRun: 'chatInputAdd' },
 				{ name: 'remove', chatInputRun: 'chatInputRemove' },
