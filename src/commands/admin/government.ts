@@ -46,10 +46,7 @@ export class GovernmentCommand extends Subcommand {
 								.setName('executive')
 								.setDescription('Add user to the executive group.')
 								.addUserOption(option =>
-									option
-										.setName('user')
-										.setDescription('The user to add to the executive group')
-										.setRequired(true),
+									option.setName('user').setDescription('The user to add to the executive group').setRequired(true),
 								),
 						)
 						.addSubcommand(command =>
@@ -57,10 +54,7 @@ export class GovernmentCommand extends Subcommand {
 								.setName('minister')
 								.setDescription('Add user to the minister group.')
 								.addUserOption(option =>
-									option
-										.setName('user')
-										.setDescription('The user to add to the minister group')
-										.setRequired(true),
+									option.setName('user').setDescription('The user to add to the minister group').setRequired(true),
 								),
 						),
 				)
@@ -84,10 +78,7 @@ export class GovernmentCommand extends Subcommand {
 								.setName('minister')
 								.setDescription('Remove user from the minister group')
 								.addUserOption(option =>
-									option
-										.setName('user')
-										.setDescription('The user to remove from the minister group')
-										.setRequired(true),
+									option.setName('user').setDescription('The user to remove from the minister group').setRequired(true),
 								),
 						),
 				)
@@ -99,13 +90,11 @@ export class GovernmentCommand extends Subcommand {
 		await interaction.deferReply({ ephemeral: true });
 		const user = interaction.options.getUser('user', true);
 
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.client.findUniqueOrThrow({ where: { id: this.container.client.id! } }),
-		);
+		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));
 
 		if (result.isErr()) throw result.unwrapErr();
 		const clientData = result.unwrap();
-		const checkExecutive = clientData.executives.find(id => id === user.id);
+		const checkExecutive = clientData.executives.includes(user.id);
 
 		if (checkExecutive) return interaction.editReply(`${user.tag} is already an executive.`);
 
@@ -123,13 +112,11 @@ export class GovernmentCommand extends Subcommand {
 		await interaction.deferReply({ ephemeral: true });
 		const user = interaction.options.getUser('user', true);
 
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.client.findUniqueOrThrow({ where: { id: this.container.client.id! } }),
-		);
+		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));
 
 		if (result.isErr()) throw result.unwrapErr();
 		const clientData = result.unwrap();
-		const checkMinister = clientData.ministers.find(id => id === user.id);
+		const checkMinister = clientData.ministers.includes(user.id);
 
 		if (checkMinister) return interaction.editReply(`${user.tag} is already a minister.`);
 
@@ -147,13 +134,11 @@ export class GovernmentCommand extends Subcommand {
 		await interaction.deferReply({ ephemeral: true });
 		const user = interaction.options.getUser('user', true);
 
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.client.findUniqueOrThrow({ where: { id: this.container.client.id! } }),
-		);
+		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));
 
 		if (result.isErr()) throw result.unwrapErr();
 		const clientData = result.unwrap();
-		const checkExecutive = clientData.executives.find(id => id === user.id);
+		const checkExecutive = clientData.executives.includes(user.id);
 
 		if (!checkExecutive) return interaction.editReply(`${user.tag} is not an executive.`);
 
@@ -177,7 +162,7 @@ export class GovernmentCommand extends Subcommand {
 
 		if (result.isErr()) throw result.unwrapErr();
 		const clientData = result.unwrap();
-		const checkMinister = clientData.ministers.find(id => id === user.id);
+		const checkMinister = clientData.ministers.includes(user.id);
 
 		if (!checkMinister) return interaction.editReply(`${user.tag} is not a minister.`);
 

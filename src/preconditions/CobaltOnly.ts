@@ -3,7 +3,7 @@ import { type ContextMenuCommandInteraction, type CommandInteraction } from 'dis
 import { COBALT_GUILD_ID, CONTROL_GUILD_ID } from '#lib/util/constants';
 
 export class CobaltOnlyPrecondition extends Precondition {
-	#mesage = 'This command can only be used in the Cobalt Network server.';
+	#message = 'This command can only be used in the Cobalt Network server.';
 
 	public override async chatInputRun(interaction: CommandInteraction) {
 		return this.doCobaltCheck(interaction);
@@ -16,7 +16,7 @@ export class CobaltOnlyPrecondition extends Precondition {
 	private async doCobaltCheck(interaction: CommandInteraction | ContextMenuCommandInteraction) {
 		const guildId = interaction.guildId;
 		const allowedGuilds = [COBALT_GUILD_ID, CONTROL_GUILD_ID];
-		if (!allowedGuilds.includes(guildId!)) return this.error({ message: this.#mesage });
+		if (!allowedGuilds.includes(guildId!)) return this.error({ message: this.#message });
 		return this.ok();
 	}
 }
