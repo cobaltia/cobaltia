@@ -12,9 +12,11 @@ datasource db {
 }
 
 model Client {
-  id          String  @id @db.VarChar(20)
-  bankBalance Decimal @default(0) @map("bank_balance")
-  tax         Decimal @default(7) @map("tax")
+  id          String   @id @db.VarChar(20)
+  bankBalance Decimal  @default(0) @map("bank_balance")
+  tax         Decimal  @default(7) @map("tax")
+  executives  String[] @default([]) @map("executives")
+  ministers   String[] @default([]) @map("ministers")
 
   @@map("client")
 }
