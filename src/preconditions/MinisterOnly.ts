@@ -12,14 +12,14 @@ export class MinisterOnlyPrecondition extends Precondition {
 		return this.doMinisterCheck(interaction.user);
 	}
 
-	private async doMinisterCheck(userId: User) {
+	private async doMinisterCheck(user: User) {
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.client.findUniqueOrThrow({ where: { id: this.container.client.id! } }),
 		);
 		if (result.isErr()) return this.error({ message: "Couldn't connect to the database" });
 
 		const clientData = result.unwrap();
-		const isMinister = clientData.ministers.find(id => id === userId.id);
+		const isMinister = clientData.ministers.find(id => id === user.id);
 		if (!isMinister) return this.error({ message: this.#message });
 		return this.ok();
 	}
