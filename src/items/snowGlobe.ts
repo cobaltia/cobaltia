@@ -8,7 +8,7 @@ export class SnowGlobeItem extends Item {
 			collectible: true,
 			description: 'A beautiful snow globe that captures the essence of winter.',
 			price: -1,
-			sellPrice: 30,
+			sellPrice: 50,
 			icon: '❄️',
 		});
 	}

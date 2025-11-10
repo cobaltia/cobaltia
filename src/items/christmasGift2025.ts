@@ -3,6 +3,7 @@ import { bold, inlineCode, type ChatInputCommandInteraction } from 'discord.js';
 import { Item } from '#lib/structures/Item';
 import { type ItemPayload } from '#lib/types';
 import { getInventory } from '#lib/util/functions/inventoryHelper';
+import { pickWeightedRandom } from '#util/common';
 
 export class ChristmasGiftItem2025 extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
@@ -32,12 +33,14 @@ export class ChristmasGiftItem2025 extends Item {
 			return interaction.followUp('You do not have enough Christmas gifts to open.');
 		}
 
-		const giftOptions = ['candyCane', 'santaHat', 'snowGlobe', 'banknote'];
+		const giftOptions = ['candyCane', 'santaHat', 'snowGlobe', 'banknote', 'goldenNutcracker'];
+		const giftWeights = [40, 20, 28, 10, 2];
 		const itemStore = this.container.stores.get('items');
 		const received: Record<string, number> = {};
 
 		for (let ii = 0; ii < context.amount; ii++) {
-			const selectedGift = giftOptions[Math.floor(Math.random() * giftOptions.length)];
+			const index = pickWeightedRandom(giftWeights);
+			const selectedGift = giftOptions[index];
 			received[selectedGift] = (received[selectedGift] ?? 0) + 1;
 		}
 

@@ -8,7 +8,7 @@ export class SantaHatItem extends Item {
 			collectible: true,
 			description: 'Wear this to feel the Christmas spirit!',
 			price: -1,
-			sellPrice: 50,
+			sellPrice: 60,
 			icon: '🎅',
 		});
 	}

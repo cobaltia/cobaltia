@@ -8,7 +8,7 @@ export class BrokenCandyCaneItem extends Item {
 			collectible: true,
 			description: 'A candy cane that has seen better days. Still sweet, but a bit sad.',
 			price: -1,
-			sellPrice: 5,
+			sellPrice: 10,
 			icon: '🍬',
 		});
 	}

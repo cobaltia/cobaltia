@@ -8,7 +8,7 @@ export class CandyCaneItem extends Item {
 			collectible: true,
 			description: 'A sweet peppermint treat for the holidays!',
 			price: -1,
-			sellPrice: 10,
+			sellPrice: 20,
 			icon: '🍭',
 		});
 	}
