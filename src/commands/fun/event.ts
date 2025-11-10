@@ -3,6 +3,7 @@ import { Subcommand } from '@sapphire/plugin-subcommands';
 import { Result } from '@sapphire/result';
 import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
+import { bold } from 'discord.js';
 import { getUser } from '#lib/database';
 import { pickWeightedRandom } from '#util/common';
 
@@ -21,9 +22,7 @@ export class EventCommand extends Subcommand {
 			builder
 				.setName(this.name)
 				.setDescription(this.description)
-				.addSubcommand(subcommand =>
-					subcommand.setName('christmas').setDescription('Play the Christmas event game.'),
-				),
+				.addSubcommand(subcommand => subcommand.setName('christmas').setDescription('Play the Christmas event game.')),
 		);
 	}
 
@@ -57,12 +56,18 @@ export class EventCommand extends Subcommand {
 	}
 
 	private async christmasBadOutcome(data: PrismaUser) {
+		const itemStore = this.container.stores.get('items');
+		const giftOptions = ['coal', 'brokenCandyCane'];
+		const selectedGift = giftOptions[Math.floor(Math.random() * giftOptions.length)];
+		const item = itemStore.get(selectedGift);
+		if (!item) return 'Something went wrong while getting your gift...';
+
 		await this.container.prisma.inventory.upsert({
-			where: { userId_itemId: { userId: data.id, itemId: 'coal' } },
-			create: { userId: data.id, itemId: 'coal', quantity: 1 },
+			where: { userId_itemId: { userId: data.id, itemId: selectedGift } },
+			create: { userId: data.id, itemId: selectedGift, quantity: 1 },
 			update: { quantity: { increment: 1 } },
 		});
 
-		return 'You got coal in your stocking... ❄️';
+		return `You got a ${item.icon} ${bold(item.displayName)} in your stocking...`;
 	}
 }

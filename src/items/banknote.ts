@@ -11,7 +11,7 @@ export class BanknoteItem extends Item {
 			...options,
 			displayName: 'Banknote',
 			description: 'A banknote that can be exchanged for bank space.',
-			price: 999.99,
+			price: 1_000,
 			icon: '💰',
 		});
 	}
