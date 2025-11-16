@@ -1,23 +1,25 @@
 /* eslint-disable unicorn/new-for-builtins */
 import { isMessageInstance } from '@sapphire/discord.js-utilities';
 import {
+	type Command,
 	UserError,
 	type ChatInputCommandErrorPayload,
 	type ContextMenuCommandErrorPayload,
 	container,
-	type Command,
 	Events,
+	type ChatInputCommand,
 } from '@sapphire/framework';
 import type { ChatInputSubcommandErrorPayload, Subcommand } from '@sapphire/plugin-subcommands';
 import {
 	codeBlock,
 	EmbedBuilder,
-	type CommandInteraction,
 	type APIMessage,
 	type Message,
 	bold,
 	hyperlink,
 	hideLinkEmbed,
+	type ChatInputCommandInteraction,
+	type ContextMenuCommandInteraction,
 } from 'discord.js';
 import type { ErrorItemPayload } from '#lib/types';
 import { OWNERS } from '#root/config';
@@ -61,18 +63,27 @@ export async function handleChatInputOrContextMenuCommandError(
 	return undefined;
 }
 
-function generateUnexpectedErrorMessage(interaction: CommandInteraction, error: Error) {
+function generateUnexpectedErrorMessage(
+	interaction: ChatInputCommand.Interaction | ChatInputCommandInteraction | ContextMenuCommandInteraction,
+	error: Error,
+) {
 	if (OWNERS.includes(interaction.user.id)) return codeBlock('js', error.stack!);
 	return `I found an unexpected error, please report the steps you have taken to Juan.`;
 }
 
-export async function userError(interaction: CommandInteraction, error: UserError) {
+export async function userError(
+	interaction: ChatInputCommand.Interaction | ChatInputCommandInteraction | ContextMenuCommandInteraction,
+	error: UserError,
+) {
 	if (Reflect.get(Object(error.context), 'silent')) return;
 
 	return alert(interaction, error.message || unknownErrorMessage);
 }
 
-async function alert(interaction: CommandInteraction, content: string) {
+async function alert(
+	interaction: ChatInputCommand.Interaction | ChatInputCommandInteraction | ContextMenuCommandInteraction,
+	content: string,
+) {
 	if (interaction.replied || interaction.deferred) {
 		return interaction.editReply({ content, allowedMentions: { users: [interaction.user.id], roles: [] } });
 	}
@@ -84,7 +95,11 @@ async function alert(interaction: CommandInteraction, content: string) {
 	});
 }
 
-async function sendErrorChannel(interaction: CommandInteraction, command: Command | Subcommand, error: Error) {
+async function sendErrorChannel(
+	interaction: ChatInputCommand.Interaction | ChatInputCommandInteraction | ContextMenuCommandInteraction,
+	command: Command | Subcommand,
+	error: Error,
+) {
 	const webhook = container.webhookError;
 	if (!webhook) return;
 
@@ -115,7 +130,12 @@ function getCommandLine(command: Command | Subcommand) {
 	return `**Command**: ${command.location.full}`;
 }
 
-function getOptionsLine(options: CommandInteraction['options']) {
+function getOptionsLine(
+	options:
+		| ChatInputCommand.Interaction['options']
+		| ChatInputCommandInteraction['options']
+		| ContextMenuCommandInteraction['options'],
+) {
 	if (options.data.length === 0) return '**Options**: None';
 
 	const mappedOptions = [];

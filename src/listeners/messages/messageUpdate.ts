@@ -17,7 +17,7 @@ export class MessageUpdateListener extends Listener<typeof Events.MessageUpdate>
 		});
 	}
 
-	public async run(old: Message, message: Message) {
+	public async run(old: Message<true>, message: Message<true>) {
 		if (isNullish(old.content) || !isGuildMessage(message) || old.content === message.content || message.author.bot)
 			return;
 

@@ -1,7 +1,7 @@
 import { Listener } from '@sapphire/framework';
 import type { Client } from 'discord.js';
 
-export class ReadyListener extends Listener {
+export class ClientReadyListener extends Listener {
 	public run(client: Client) {
 		const logger = this.container.logger;
 		const { username, id } = client.user!;
@@ -15,9 +15,7 @@ export class ReadyListener extends Listener {
 		logger.info(`Loaded ${listeners.size} listeners`);
 		logger.info(`Loaded ${items.size} items`);
 		logger.info(
-			apiEnabled
-				? `Successfully started API on port ${client.options.api!.listenOptions?.port}`
-				: `API is disabled`,
+			apiEnabled ? `Successfully started API on port ${client.options.api!.listenOptions?.port}` : `API is disabled`,
 		);
 	}
 }
