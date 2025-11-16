@@ -15,7 +15,9 @@ export class ClientReadyListener extends Listener {
 		logger.info(`Loaded ${listeners.size} listeners`);
 		logger.info(`Loaded ${items.size} items`);
 		logger.info(
-			apiEnabled ? `Successfully started API on port ${client.options.api!.listenOptions?.port}` : `API is disabled`,
+			apiEnabled
+				? `Successfully started API on port ${client.options.api!.listenOptions?.port}`
+				: `API is disabled`,
 		);
 	}
 }
