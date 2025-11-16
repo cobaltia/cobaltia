@@ -45,7 +45,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch();
+		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.$queryRawTyped(getLocalUserWalletLeaderboard(users!.map(user => user.id))),
 		);
@@ -83,7 +83,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleBank(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch();
+		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.$queryRawTyped(getLocalUserBankLeaderboard(users!.map(user => user.id))),
 		);
@@ -121,7 +121,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleLevel(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch();
+		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users!.map(user => user.id))),
 		);
@@ -159,7 +159,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch();
+		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.$queryRawTyped(getLocalUserNetworthLeaderboard(users!.map(user => user.id))),
 		);
@@ -197,7 +197,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleSocialCredit(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch();
+		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
 		const result = await Result.fromAsync(async () =>
 			this.container.prisma.$queryRawTyped(getLocalUserSocialCreditLeaderboard(users!.map(user => user.id))),
 		);
