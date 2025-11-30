@@ -16,6 +16,7 @@ export class UserRoute extends Route {
 
 		await Promise.all(
 			client.guilds.cache.map(async guild => {
+				// TODO(Isidro): Paginate this for guilds with more than 1000 members
 				const members = await guild.members.fetch({ limit: 1_000 });
 				for (const member of members.values()) {
 					const { user } = member;

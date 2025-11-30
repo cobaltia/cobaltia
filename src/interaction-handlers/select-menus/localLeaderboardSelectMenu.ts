@@ -18,6 +18,7 @@ import {
 } from 'discord.js';
 import { formatMoney } from '#util/common';
 import { ONE_TO_TEN } from '#util/constants';
+import { fetchMembersFromCache } from '#util/functions/cache';
 
 export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	public constructor(context: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
@@ -45,9 +46,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserWalletLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.$queryRawTyped(getLocalUserWalletLeaderboard(users)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -83,9 +84,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleBank(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserBankLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.$queryRawTyped(getLocalUserBankLeaderboard(users)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -121,9 +122,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleLevel(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -159,9 +160,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserNetworthLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.$queryRawTyped(getLocalUserNetworthLeaderboard(users)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -197,9 +198,9 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleSocialCredit(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const users = await interaction.guild?.members.fetch({ limit: 1_000 });
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserSocialCreditLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.$queryRawTyped(getLocalUserSocialCreditLeaderboard(users)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 

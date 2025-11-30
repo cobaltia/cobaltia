@@ -46,7 +46,7 @@
 		"dayjs": "^1.11.13",
 		"diff": "^5.2.0",
 		"discord-api-types": "^0.37.103",
-		"discord.js": "^14.24.2",
+		"discord.js": "^14.25.1",
 		"dnd5e-dice-roller": "^0.0.13",
 		"ioredis": "^5.4.1",
 		"prom-client": "^15.1.3"

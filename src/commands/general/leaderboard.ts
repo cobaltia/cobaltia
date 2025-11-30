@@ -8,6 +8,7 @@ import {
 	StringSelectMenuBuilder,
 } from 'discord.js';
 import { ONE_TO_TEN } from '#lib/util/constants';
+import { fetchMembersFromCache } from '#lib/util/functions/cache';
 
 export class LeaderboardCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -43,9 +44,9 @@ export class LeaderboardCommand extends Command {
 	}
 
 	private async localLeaderboard(interaction: Command.ChatInputCommandInteraction) {
-		const users = await interaction.guild?.members.fetch();
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
