@@ -5,6 +5,7 @@ import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
 import { bold } from 'discord.js';
 import { getUser } from '#lib/database';
+import { ItemEmojis } from '#lib/util/constants';
 import { pickWeightedRandom } from '#util/common';
 
 export class EventCommand extends Subcommand {
@@ -22,7 +23,9 @@ export class EventCommand extends Subcommand {
 			builder
 				.setName(this.name)
 				.setDescription(this.description)
-				.addSubcommand(subcommand => subcommand.setName('christmas').setDescription('Play the Christmas event game.')),
+				.addSubcommand(subcommand =>
+					subcommand.setName('christmas').setDescription('Play the Christmas event game.'),
+				),
 		);
 	}
 
@@ -52,7 +55,7 @@ export class EventCommand extends Subcommand {
 			update: { quantity: { increment: 1 } },
 		});
 
-		return 'You found a Christmas present under the tree! 🎁';
+		return `You found a Christmas present under the tree! ${ItemEmojis.ChristmasGift2025}`;
 	}
 
 	private async christmasBadOutcome(data: PrismaUser) {

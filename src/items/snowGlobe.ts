@@ -1,4 +1,5 @@
 import { Item } from '#lib/structures/Item';
+import { ItemEmojis } from '#lib/util/constants';
 
 export class SnowGlobeItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
@@ -9,7 +10,7 @@ export class SnowGlobeItem extends Item {
 			description: 'A beautiful snow globe that captures the essence of winter.',
 			price: -1,
 			sellPrice: 50,
-			icon: '❄️',
+			icon: ItemEmojis.SnowGlobe,
 		});
 	}
 }

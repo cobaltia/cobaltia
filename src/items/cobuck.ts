@@ -1,4 +1,5 @@
 import { Item } from '#lib/structures/Item';
+import { ItemEmojis } from '#lib/util/constants';
 
 export class CobuckItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
@@ -9,7 +10,7 @@ export class CobuckItem extends Item {
 			description: 'Wait what physical cobuck money?',
 			price: 1,
 			sellPrice: 1,
-			icon: '💵',
+			icon: ItemEmojis.Cobuck,
 		});
 	}
 }

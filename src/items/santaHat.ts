@@ -1,4 +1,5 @@
 import { Item } from '#lib/structures/Item';
+import { ItemEmojis } from '#lib/util/constants';
 
 export class SantaHatItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
@@ -9,7 +10,7 @@ export class SantaHatItem extends Item {
 			description: 'Wear this to feel the Christmas spirit!',
 			price: -1,
 			sellPrice: 60,
-			icon: '🎅',
+			icon: ItemEmojis.SantaHat,
 		});
 	}
 }

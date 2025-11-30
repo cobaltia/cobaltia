@@ -2,6 +2,7 @@ import { Result } from '@sapphire/result';
 import { bold, inlineCode, type ChatInputCommandInteraction } from 'discord.js';
 import { Item } from '#lib/structures/Item';
 import { type ItemPayload } from '#lib/types';
+import { ItemEmojis } from '#lib/util/constants';
 import { getInventory } from '#lib/util/functions/inventoryHelper';
 import { pickWeightedRandom } from '#util/common';
 
@@ -13,7 +14,7 @@ export class ChristmasGiftItem2025 extends Item {
 			description: 'A festive gift to celebrate the holiday season!',
 			price: -1,
 			sellPrice: 100,
-			icon: '🎁',
+			icon: ItemEmojis.ChristmasGift2025,
 		});
 	}
 

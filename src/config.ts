@@ -58,6 +58,7 @@ export const CLIENT_OPTIONS: ClientOptions = {
 	partials: [Partials.Message, Partials.GuildMember],
 	loadDefaultErrorListeners: false,
 	loadSubcommandErrorListeners: false,
+	loadMessageCommandListeners: true,
 	defaultCooldown: {
 		delay: 5 * Time.Second,
 		limit: 1,

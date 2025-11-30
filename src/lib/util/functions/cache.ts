@@ -2,7 +2,7 @@ import { container } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { type Guild } from 'discord.js';
 
-//TODO(Isidro): refactor caching strategy to use redis hashes instead of stringified arrays
+// TODO(Isidro): refactor caching strategy to use redis hashes instead of stringified arrays
 export async function fetchMembersFromCache(guild: Guild): Promise<string[]> {
 	const { redis } = container;
 	const cacheKey = `guild:${guild.id}:members`;
