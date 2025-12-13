@@ -54,16 +54,31 @@ export const COBALT_GUILD_ID = '322505254098698240';
 export const CONTROL_GUILD_ID = '823300821994569748';
 
 export const enum ItemEmojis {
-	Banknote = '<:banknote:1444780217582489630>',
+	Banknote = 'banknote',
 	BrokenCandyCane = '🍬',
-	CandyCane = '<:candyCane:1444780219624849468>',
-	ChristmasGift2025 = '<:christmasGift2025:1444780220883140669>',
-	Coal = '<:coal:1444780222808326277>',
-	Cobuck = '<:cobuck:1444780224578322562>',
+	CandyCane = 'candyCane',
+	ChristmasGift2025 = 'christmasGift2025',
+	Coal = 'coal',
+	Cobuck = 'cobuck',
 	GoldenNutcraker = '🪆',
-	SantaHat = '<:santaHat:1444780225589411950>',
-	SnowGlobe = '<:snowGlobe:1444780227296231505>',
+	SantaHat = 'santaHat',
+	SnowGlobe = 'snowGlobe',
 
 	// eslint-disable-next-line typescript-sort-keys/string-enum
 	Default = '',
 }
+
+// export const enum ItemEmojis {
+// 	Banknote = '<:banknote:1444780217582489630>',
+// 	BrokenCandyCane = '🍬',
+// 	CandyCane = '<:candyCane:1444780219624849468>',
+// 	ChristmasGift2025 = '<:christmasGift2025:1444780220883140669>',
+// 	Coal = '<:coal:1444780222808326277>',
+// 	Cobuck = '<:cobuck:1444780224578322562>',
+// 	GoldenNutcraker = '🪆',
+// 	SantaHat = '<:santaHat:1444780225589411950>',
+// 	SnowGlobe = '<:snowGlobe:1444780227296231505>',
+
+// 	// eslint-disable-next-line typescript-sort-keys/string-enum
+// 	Default = '',
+// }

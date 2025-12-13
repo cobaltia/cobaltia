@@ -49,7 +49,7 @@ export class StoreCommand extends Subcommand {
 				.filter(item => item.price > 0)
 				.map(
 					item =>
-						`${item.icon} ${bold(item.displayName)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
+						`${item.iconEmoji} ${bold(item.displayName)} - ${inlineCode(formatMoney(item.price)!)}\n${item.description}\n`,
 				)
 				.join('\n'),
 		);

@@ -62,7 +62,7 @@ export class ChristmasGiftItem2025 extends Item {
 			.map(([itemId, count]) => {
 				const item = itemStore.get(itemId);
 				const itemName = item ? item.displayName : itemId;
-				return `You have opened ${inlineCode(count.toString())} x ${item?.icon} ${bold(itemName)}!`;
+				return `You have opened ${inlineCode(count.toString())} x ${item?.iconEmoji} ${bold(itemName)}!`;
 			})
 			.join('\n');
 

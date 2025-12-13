@@ -30,6 +30,11 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 
 	public run?(interaction: ChatInputCommandInteraction, payload: ItemPayload): Awaitable<unknown>;
 
+	public get iconEmoji() {
+		const cache = this.container.client.application?.emojis.cache;
+		return cache?.find(emoji => emoji.name === this.icon) ?? this.icon;
+	}
+
 	public override toJSON(): ItemJSON {
 		return {
 			...super.toJSON(),

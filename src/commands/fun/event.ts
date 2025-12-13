@@ -71,6 +71,6 @@ export class EventCommand extends Subcommand {
 			update: { quantity: { increment: 1 } },
 		});
 
-		return `You got a ${item.icon} ${bold(item.displayName)} in your stocking...`;
+		return `You got a ${item.iconEmoji} ${bold(item.displayName)} in your stocking...`;
 	}
 }

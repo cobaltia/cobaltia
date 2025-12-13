@@ -182,7 +182,9 @@ export class ProfileSelectMenuHandler extends InteractionHandler {
 			for (const [key, value] of inventoryMap) {
 				if (value === 0) continue;
 				const item = itemStore.get(key)!;
-				description.push(`${item.icon} ${bold(item.displayName)} - ${inlineCode(` ${formatNumber(value)!} `)}`);
+				description.push(
+					`${item.iconEmoji} ${bold(item.displayName)} - ${inlineCode(` ${formatNumber(value)!} `)}`,
+				);
 			}
 		}
 

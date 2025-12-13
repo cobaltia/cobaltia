@@ -14,7 +14,10 @@ export class TestCommand extends Command {
 
 	public async messageRun(message: Message) {
 		if ('send' in message.channel && typeof message.channel.send === 'function') {
-			await message.channel.send(ItemEmojis.Banknote);
+			const result = this.container.client.application?.emojis.cache;
+			await message.channel.send(
+				result?.find(emoji => emoji.name === ItemEmojis.Banknote)?.toString() ?? 'Emoji not found',
+			);
 		}
 	}
 }
