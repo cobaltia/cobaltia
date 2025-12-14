@@ -5,7 +5,6 @@ import { bold, type ChatInputCommandInteraction } from 'discord.js';
 import { getUser } from '#lib/database';
 import { Event } from '#lib/structures/Event';
 import { pickWeightedRandom } from '#util/common';
-import { ItemEmojis } from '#util/constants';
 
 export class Christmas2025 extends Event {
 	public constructor(context: Event.LoaderContext, options: Event.Options) {
@@ -35,13 +34,17 @@ export class Christmas2025 extends Event {
 	}
 
 	private async christmasGoodOutcome(data: PrismaUser) {
+		const itemStore = this.container.stores.get('items');
+		const item = itemStore.get('christmasGift2025');
+		if (!item) return 'Something went wrong while getting your gift...';
+
 		await this.container.prisma.inventory.upsert({
 			where: { userId_itemId: { userId: data.id, itemId: 'christmasGift2025' } },
 			create: { userId: data.id, itemId: 'christmasGift2025', quantity: 1 },
 			update: { quantity: { increment: 1 } },
 		});
 
-		return `You found a Christmas present under the tree! ${ItemEmojis.ChristmasGift2025}`;
+		return `You found a ${item.iconEmoji} ${bold(item.displayName)} present under the tree!`;
 	}
 
 	private async christmasBadOutcome(data: PrismaUser) {
