@@ -1,6 +1,5 @@
 import { Command } from '@sapphire/framework';
 import { type Message } from 'discord.js';
-import { ItemEmojis } from '#lib/util/constants';
 
 export class TestCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -14,10 +13,7 @@ export class TestCommand extends Command {
 
 	public async messageRun(message: Message) {
 		if ('send' in message.channel && typeof message.channel.send === 'function') {
-			const result = this.container.client.application?.emojis.cache;
-			await message.channel.send(
-				result?.find(emoji => emoji.name === ItemEmojis.Banknote)?.toString() ?? 'Emoji not found',
-			);
+			await message.channel.send('Test command executed successfully!');
 		}
 	}
 }

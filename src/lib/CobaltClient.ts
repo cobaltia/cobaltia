@@ -1,5 +1,6 @@
 import { SapphireClient, container } from '@sapphire/framework';
 import { CLIENT_OPTIONS } from '#root/config';
+import { EventStore } from '#structures/EventStore';
 import { ItemStore } from '#structures/ItemStore';
 
 export class CobaltClient extends SapphireClient {
@@ -7,6 +8,7 @@ export class CobaltClient extends SapphireClient {
 		super(CLIENT_OPTIONS);
 
 		container.stores.register(new ItemStore());
+		container.stores.register(new EventStore());
 		this.on('raw', (packet: any) => container.metrics.incrementEvent({ event: packet.t }));
 	}
 
