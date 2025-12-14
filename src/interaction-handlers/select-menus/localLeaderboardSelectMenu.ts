@@ -5,6 +5,7 @@ import {
 	getLocalUserSocialCreditLeaderboard,
 	getLocalUserVcTimeLeaderboard,
 	getLocalUserWalletLeaderboard,
+	getLocalInventoryLeaderboard,
 } from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
@@ -42,6 +43,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		if (value === 'networth') return this.handleNetWorth(interaction);
 		if (value === 'socialcredit') return this.handleSocialCredit(interaction);
 		if (value === 'vctime') return this.handleVcTime(interaction);
+		if (value === 'inventory') return this.handleInventory(interaction);
 	}
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
@@ -75,6 +77,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -113,6 +116,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -151,6 +155,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -189,6 +194,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -227,6 +233,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit', default: true },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -264,7 +271,62 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime', default: true },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
+			),
+		];
+
+		await interaction.editReply({ embeds: [embed], components });
+	}
+
+	public async handleInventory(interaction: StringSelectMenuInteraction) {
+		await interaction.deferUpdate();
+		const value = 'banknote';
+		const users = await fetchMembersFromCache(interaction.guild!);
+		const result = await Result.fromAsync(async () =>
+			this.container.prisma.$queryRawTyped(getLocalInventoryLeaderboard(value, users)),
+		);
+		if (result.isErr()) throw result.unwrapErr();
+
+		const data = result.unwrap();
+		const description = [];
+
+		for (const [index, itemData] of data.entries()) {
+			const user = await this.container.client.users.fetch(itemData.user_id);
+			const quantity = itemData.quantity.toString();
+			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${quantity} `)} - ${user}`);
+		}
+
+		const itemStore = this.container.stores.get('items');
+
+		const embed = new EmbedBuilder()
+			.setTitle(`Local ${itemStore.get(value)?.displayName ?? 'Item'} Leaderboard`)
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-local`).addOptions([
+					{ label: 'Wallet', value: 'wallet' },
+					{ label: 'Bank', value: 'bank' },
+					{ label: 'Net Worth', value: 'networth' },
+					{ label: 'Level', value: 'level' },
+					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory', default: true },
+				]),
+			),
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-local-inventory`).addOptions(
+					itemStore.sort().map(item => ({
+						emoji:
+							typeof item.iconEmoji === 'object' ? { id: item.iconEmoji.id } : { name: item.iconEmoji },
+						label: item.displayName,
+						description: item.description.slice(0, 100),
+						value: item.name,
+						default: item.name === value,
+					})),
+				),
 			),
 		];
 
