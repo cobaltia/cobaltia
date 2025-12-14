@@ -1,7 +1,7 @@
 import { getLocalInventoryLeaderboard } from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
-import type {
-	MessageActionRowComponentBuilder,
+import {
+	type MessageActionRowComponentBuilder,
 	ActionRowBuilder,
 	EmbedBuilder,
 	inlineCode,
