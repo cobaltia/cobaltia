@@ -3,7 +3,7 @@ import {
 	type ChatInputCommandSuccessPayload,
 	type ContextMenuCommandSuccessPayload,
 } from '@sapphire/framework';
-import type { RunSuccessEventPayload, type RunSuccessItemPayload } from '#lib/types';
+import type { RunSuccessEventPayload, RunSuccessItemPayload } from '#lib/types';
 
 export function handleChatInputOrContextMenuCommandSuccess(
 	payload: ChatInputCommandSuccessPayload | ContextMenuCommandSuccessPayload,

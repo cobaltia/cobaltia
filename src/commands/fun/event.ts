@@ -17,7 +17,7 @@ export class EventCommand extends Command {
 				.setName(this.name)
 				.setDescription(this.description)
 				.addStringOption(option =>
-					option.setName('event').setDescription('The event to play').setRequired(true),
+					option.setName('event').setDescription('The event to play').setRequired(true).setAutocomplete(true),
 				),
 		);
 	}
