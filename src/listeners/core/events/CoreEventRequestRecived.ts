@@ -1,4 +1,4 @@
-import { Listener } from '@sapphire/framework';
+import { Listener, Result } from '@sapphire/framework';
 import { Events } from '#lib/types';
 
 export class CoreEventRequestRecived extends Listener<typeof Events.EventRequestReceived> {
@@ -6,7 +6,7 @@ export class CoreEventRequestRecived extends Listener<typeof Events.EventRequest
 		super(context, { event: Events.EventRequestReceived });
 	}
 
-	public run(eventName: string, interaction: any) {
+	public async run(eventName: string, interaction: any) {
 		const { client, stores } = this.container;
 		const eventStore = stores.get('events');
 		const event = eventStore.get(eventName);
@@ -16,7 +16,16 @@ export class CoreEventRequestRecived extends Listener<typeof Events.EventRequest
 			return;
 		}
 
-		if (!event.enabled) {
+		let enabled = false;
+		const result = await Result.fromAsync(async () =>
+			this.container.prisma.event.findFirst({ where: { name: event.name } }),
+		);
+		if (result.isErr()) enabled = false;
+
+		const eventData = result.unwrap();
+		enabled = eventData ? eventData.enabled : false;
+
+		if (!enabled) {
 			client.emit(Events.EventDenied, 'This event is currently not enabled', {
 				event,
 				interaction,

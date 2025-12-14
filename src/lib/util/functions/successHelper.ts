@@ -3,7 +3,7 @@ import {
 	type ChatInputCommandSuccessPayload,
 	type ContextMenuCommandSuccessPayload,
 } from '@sapphire/framework';
-import { type RunSuccessItemPayload } from '#lib/types';
+import type { RunSuccessEventPayload, type RunSuccessItemPayload } from '#lib/types';
 
 export function handleChatInputOrContextMenuCommandSuccess(
 	payload: ChatInputCommandSuccessPayload | ContextMenuCommandSuccessPayload,
@@ -57,4 +57,20 @@ export function handleItemSuccess(payload: RunSuccessItemPayload) {
 	});
 
 	container.logger.info(`${author} - ${itemName} (${runTime})`);
+}
+
+function getSuccessEventData({ interaction, event, duration }: RunSuccessEventPayload) {
+	const eventName = event.name;
+	const author = `${interaction.user.username} [${interaction.user.id}]`;
+	const runTime = getDuration(duration);
+
+	return { eventName, author, runTime };
+}
+
+export function handleEventSuccess(payload: RunSuccessEventPayload) {
+	const { eventName, author, runTime } = getSuccessEventData(payload);
+
+	// TODO(Isidro): Add metrics for event success when applicable
+
+	container.logger.info(`${author} - ${eventName} (${runTime})`);
 }

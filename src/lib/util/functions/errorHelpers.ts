@@ -21,7 +21,7 @@ import {
 	type ChatInputCommandInteraction,
 	type ContextMenuCommandInteraction,
 } from 'discord.js';
-import type { ErrorItemPayload } from '#lib/types';
+import type { ErrorEventPayload, ErrorItemPayload } from '#lib/types';
 import { OWNERS } from '#root/config';
 import { Colors } from '#util/constants';
 
@@ -165,6 +165,27 @@ export async function handleItemRunError(error: Error, payload: ErrorItemPayload
 	}
 
 	logger.fatal(`[ITEM] ${item.location.full}\n${error.stack ?? error.message}`);
+
+	try {
+		await alert(interaction, generateUnexpectedErrorMessage(interaction, error));
+	} catch (error) {
+		client.emit(Events.Error, error as Error);
+	}
+
+	return undefined;
+}
+
+export async function handleEventRunError(error: Error, payload: ErrorEventPayload) {
+	const { client, logger } = container;
+	const { interaction, event } = payload;
+
+	if (error instanceof UserError) return userError(interaction, error);
+
+	if (error.name === 'AbortError' || error.message === 'Internal Server Error') {
+		return alert(interaction, 'I had a small network hiccup. Please try again.');
+	}
+
+	logger.fatal(`[EVENT] ${event.location.full}\n${error.stack ?? error.message}`);
 
 	try {
 		await alert(interaction, generateUnexpectedErrorMessage(interaction, error));
