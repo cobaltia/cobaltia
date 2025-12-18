@@ -23,6 +23,9 @@ importers:
       '@sapphire/plugin-api':
         specifier: ^8.0.0
         version: 8.0.0
+      '@sapphire/plugin-pattern-commands':
+        specifier: ^6.0.3
+        version: 6.0.3
       '@sapphire/plugin-subcommands':
         specifier: ^7.0.1
         version: 7.0.1
@@ -736,6 +739,10 @@ packages:
 
   '@sapphire/plugin-api@8.0.0':
     resolution: {integrity: sha512-9PTXqcFMSGxVI+siCTdsFRIBEnlgJ6JvyHIliMRe/aaf/KARDoSbD4N8/HVIrZKQLEO1ktnw3kMh9rAWWx9P5g==}
+    engines: {node: '>=v18', npm: '>=7'}
+
+  '@sapphire/plugin-pattern-commands@6.0.3':
+    resolution: {integrity: sha512-As2KfC/h8aPZuYRsJrDabdprRrNpUr7qZwzxjbC21GPBp1evfrRXCvugJQStAof9ms1Hm3aZRJDrtxSPrlg7XQ==}
     engines: {node: '>=v18', npm: '>=7'}
 
   '@sapphire/plugin-subcommands@7.0.1':
@@ -4437,6 +4444,8 @@ snapshots:
       cookie-es: 1.2.2
       tldts: 6.1.82
       undici: 7.4.0
+
+  '@sapphire/plugin-pattern-commands@6.0.3': {}
 
   '@sapphire/plugin-subcommands@7.0.1':
     dependencies:

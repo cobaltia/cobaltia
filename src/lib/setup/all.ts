@@ -6,3 +6,4 @@ import '#lib/setup/registry';
 import '#lib/setup/metrics';
 import '@sapphire/plugin-subcommands/register';
 import '@sapphire/plugin-api/register';
+import '@sapphire/plugin-pattern-commands/register';
