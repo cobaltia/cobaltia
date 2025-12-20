@@ -1,4 +1,5 @@
 import { Listener, Result } from '@sapphire/framework';
+import { type ChatInputCommandInteraction } from 'discord.js';
 import { Events } from '#lib/types';
 
 export class CoreEventRequestReceived extends Listener<typeof Events.EventRequestReceived> {
@@ -6,7 +7,7 @@ export class CoreEventRequestReceived extends Listener<typeof Events.EventReques
 		super(context, { event: Events.EventRequestReceived });
 	}
 
-	public async run(eventName: string, interaction: any) {
+	public async run(eventName: string, interaction: ChatInputCommandInteraction) {
 		const { client, stores } = this.container;
 		const eventStore = stores.get('events');
 		const event = eventStore.get(eventName);

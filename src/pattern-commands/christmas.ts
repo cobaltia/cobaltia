@@ -14,7 +14,6 @@ export class ChristmasPatternCommand extends PatternCommand {
 		super(context, {
 			...options,
 			aliases: ['christmas'],
-			// TODO: Verify that this is dynamic and not staticlly setting the value at startup
 			chance: new Date().getUTCMonth() === 11 && new Date().getUTCDate() === 25 ? 50 : 10,
 			description: 'A chance to get some presents!',
 		});
