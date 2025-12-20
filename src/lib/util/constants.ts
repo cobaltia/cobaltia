@@ -55,7 +55,7 @@ export const CONTROL_GUILD_ID = '823300821994569748';
 
 export const enum ItemEmojis {
 	Banknote = 'banknote',
-	BrokenCandyCane = '🍬',
+	BrokenCandyCane = 'brokenCandyCane',
 	CandyCane = 'candyCane',
 	ChristmasGift2025 = 'christmasGift2025',
 	Coal = 'coal',
