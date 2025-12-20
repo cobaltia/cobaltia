@@ -1,4 +1,3 @@
-import { getLocalInventoryLeaderboard } from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import {
 	type MessageActionRowComponentBuilder,
@@ -30,7 +29,15 @@ export class LocalInventoryLeaderboardSelectMenu extends InteractionHandler {
 		const value = interaction.values[0];
 		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalInventoryLeaderboard(value, users)),
+			this.container.prisma.inventory.findMany({
+				where: {
+					itemId: value,
+					userId: { in: users },
+					quantity: { gt: 0 },
+				},
+				take: 10,
+				orderBy: { quantity: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -38,12 +45,17 @@ export class LocalInventoryLeaderboardSelectMenu extends InteractionHandler {
 		const description = [];
 
 		for (const [index, itemData] of data.entries()) {
-			const user = await this.container.client.users.fetch(itemData.user_id);
+			const user = await this.container.client.users.fetch(itemData.userId);
 			const quantity = itemData.quantity.toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${quantity} `)} - ${user}`);
 		}
 
 		const itemStore = this.container.stores.get('items');
+		const itemsWithEntries = await this.container.prisma.inventory.groupBy({
+			by: ['itemId'],
+			where: { quantity: { gt: 0 }, userId: { in: users } },
+		});
+		const itemIdsWithEntries = new Set(itemsWithEntries.map(item => item.itemId));
 
 		const embed = new EmbedBuilder()
 			.setTitle(`Local ${itemStore.get(value)?.displayName ?? 'Item'} Leaderboard`)
@@ -64,14 +76,19 @@ export class LocalInventoryLeaderboardSelectMenu extends InteractionHandler {
 			),
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-local-inventory`).addOptions(
-					itemStore.sort().map(item => ({
-						emoji:
-							typeof item.iconEmoji === 'object' ? { id: item.iconEmoji.id } : { name: item.iconEmoji },
-						label: item.displayName,
-						description: item.description.slice(0, 100),
-						value: item.name,
-						default: item.name === value,
-					})),
+					itemStore
+						.sort()
+						.filter(item => itemIdsWithEntries.has(item.name))
+						.map(item => ({
+							emoji:
+								typeof item.iconEmoji === 'object'
+									? { id: item.iconEmoji.id }
+									: { name: item.iconEmoji },
+							label: item.displayName,
+							description: item.description.slice(0, 100),
+							value: item.name,
+							default: item.name === value,
+						})),
 				),
 			),
 		];

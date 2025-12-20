@@ -287,6 +287,11 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		}
 
 		const itemStore = this.container.stores.get('items');
+		const itemsWithEntries = await this.container.prisma.inventory.groupBy({
+			by: ['itemId'],
+			where: { quantity: { gt: 0 } },
+		});
+		const itemIdsWithEntries = new Set(itemsWithEntries.map(item => item.itemId));
 
 		const embed = new EmbedBuilder()
 			.setTitle(`Global ${itemStore.get(value)?.displayName ?? 'Item'} Leaderboard`)
@@ -307,14 +312,19 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 			),
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global-inventory`).addOptions(
-					itemStore.sort().map(item => ({
-						emoji:
-							typeof item.iconEmoji === 'object' ? { id: item.iconEmoji.id } : { name: item.iconEmoji },
-						label: item.displayName,
-						description: item.description.slice(0, 100),
-						value: item.name,
-						default: item.name === value,
-					})),
+					itemStore
+						.sort()
+						.filter(item => itemIdsWithEntries.has(item.name))
+						.map(item => ({
+							emoji:
+								typeof item.iconEmoji === 'object'
+									? { id: item.iconEmoji.id }
+									: { name: item.iconEmoji },
+							label: item.displayName,
+							description: item.description.slice(0, 100),
+							value: item.name,
+							default: item.name === value,
+						})),
 				),
 			),
 		];

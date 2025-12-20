@@ -1,12 +1,4 @@
-import {
-	getLocalUserBankLeaderboard,
-	getLocalUserLevelLeaderboard,
-	getLocalUserNetworthLeaderboard,
-	getLocalUserSocialCreditLeaderboard,
-	getLocalUserVcTimeLeaderboard,
-	getLocalUserWalletLeaderboard,
-	getLocalInventoryLeaderboard,
-} from '@prisma/client/sql';
+import { getLocalUserNetworthLeaderboard, getLocalUserVcTimeLeaderboard } from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import {
@@ -50,7 +42,11 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserWalletLeaderboard(users)),
+			this.container.prisma.user.findMany({
+				where: { id: { in: users }, wallet: { gt: 0 } },
+				take: 10,
+				orderBy: { wallet: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -89,7 +85,11 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserBankLeaderboard(users)),
+			this.container.prisma.user.findMany({
+				where: { id: { in: users }, bankBalance: { gt: 0 } },
+				take: 10,
+				orderBy: { bankBalance: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -98,7 +98,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 		for (const [index, userData] of data.entries()) {
 			const user = await this.container.client.users.fetch(userData.id);
-			const bank = userData.bank_balance.toString();
+			const bank = userData.bankBalance.toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${formatMoney(bank)} `)} - ${user}`);
 		}
 
@@ -128,7 +128,11 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users)),
+			this.container.prisma.user.findMany({
+				where: { id: { in: users }, level: { gt: 0 } },
+				take: 10,
+				orderBy: { level: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -206,7 +210,11 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserSocialCreditLeaderboard(users)),
+			this.container.prisma.user.findMany({
+				where: { id: { in: users }, socialCredit: { gt: 0 } },
+				take: 10,
+				orderBy: { socialCredit: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -215,7 +223,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 		for (const [index, userData] of data.entries()) {
 			const user = await this.container.client.users.fetch(userData.id);
-			const socialCredit = userData.social_credit.toString();
+			const socialCredit = userData.socialCredit.toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${socialCredit} `)} - ${user}`);
 		}
 
@@ -284,7 +292,15 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const value = 'banknote';
 		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalInventoryLeaderboard(value, users)),
+			this.container.prisma.inventory.findMany({
+				where: {
+					itemId: value,
+					userId: { in: users },
+					quantity: { gt: 0 },
+				},
+				take: 10,
+				orderBy: { quantity: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -292,12 +308,17 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		const description = [];
 
 		for (const [index, itemData] of data.entries()) {
-			const user = await this.container.client.users.fetch(itemData.user_id);
+			const user = await this.container.client.users.fetch(itemData.userId);
 			const quantity = itemData.quantity.toString();
 			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${quantity} `)} - ${user}`);
 		}
 
 		const itemStore = this.container.stores.get('items');
+		const itemsWithEntries = await this.container.prisma.inventory.groupBy({
+			by: ['itemId'],
+			where: { quantity: { gt: 0 }, userId: { in: users } },
+		});
+		const itemIdsWithEntries = new Set(itemsWithEntries.map(item => item.itemId));
 
 		const embed = new EmbedBuilder()
 			.setTitle(`Local ${itemStore.get(value)?.displayName ?? 'Item'} Leaderboard`)
@@ -318,14 +339,19 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 			),
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-local-inventory`).addOptions(
-					itemStore.sort().map(item => ({
-						emoji:
-							typeof item.iconEmoji === 'object' ? { id: item.iconEmoji.id } : { name: item.iconEmoji },
-						label: item.displayName,
-						description: item.description.slice(0, 100),
-						value: item.name,
-						default: item.name === value,
-					})),
+					itemStore
+						.sort()
+						.filter(item => itemIdsWithEntries.has(item.name))
+						.map(item => ({
+							emoji:
+								typeof item.iconEmoji === 'object'
+									? { id: item.iconEmoji.id }
+									: { name: item.iconEmoji },
+							label: item.displayName,
+							description: item.description.slice(0, 100),
+							value: item.name,
+							default: item.name === value,
+						})),
 				),
 			),
 		];

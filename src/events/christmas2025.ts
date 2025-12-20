@@ -60,6 +60,6 @@ export class Christmas2025 extends Event {
 			update: { quantity: { increment: 1 } },
 		});
 
-		return `You got a ${item.iconEmoji} ${bold(item.displayName)} in your stocking...`;
+		return `You got a ${item.iconEmoji} ${bold(item.displayName)} under the tree...`;
 	}
 }
