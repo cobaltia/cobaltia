@@ -27,7 +27,7 @@ export const Events = {
 	ItemRun: 'itemRun' as const,
 	ItemRunSuccess: 'itemRunSuccess' as const,
 	EventRequestReceived: 'eventRequestReceived' as const,
-	UnkonwnEvent: 'unknownEvent' as const,
+	UnknownEvent: 'unknownEvent' as const,
 	EventDenied: 'eventDenied' as const,
 	EventAccepted: 'eventAccepted' as const,
 	EventError: 'eventError' as const,
@@ -125,7 +125,7 @@ declare module 'discord.js' {
 		[CobaltEvents.ItemRun]: [payload: RunItemPayload];
 		[CobaltEvents.ItemRunSuccess]: [payload: RunSuccessItemPayload];
 		[CobaltEvents.EventRequestReceived]: [eventName: string, interaction: ChatInputCommandInteraction];
-		[CobaltEvents.UnkonwnEvent]: [payload: UnknownEventPayload];
+		[CobaltEvents.UnknownEvent]: [payload: UnknownEventPayload];
 		[CobaltEvents.EventDenied]: [error: string, payload: EventPayload];
 		[CobaltEvents.EventAccepted]: [payload: EventPayload];
 		[CobaltEvents.EventError]: [error: unknown, payload: ErrorEventPayload];

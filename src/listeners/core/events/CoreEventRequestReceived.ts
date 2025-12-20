@@ -1,7 +1,7 @@
 import { Listener, Result } from '@sapphire/framework';
 import { Events } from '#lib/types';
 
-export class CoreEventRequestRecived extends Listener<typeof Events.EventRequestReceived> {
+export class CoreEventRequestReceived extends Listener<typeof Events.EventRequestReceived> {
 	public constructor(context: Listener.LoaderContext) {
 		super(context, { event: Events.EventRequestReceived });
 	}
@@ -12,7 +12,7 @@ export class CoreEventRequestRecived extends Listener<typeof Events.EventRequest
 		const event = eventStore.get(eventName);
 
 		if (!event) {
-			client.emit(Events.UnkonwnEvent, { interaction, context: { eventName } });
+			client.emit(Events.UnknownEvent, { interaction, context: { eventName } });
 			return;
 		}
 

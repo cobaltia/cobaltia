@@ -60,7 +60,7 @@ export const enum ItemEmojis {
 	ChristmasGift2025 = 'christmasGift2025',
 	Coal = 'coal',
 	Cobuck = 'cobuck',
-	GoldenNutcraker = '🪆',
+	GoldenNutcracker = '🪆',
 	SantaHat = 'santaHat',
 	SnowGlobe = 'snowGlobe',
 

@@ -8,7 +8,6 @@ export async function fetchMembersFromCache(guild: Guild): Promise<string[]> {
 	const cacheKey = `guild:${guild.id}:members`;
 
 	const cached = await redis.get(cacheKey);
-	console.log('Cached members:', cached);
 
 	if (cached) return JSON.parse(cached);
 
