@@ -85,6 +85,14 @@ model BankTransaction {
   @@map("bank_transactions")
 }
 
+model Event {
+  id          String   @id @default(cuid())
+  name        String   @map("name")
+  enabled     Boolean  @default(false) @map("enabled")
+
+  @@map("events")
+}
+
 enum Transaction {
   DEPOSIT
   WITHDRAW

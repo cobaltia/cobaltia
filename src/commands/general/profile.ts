@@ -6,7 +6,6 @@ import {
 	ActionRowBuilder,
 	type MessageActionRowComponentBuilder,
 	StringSelectMenuBuilder,
-	type ContextMenuCommandType,
 } from 'discord.js';
 import { getUser } from '#lib/database';
 import { profileEmbed } from '#util/discord-embeds';
@@ -30,8 +29,7 @@ export class ProfileCommand extends Command {
 		);
 
 		registry.registerContextMenuCommand(builder =>
-			// TODO(Isidro): remove the type assertion once the discord.js typings are updated
-			builder.setName('View Profile').setType(ApplicationCommandType.User as ContextMenuCommandType),
+			builder.setName('View Profile').setType(ApplicationCommandType.User),
 		);
 	}
 

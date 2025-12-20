@@ -2,6 +2,7 @@ import { AliasPiece } from '@sapphire/framework';
 import { type Awaitable, roundNumber } from '@sapphire/utilities';
 import { type ChatInputCommandInteraction } from 'discord.js';
 import { type ItemPayload } from '#lib/types';
+import { ItemEmojis } from '#lib/util/constants';
 
 export class Item<Options extends Item.Options = Item.Options> extends AliasPiece<ItemOptions, 'items'> {
 	public readonly displayName: string;
@@ -14,7 +15,7 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 
 	public readonly sellPrice: number;
 
-	public readonly icon: string;
+	public readonly icon: ItemEmojis;
 
 	public constructor(context: Item.LoaderContext, options: ItemOptions) {
 		super(context, options);
@@ -22,12 +23,17 @@ export class Item<Options extends Item.Options = Item.Options> extends AliasPiec
 		this.displayName = options.displayName ?? this.name;
 		this.collectible = options.collectible ?? false;
 		this.description = options.description;
-		this.icon = options.icon ?? '';
+		this.icon = options.icon ?? ItemEmojis.Default;
 		this.price = options.price ?? 1;
 		this.sellPrice = options.sellPrice ?? roundNumber(this.price * 0.7, 2);
 	}
 
 	public run?(interaction: ChatInputCommandInteraction, payload: ItemPayload): Awaitable<unknown>;
+
+	public get iconEmoji() {
+		const cache = this.container.client.application?.emojis.cache;
+		return cache?.find(emoji => emoji.name === this.icon) ?? this.icon;
+	}
 
 	public override toJSON(): ItemJSON {
 		return {
@@ -46,7 +52,7 @@ export interface ItemOptions extends AliasPiece.Options {
 	collectible?: boolean;
 	description: string;
 	displayName?: string;
-	icon?: string;
+	icon?: ItemEmojis;
 	price?: number;
 	sellPrice?: number;
 }
@@ -55,7 +61,7 @@ export interface ItemJSON extends AliasPiece.JSON {
 	collectible: boolean;
 	description: string;
 	displayName: string;
-	icon: string;
+	icon: ItemEmojis;
 	price: number;
 	sellPrice: number;
 }

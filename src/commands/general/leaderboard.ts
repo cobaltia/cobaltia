@@ -1,4 +1,3 @@
-import { getLocalUserLevelLeaderboard } from '@prisma/client/sql';
 import { Command, Result } from '@sapphire/framework';
 import {
 	ActionRowBuilder,
@@ -8,6 +7,7 @@ import {
 	StringSelectMenuBuilder,
 } from 'discord.js';
 import { ONE_TO_TEN } from '#lib/util/constants';
+import { fetchMembersFromCache } from '#lib/util/functions/cache';
 
 export class LeaderboardCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -43,9 +43,13 @@ export class LeaderboardCommand extends Command {
 	}
 
 	private async localLeaderboard(interaction: Command.ChatInputCommandInteraction) {
-		const users = await interaction.guild?.members.fetch();
+		const users = await fetchMembersFromCache(interaction.guild!);
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserLevelLeaderboard(users!.map(user => user.id))),
+			this.container.prisma.user.findMany({
+				where: { id: { in: users }, level: { gt: 0 } },
+				take: 10,
+				orderBy: { level: 'desc' },
+			}),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -72,6 +76,7 @@ export class LeaderboardCommand extends Command {
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -108,6 +113,7 @@ export class LeaderboardCommand extends Command {
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];

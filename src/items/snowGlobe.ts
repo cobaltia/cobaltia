@@ -1,16 +1,16 @@
 import { Item } from '#lib/structures/Item';
 import { ItemEmojis } from '#lib/util/constants';
 
-export class CobuckItem extends Item {
+export class SnowGlobeItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
 		super(context, {
 			...options,
-			displayName: 'Cobuck',
+			displayName: 'Snow Globe',
 			collectible: true,
-			description: 'Wait what physical cobuck money?',
-			price: 1,
-			sellPrice: 1,
-			icon: ItemEmojis.Cobuck,
+			description: 'A beautiful snow globe that captures the essence of winter.',
+			price: -1,
+			sellPrice: 50,
+			icon: ItemEmojis.SnowGlobe,
 		});
 	}
 }

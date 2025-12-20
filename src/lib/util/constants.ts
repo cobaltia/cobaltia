@@ -1,5 +1,5 @@
 import { URL } from 'node:url';
-import type { SelectMenuComponentOptionData } from 'discord.js';
+import { type SelectMenuComponentOptionData } from 'discord.js';
 
 export const rootFolder = new URL('../../../', import.meta.url);
 export const assetsFolder = new URL('assets/', rootFolder);
@@ -52,3 +52,18 @@ export const ROLES: SelectMenuComponentOptionData[] = [
 
 export const COBALT_GUILD_ID = '322505254098698240';
 export const CONTROL_GUILD_ID = '823300821994569748';
+
+export const enum ItemEmojis {
+	Banknote = 'banknote',
+	BrokenCandyCane = 'brokenCandyCane',
+	CandyCane = 'candyCane',
+	ChristmasGift2025 = 'christmasGift2025',
+	Coal = 'coal',
+	Cobuck = 'cobuck',
+	GoldenNutcracker = '🪆',
+	SantaHat = 'santaHat',
+	SnowGlobe = 'snowGlobe',
+
+	// eslint-disable-next-line typescript-sort-keys/string-enum
+	Default = '',
+}

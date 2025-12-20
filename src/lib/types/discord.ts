@@ -1,5 +1,6 @@
 import type { $Enums } from '@prisma/client';
 import { type ChatInputCommandInteraction, type GuildMember, type Message } from 'discord.js';
+import type { Event } from '#lib/structures/Event';
 import type { Item } from '#lib/structures/Item';
 
 export type GuildMessage = Message<true> & { member: GuildMember };
@@ -25,6 +26,13 @@ export const Events = {
 	ItemError: 'itemError' as const,
 	ItemRun: 'itemRun' as const,
 	ItemRunSuccess: 'itemRunSuccess' as const,
+	EventRequestReceived: 'eventRequestReceived' as const,
+	UnknownEvent: 'unknownEvent' as const,
+	EventDenied: 'eventDenied' as const,
+	EventAccepted: 'eventAccepted' as const,
+	EventError: 'eventError' as const,
+	EventRun: 'eventRun' as const,
+	EventRunSuccess: 'eventRunSuccess' as const,
 };
 
 declare const CobaltEvents: typeof Events;
@@ -54,6 +62,33 @@ export interface RunItemPayload extends ItemPayload {
 }
 
 export interface RunSuccessItemPayload extends RunItemPayload {
+	duration: number;
+}
+
+export interface EventContext extends Record<PropertyKey, unknown> {
+	eventName: string;
+}
+
+export interface EventPayload {
+	context: EventContext;
+	event: Event;
+	interaction: ChatInputCommandInteraction;
+}
+
+export interface UnknownEventPayload {
+	context: EventContext;
+	interaction: ChatInputCommandInteraction;
+}
+
+export interface ErrorEventPayload extends EventPayload {
+	duration: number;
+}
+
+export interface RunEventPayload extends EventPayload {
+	duration: number;
+}
+
+export interface RunSuccessEventPayload extends RunEventPayload {
 	duration: number;
 }
 
@@ -89,5 +124,12 @@ declare module 'discord.js' {
 		[CobaltEvents.ItemError]: [error: unknown, payload: ErrorItemPayload];
 		[CobaltEvents.ItemRun]: [payload: RunItemPayload];
 		[CobaltEvents.ItemRunSuccess]: [payload: RunSuccessItemPayload];
+		[CobaltEvents.EventRequestReceived]: [eventName: string, interaction: ChatInputCommandInteraction];
+		[CobaltEvents.UnknownEvent]: [payload: UnknownEventPayload];
+		[CobaltEvents.EventDenied]: [error: string, payload: EventPayload];
+		[CobaltEvents.EventAccepted]: [payload: EventPayload];
+		[CobaltEvents.EventError]: [error: unknown, payload: ErrorEventPayload];
+		[CobaltEvents.EventRun]: [payload: RunEventPayload];
+		[CobaltEvents.EventRunSuccess]: [payload: RunSuccessEventPayload];
 	}
 }

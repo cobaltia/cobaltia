@@ -1,6 +1,7 @@
 import { Result } from '@sapphire/result';
 import { type ChatInputCommandInteraction } from 'discord.js';
 import { type ItemPayload } from '#lib/types';
+import { ItemEmojis } from '#lib/util/constants';
 import { getInventory } from '#lib/util/functions/inventoryHelper';
 import { Item } from '#structures/Item';
 import { formatMoney } from '#util/common';
@@ -9,10 +10,10 @@ export class BanknoteItem extends Item {
 	public constructor(context: Item.LoaderContext, options: Item.Options) {
 		super(context, {
 			...options,
-			displayName: 'banknote',
+			displayName: 'Banknote',
 			description: 'A banknote that can be exchanged for bank space.',
-			price: 999.99,
-			icon: '💰',
+			price: 1_000,
+			icon: ItemEmojis.Banknote,
 		});
 	}
 

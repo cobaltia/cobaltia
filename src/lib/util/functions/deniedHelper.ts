@@ -1,6 +1,6 @@
 import type { ChatInputCommandDeniedPayload, ContextMenuCommandDeniedPayload, UserError } from '@sapphire/framework';
 import type { ChatInputSubcommandDeniedPayload } from '@sapphire/plugin-subcommands';
-import type { ItemPayload } from '#lib/types';
+import type { EventPayload, ItemPayload } from '#lib/types';
 
 export async function handleChatInputOrContextMenuCommandDenied(
 	{ context, message: content }: UserError,
@@ -16,7 +16,7 @@ export async function handleChatInputOrContextMenuCommandDenied(
 	});
 }
 
-export async function handleItemDenied(error: string, { interaction }: ItemPayload) {
+export async function handleItemOrEventDenied(error: string, { interaction }: EventPayload | ItemPayload) {
 	return interaction.reply({
 		content: error,
 		allowedMentions: { users: [interaction.user.id], roles: [] },

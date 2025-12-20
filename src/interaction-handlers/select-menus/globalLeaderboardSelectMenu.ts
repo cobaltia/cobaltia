@@ -34,6 +34,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 		if (value === 'networth') return this.handleNetWorth(interaction);
 		if (value === 'socialcredit') return this.handleSocialCredit(interaction);
 		if (value === 'vctime') return this.handleVcTime(interaction);
+		if (value === 'inventory') return this.handleInventory(interaction);
 	}
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
@@ -66,6 +67,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -103,6 +105,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -140,6 +143,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level', default: true },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -177,6 +181,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -214,6 +219,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit', default: true },
 					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
 			),
 		];
@@ -251,7 +257,75 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 					{ label: 'Level', value: 'level' },
 					{ label: 'Social Credit', value: 'socialcredit' },
 					{ label: 'VC Time', value: 'vctime', default: true },
+					{ label: 'Inventory', value: 'inventory' },
 				]),
+			),
+		];
+
+		await interaction.editReply({ embeds: [embed], components });
+	}
+
+	private async handleInventory(interaction: StringSelectMenuInteraction) {
+		await interaction.deferUpdate();
+		const value = 'banknote';
+		const result = await Result.fromAsync(async () =>
+			this.container.prisma.inventory.findMany({
+				take: 10,
+				orderBy: { quantity: 'desc' },
+				where: { itemId: value },
+			}),
+		);
+		if (result.isErr()) throw result.unwrapErr();
+
+		const data = result.unwrap();
+		const description = [];
+
+		for (const [index, userData] of data.entries()) {
+			const user = await this.container.client.users.fetch(userData.userId);
+			const itemCount = userData.quantity;
+			description.push(`${ONE_TO_TEN.get(index + 1)} ${inlineCode(` ${itemCount} `)} - ${user}`);
+		}
+
+		const itemStore = this.container.stores.get('items');
+		const itemsWithEntries = await this.container.prisma.inventory.groupBy({
+			by: ['itemId'],
+			where: { quantity: { gt: 0 } },
+		});
+		const itemIdsWithEntries = new Set(itemsWithEntries.map(item => item.itemId));
+
+		const embed = new EmbedBuilder()
+			.setTitle(`Global ${itemStore.get(value)?.displayName ?? 'Item'} Leaderboard`)
+			.setDescription(description.length ? description.join('\n') : 'No users found.')
+			.setURL('https://www.cobaltia.gg/leaderboard')
+			.setFooter({ text: 'For a more comprehensive list visit the website' });
+		const components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global`).addOptions([
+					{ label: 'Wallet', value: 'wallet' },
+					{ label: 'Bank', value: 'bank' },
+					{ label: 'Net Worth', value: 'networth' },
+					{ label: 'Level', value: 'level' },
+					{ label: 'Social Credit', value: 'socialcredit' },
+					{ label: 'VC Time', value: 'vctime' },
+					{ label: 'Inventory', value: 'inventory', default: true },
+				]),
+			),
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new StringSelectMenuBuilder().setCustomId(`select-menu:leaderboard-global-inventory`).addOptions(
+					itemStore
+						.sort()
+						.filter(item => itemIdsWithEntries.has(item.name))
+						.map(item => ({
+							emoji:
+								typeof item.iconEmoji === 'object'
+									? { id: item.iconEmoji.id }
+									: { name: item.iconEmoji },
+							label: item.displayName,
+							description: item.description.slice(0, 100),
+							value: item.name,
+							default: item.name === value,
+						})),
+				),
 			),
 		];
 
