@@ -7,7 +7,7 @@ export class EventCommand extends Command {
 		super(context, {
 			...options,
 			description: 'Event games.',
-			cooldownDelay: Time.Second,
+			cooldownDelay: Time.Minute * 10,
 		});
 	}
 

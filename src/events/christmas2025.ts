@@ -22,7 +22,6 @@ export class Christmas2025 extends Event {
 
 		const goodPercentage = roundNumber(data.socialCredit / 2_000, 2) * 100;
 		const weights = [goodPercentage, 100 - goodPercentage];
-		console.log(weights);
 
 		const situation = pickWeightedRandom(weights);
 		switch (situation) {
