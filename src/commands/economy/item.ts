@@ -1,5 +1,6 @@
 import { Result, type ApplicationCommandRegistry } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
+import { bold } from 'discord.js';
 import { Events } from '#lib/types';
 import { getInventory } from '#lib/util/functions/inventoryHelper';
 import { formatMoney } from '#util/common';
@@ -58,13 +59,16 @@ export class ItemCommand extends Subcommand {
 	}
 
 	public async chatInputSell(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply();
 		const itemName = interaction.options.getString('item', true);
 		const amount = interaction.options.getInteger('amount', false) ?? 1;
 		const items = this.container.stores.get('items');
 		const item = items.get(itemName);
-		// TODO(Isidro): Maybe make is the unknown item listener
-		if (!item) throw new Error('Item not found');
+		if (!item) {
+			this.container.client.emit(Events.UnknownItem, { interaction, context: { itemName, amount } });
+			return;
+		}
+
+		await interaction.deferReply();
 
 		const result = await Result.fromAsync(() => getInventory(interaction.user.id));
 		if (result.isErr()) throw result.unwrapErr();
@@ -105,7 +109,7 @@ export class ItemCommand extends Subcommand {
 		});
 
 		return interaction.editReply(
-			`You have sold ${amount} ${item.displayName} for ${formatMoney(item.sellPrice * amount)}.`,
+			`You have sold ${amount} ${item.iconEmoji} ${bold(item.displayName)} for ${formatMoney(item.sellPrice * amount)}.`,
 		);
 	}
 }

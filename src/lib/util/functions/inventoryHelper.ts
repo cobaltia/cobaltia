@@ -2,7 +2,9 @@ import { container } from '@sapphire/framework';
 import { none, type Option, Result, some } from '@sapphire/result';
 
 export async function getInventory(userId: string): Promise<Option<Map<string, number>>> {
-	const result = await Result.fromAsync(async () => container.prisma.inventory.findMany({ where: { userId } }));
+	const result = await Result.fromAsync(async () =>
+		container.prisma.inventory.findMany({ where: { userId, quantity: { gt: 0 } } }),
+	);
 
 	const inventory = result.unwrap();
 
@@ -25,7 +27,7 @@ export async function getInventoryNetWorth(userId: string): Promise<number> {
 		const item = items.get(key);
 		if (!item) continue;
 
-		netWorth += item.price * value;
+		netWorth += item.sellPrice * value;
 	}
 
 	return netWorth;

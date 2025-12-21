@@ -36,16 +36,17 @@ export class ItemAutocomplete extends InteractionHandler {
 
 			const validSubcommands = ['sell', 'use'];
 			if (validSubcommands.includes(subcommand)) {
-				if (subcommand === 'use') allItems = allItems.filter(item => !item.collectible);
 				const result = await getInventory(interaction.member.id);
 				if (result.isSome()) {
 					const inventory = result.unwrap();
-					for (const [name, quantity] of inventory) {
-						const item = allItems.find(item => item.name === name);
-						if (item && quantity === 0) {
-							allItems = allItems.filter(item => item.name !== name);
-						}
-					}
+
+					allItems = allItems.filter(item => inventory.has(item.name));
+				} else {
+					allItems = [];
+				}
+
+				if (subcommand === 'use') {
+					allItems = allItems.filter(item => !item.collectible);
 				}
 			}
 
