@@ -20,6 +20,7 @@ import {
 	hideLinkEmbed,
 	type ChatInputCommandInteraction,
 	type ContextMenuCommandInteraction,
+	MessageFlags,
 } from 'discord.js';
 import type { ErrorEventPayload, ErrorItemPayload } from '#lib/types';
 import { OWNERS } from '#root/config';
@@ -91,7 +92,7 @@ async function alert(
 	return interaction.reply({
 		content,
 		allowedMentions: { users: [interaction.user.id], roles: [] },
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }
 

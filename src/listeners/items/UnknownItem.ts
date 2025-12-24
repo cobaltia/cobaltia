@@ -1,4 +1,5 @@
 import { Listener } from '@sapphire/framework';
+import { MessageFlags } from 'discord.js';
 import { Events, type UnknownItemPayload } from '#lib/types';
 
 export class UnknownItemListener extends Listener<typeof Events.UnknownItem> {
@@ -12,7 +13,7 @@ export class UnknownItemListener extends Listener<typeof Events.UnknownItem> {
 		return interaction.reply({
 			content: 'This item does not exist.',
 			allowedMentions: { users: [interaction.user.id], roles: [] },
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 }

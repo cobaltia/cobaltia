@@ -8,7 +8,7 @@ import {
 	type InteractionHandler,
 	container,
 } from '@sapphire/framework';
-import { codeBlock, EmbedBuilder, type Interaction } from 'discord.js';
+import { codeBlock, EmbedBuilder, MessageFlags, type Interaction } from 'discord.js';
 import { OWNERS } from '#root/config';
 import { Colors, rootFolder } from '#util/constants';
 import { getErrorLine, getLinkLine } from '#util/functions/errorHelpers';
@@ -63,7 +63,7 @@ async function alert(interaction: Interaction, content: string) {
 	return interaction.reply({
 		content,
 		allowedMentions: { users: [interaction.user.id], roles: [] },
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }
 

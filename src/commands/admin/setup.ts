@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { PermissionFlagsBits } from 'discord.js';
+import { MessageFlags, PermissionFlagsBits } from 'discord.js';
 
 export class SetupCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -64,7 +64,7 @@ export class SetupCommand extends Subcommand {
 
 	public async chatInputLog(interaction: Subcommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },
@@ -78,7 +78,7 @@ export class SetupCommand extends Subcommand {
 	public async chatInputWelcome(interaction: Subcommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
 		const message = interaction.options.getString('message') ?? undefined;
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },
@@ -91,7 +91,7 @@ export class SetupCommand extends Subcommand {
 
 	public async chatInputVoice(interaction: Subcommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },

@@ -48,6 +48,8 @@ export class ItemAutocomplete extends InteractionHandler {
 				if (subcommand === 'use') {
 					allItems = allItems.filter(item => !item.collectible);
 				}
+			} else if (subcommand === 'buy') {
+				allItems = allItems.filter(item => item.price > 0);
 			}
 
 			if (isNullishOrEmpty(focusedOption.value)) {

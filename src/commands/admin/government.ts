@@ -1,6 +1,6 @@
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { Result } from '@sapphire/result';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
 import { getClient } from '#lib/database';
 
 export class GovernmentCommand extends Subcommand {
@@ -96,7 +96,7 @@ export class GovernmentCommand extends Subcommand {
 	}
 
 	public async ChatInputAddExecutive(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const user = interaction.options.getUser('user', true);
 
 		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));
@@ -118,7 +118,7 @@ export class GovernmentCommand extends Subcommand {
 	}
 
 	public async ChatInputAddMinister(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const user = interaction.options.getUser('user', true);
 
 		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));
@@ -140,7 +140,7 @@ export class GovernmentCommand extends Subcommand {
 	}
 
 	public async ChatInputRemoveExecutive(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const user = interaction.options.getUser('user', true);
 
 		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));
@@ -164,7 +164,7 @@ export class GovernmentCommand extends Subcommand {
 	}
 
 	public async ChatInputRemoveMinister(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const user = interaction.options.getUser('user', true);
 
 		const result = await Result.fromAsync(async () => getClient(this.container.client.id!));

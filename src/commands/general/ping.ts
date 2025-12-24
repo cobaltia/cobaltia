@@ -1,6 +1,6 @@
 import { isMessageInstance } from '@sapphire/discord.js-utilities';
 import { Command } from '@sapphire/framework';
-import { channelMention } from 'discord.js';
+import { channelMention, MessageFlags } from 'discord.js';
 
 export class PingCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -18,7 +18,7 @@ export class PingCommand extends Command {
 		const owned = channelMention('770680135883554836');
 		const msg = await interaction.reply({
 			content: `If you see this then get ${owned}`,
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 			fetchReply: true,
 		});
 		if (isMessageInstance(msg)) {
