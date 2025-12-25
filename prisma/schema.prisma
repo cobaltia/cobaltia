@@ -40,7 +40,6 @@ model User {
   experience      Int               @default(0) @map("experience")
   level           Int               @default(0) @map("level")
   socialCredit    Int               @default(1000) @map("social_credit")
-  workCooldown    DateTime          @default(now()) @map("work_cooldown")
   Voice           Voice[]
   BankTransaction BankTransaction[]
   Inventory       Inventory[]

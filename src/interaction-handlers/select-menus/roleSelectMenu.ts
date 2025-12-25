@@ -5,6 +5,7 @@ import {
 	type Role,
 	type StringSelectMenuInteraction,
 	ActionRowBuilder,
+	MessageFlags,
 	StringSelectMenuBuilder,
 } from 'discord.js';
 import { ROLES } from '#lib/util/constants';
@@ -61,6 +62,6 @@ export class RoleSelectMenuHandler extends InteractionHandler {
 		if (rolesToRemove.length) message.push(`Removed ${rolesToRemove.join(', ')}`);
 		if (rolesToAdd.length) message.push(`Added ${rolesToAdd.join(', ')}`);
 
-		await interaction.followUp({ content: message.join('\n'), ephemeral: true });
+		await interaction.followUp({ content: message.join('\n'), flags: MessageFlags.Ephemeral });
 	}
 }

@@ -3,7 +3,7 @@ import process from 'node:process';
 import { version as sapphireVersion, Command } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
-import { EmbedBuilder, TimestampStyles, hideLinkEmbed, hyperlink, time, version } from 'discord.js';
+import { EmbedBuilder, MessageFlags, TimestampStyles, hideLinkEmbed, hyperlink, time, version } from 'discord.js';
 import { Colors } from '#util/constants';
 
 export class InfoCommand extends Command {
@@ -21,7 +21,7 @@ export class InfoCommand extends Command {
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		return interaction.reply({
 			embeds: [this.embed],
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 

@@ -6,6 +6,7 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
+	MessageFlags,
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { getBankStatement, getUser } from '#lib/database';
@@ -255,7 +256,7 @@ export class BankCommand extends Subcommand {
 	}
 
 	public async chatInputStatement(interaction: Subcommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		const result = await Result.fromAsync(async () => getBankStatement(interaction.user.id));
 		if (result.isErr()) {

@@ -1,5 +1,6 @@
 import type { ChatInputCommandDeniedPayload, ContextMenuCommandDeniedPayload, UserError } from '@sapphire/framework';
 import type { ChatInputSubcommandDeniedPayload } from '@sapphire/plugin-subcommands';
+import { MessageFlags } from 'discord.js';
 import type { EventPayload, ItemPayload } from '#lib/types';
 
 export async function handleChatInputOrContextMenuCommandDenied(
@@ -12,7 +13,7 @@ export async function handleChatInputOrContextMenuCommandDenied(
 	return interaction.reply({
 		content,
 		allowedMentions: { users: [interaction.user.id], roles: [] },
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }
 
@@ -20,6 +21,6 @@ export async function handleItemOrEventDenied(error: string, { interaction }: Ev
 	return interaction.reply({
 		content: error,
 		allowedMentions: { users: [interaction.user.id], roles: [] },
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }

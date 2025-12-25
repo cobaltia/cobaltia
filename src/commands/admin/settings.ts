@@ -5,6 +5,7 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
+	MessageFlags,
 	PermissionFlagsBits,
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
@@ -29,7 +30,7 @@ export class SettingsCommand extends Command {
 	}
 
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const { guild } = interaction;
 		const result = await Result.fromAsync(async () => getGuild(guild!.id));
 		if (result.isErr()) throw result.unwrapErr();
