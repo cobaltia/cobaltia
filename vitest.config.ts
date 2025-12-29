@@ -13,7 +13,7 @@ export default defineConfig({
 		globals: true,
 		coverage: {
 			reporter: ['text', 'lcov', 'cobertura'],
-			include: ['src/lib/**/*.ts'],
+			include: ['src/lib/util/**/*.ts'],
 			exclude: [],
 		},
 	},

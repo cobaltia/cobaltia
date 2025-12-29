@@ -86,7 +86,7 @@ export class LeaderboardCommand extends Command {
 
 	private async globalLeaderboard(interaction: Command.ChatInputCommandInteraction) {
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { level: 'desc' } }),
+			this.container.prisma.user.findMany({ take: 10, orderBy: { level: 'desc' }, where: { level: { gt: 0 } } }),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
