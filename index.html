@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<head>
+		<script>
+			const DiscordOauthURL = `https://discord.com/oauth2/authorize`;
+			const oauthURL = new URL(DiscordOauthURL);
+			oauthURL.search = new URLSearchParams([
+				['redirect_uri', 'http://127.0.0.1:3000/oauth/callback'],
+				['response_type', 'code'],
+				['scope', ['identify', 'guilds'].join(' ')],
+				['client_id', '582364194079506432'],
+			]).toString();
+
+			function redirect() {
+				window.location.replace(oauthURL);
+			}
+		</script>
+	</head>
+	<body>
+		<button onclick="redirect()">Login</button>
+	</body>
+</html>
