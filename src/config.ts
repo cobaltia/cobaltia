@@ -3,18 +3,12 @@ import process from 'node:process';
 import { URL } from 'node:url';
 import type { Prisma } from '@prisma/client';
 import { BucketScope, LogLevel } from '@sapphire/framework';
-import type { ServerOptionsAuth, type ServerOptions } from '@sapphire/plugin-api';
+import type { ServerOptionsAuth, ServerOptions } from '@sapphire/plugin-api';
 import { Time } from '@sapphire/time-utilities';
-import type {
-	ArrayString,
-	type BooleanString,
-	envIsDefined,
-	envParseArray,
-	envParseBoolean,
-	envParseString,
-	setup,
-} from '@skyra/env-utilities';
-import type { OAuth2Scopes, type ClientOptions, GatewayIntentBits, Partials, type WebhookClientData } from 'discord.js';
+import type { ArrayString, BooleanString } from '@skyra/env-utilities';
+import { envIsDefined, envParseArray, envParseBoolean, envParseString, setup } from '@skyra/env-utilities';
+import type { OAuth2Scopes, ClientOptions, WebhookClientData } from 'discord.js';
+import { GatewayIntentBits, Partials } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
 export const OWNERS = ['288703114473635841'];
