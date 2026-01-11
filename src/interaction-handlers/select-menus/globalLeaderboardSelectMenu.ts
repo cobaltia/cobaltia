@@ -154,7 +154,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getGlobalUserNetworthLeaderboard()),
+			this.container.prisma.$queryRawTyped(getGlobalUserNetworthLeaderboard(10, 0)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 
@@ -230,7 +230,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleVcTime(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getGlobalUSerVcTimeLeaderboard()),
+			this.container.prisma.$queryRawTyped(getGlobalUSerVcTimeLeaderboard(10, 0)),
 		);
 		if (result.isErr()) throw result.unwrapErr();
 

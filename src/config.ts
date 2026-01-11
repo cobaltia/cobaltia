@@ -44,7 +44,7 @@ function parseApiAuth(): ServerOptionsAuth | undefined {
 
 	return {
 		id: envParseString('CLIENT_ID'),
-		secret: envParseString('OAUTH_SCOPE'),
+		secret: envParseString('OAUTH_SECRET'),
 		cookie: envParseString('OAUTH_COOKIE'),
 		redirect: envParseString('OAUTH_REDIRECT_URL'),
 		scopes: envParseArray('OAUTH_SCOPE') as OAuth2Scopes[],
