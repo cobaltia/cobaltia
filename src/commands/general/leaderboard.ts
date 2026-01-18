@@ -1,4 +1,4 @@
-import { Command, Result } from '@sapphire/framework';
+import { Command } from '@sapphire/framework';
 import {
 	ActionRowBuilder,
 	EmbedBuilder,
@@ -6,6 +6,7 @@ import {
 	inlineCode,
 	StringSelectMenuBuilder,
 } from 'discord.js';
+import { getGlobalLevel, getLocalLevel } from '#lib/database';
 import { ONE_TO_TEN } from '#lib/util/constants';
 import { fetchMembersFromCache } from '#lib/util/functions/cache';
 
@@ -44,13 +45,7 @@ export class LeaderboardCommand extends Command {
 
 	private async localLeaderboard(interaction: Command.ChatInputCommandInteraction) {
 		const users = await fetchMembersFromCache(interaction.guild!);
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: { id: { in: users }, level: { gt: 0 } },
-				take: 10,
-				orderBy: { level: 'desc' },
-			}),
-		);
+		const result = await getLocalLevel(users);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -85,9 +80,7 @@ export class LeaderboardCommand extends Command {
 	}
 
 	private async globalLeaderboard(interaction: Command.ChatInputCommandInteraction) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { level: 'desc' } }),
-		);
+		const result = await getGlobalLevel();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();

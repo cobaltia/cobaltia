@@ -1,7 +1,13 @@
-import { getGlobalUserNetworthLeaderboard, getGlobalUSerVcTimeLeaderboard } from '@prisma/client/sql';
 import { Route } from '@sapphire/plugin-api';
-import { Result } from '@sapphire/result';
 import { DurationFormatter } from '@sapphire/time-utilities';
+import {
+	getGlobalBank,
+	getGlobalLevel,
+	getGlobalNetworth,
+	getGlobalSocialCredit,
+	getGlobalVcTime,
+	getGlobalWallet,
+} from '#lib/database';
 
 export class UserRoute extends Route {
 	public async run(request: Route.Request, response: Route.Response) {
@@ -40,13 +46,7 @@ export class UserRoute extends Route {
 	}
 
 	private async handleWallet(limit: number, offset: number, response: Route.Response) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				orderBy: { wallet: 'desc' },
-				take: limit,
-				skip: offset,
-			}),
-		);
+		const result = await getGlobalWallet(limit, offset);
 		if (result.isErr()) {
 			response.error(500, 'Failed to fetch leaderboard data');
 			return;
@@ -76,13 +76,7 @@ export class UserRoute extends Route {
 	}
 
 	private async handleBank(limit: number, offset: number, response: Route.Response) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				orderBy: { bankBalance: 'desc' },
-				take: limit,
-				skip: offset,
-			}),
-		);
+		const result = await getGlobalBank(limit, offset);
 		if (result.isErr()) {
 			response.error(500, 'Failed to fetch leaderboard data');
 			return;
@@ -112,9 +106,7 @@ export class UserRoute extends Route {
 	}
 
 	private async handleNetWorth(limit: number, offset: number, response: Route.Response) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getGlobalUserNetworthLeaderboard(limit, offset)),
-		);
+		const result = await getGlobalNetworth(limit, offset);
 		if (result.isErr()) {
 			response.error(500, 'Failed to fetch leaderboard data');
 			return;
@@ -144,13 +136,7 @@ export class UserRoute extends Route {
 	}
 
 	private async handleLevel(limit: number, offset: number, response: Route.Response) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				orderBy: { level: 'desc' },
-				take: limit,
-				skip: offset,
-			}),
-		);
+		const result = await getGlobalLevel(limit, offset);
 		if (result.isErr()) {
 			response.error(500, 'Failed to fetch leaderboard data');
 			return;
@@ -180,13 +166,7 @@ export class UserRoute extends Route {
 	}
 
 	private async handleSocialCredit(limit: number, offset: number, response: Route.Response) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				orderBy: { socialCredit: 'desc' },
-				take: limit,
-				skip: offset,
-			}),
-		);
+		const result = await getGlobalSocialCredit(limit, offset);
 		if (result.isErr()) {
 			response.error(500, 'Failed to fetch leaderboard data');
 			return;
@@ -216,9 +196,7 @@ export class UserRoute extends Route {
 	}
 
 	private async handleVcTime(limit: number, offset: number, response: Route.Response) {
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getGlobalUSerVcTimeLeaderboard(limit, offset)),
-		);
+		const result = await getGlobalVcTime(limit, offset);
 		if (result.isErr()) {
 			response.error(500, 'Failed to fetch leaderboard data');
 			return;

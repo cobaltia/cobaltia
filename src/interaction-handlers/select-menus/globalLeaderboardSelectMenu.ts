@@ -1,4 +1,3 @@
-import { getGlobalUserNetworthLeaderboard, getGlobalUSerVcTimeLeaderboard } from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import {
@@ -9,6 +8,14 @@ import {
 	StringSelectMenuBuilder,
 	type StringSelectMenuInteraction,
 } from 'discord.js';
+import {
+	getGlobalBank,
+	getGlobalLevel,
+	getGlobalNetworth,
+	getGlobalSocialCredit,
+	getGlobalVcTime,
+	getGlobalWallet,
+} from '#lib/database';
 import { formatMoney } from '#util/common';
 import { ONE_TO_TEN } from '#util/constants';
 
@@ -39,9 +46,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { wallet: 'desc' } }),
-		);
+		const result = await getGlobalWallet();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -77,9 +82,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleBank(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { bankBalance: 'desc' } }),
-		);
+		const result = await getGlobalBank();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -115,9 +118,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleLevel(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { level: 'desc' } }),
-		);
+		const result = await getGlobalLevel();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -153,9 +154,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getGlobalUserNetworthLeaderboard(10, 0)),
-		);
+		const result = await getGlobalNetworth();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -191,9 +190,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleSocialCredit(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({ take: 10, orderBy: { socialCredit: 'desc' } }),
-		);
+		const result = await getGlobalSocialCredit();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -229,9 +226,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleVcTime(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getGlobalUSerVcTimeLeaderboard(10, 0)),
-		);
+		const result = await getGlobalVcTime();
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();

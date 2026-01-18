@@ -1,4 +1,3 @@
-import { getLocalUserNetworthLeaderboard, getLocalUserVcTimeLeaderboard } from '@prisma/client/sql';
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import {
@@ -9,6 +8,14 @@ import {
 	StringSelectMenuBuilder,
 	type StringSelectMenuInteraction,
 } from 'discord.js';
+import {
+	getLocalBank,
+	getLocalLevel,
+	getLocalNetworth,
+	getLocalSocialCredit,
+	getLocalVcTime,
+	getLocalWallet,
+} from '#lib/database';
 import { formatMoney } from '#util/common';
 import { ONE_TO_TEN } from '#util/constants';
 import { fetchMembersFromCache } from '#util/functions/cache';
@@ -41,13 +48,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleWallet(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: { id: { in: users }, wallet: { gt: 0 } },
-				take: 10,
-				orderBy: { wallet: 'desc' },
-			}),
-		);
+		const result = await getLocalWallet(users);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -84,13 +85,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleBank(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: { id: { in: users }, bankBalance: { gt: 0 } },
-				take: 10,
-				orderBy: { bankBalance: 'desc' },
-			}),
-		);
+		const result = await getLocalBank(users);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -127,13 +122,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleLevel(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: { id: { in: users }, level: { gt: 0 } },
-				take: 10,
-				orderBy: { level: 'desc' },
-			}),
-		);
+		const result = await getLocalLevel(users);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -170,9 +159,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleNetWorth(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserNetworthLeaderboard(users)),
-		);
+		const result = await getLocalNetworth(users);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -209,13 +196,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 	private async handleSocialCredit(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
 		const users = await fetchMembersFromCache(interaction.guild!);
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.user.findMany({
-				where: { id: { in: users }, socialCredit: { gt: 0 } },
-				take: 10,
-				orderBy: { socialCredit: 'desc' },
-			}),
-		);
+		const result = await getLocalSocialCredit(users);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
@@ -251,9 +232,7 @@ export class GlobalLeaderboardSelectMenuHandler extends InteractionHandler {
 
 	private async handleVcTime(interaction: StringSelectMenuInteraction) {
 		await interaction.deferUpdate();
-		const result = await Result.fromAsync(async () =>
-			this.container.prisma.$queryRawTyped(getLocalUserVcTimeLeaderboard(interaction.guildId!)),
-		);
+		const result = await getLocalVcTime(interaction.guildId!);
 		if (result.isErr()) throw result.unwrapErr();
 
 		const data = result.unwrap();
