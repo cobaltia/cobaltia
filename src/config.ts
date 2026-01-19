@@ -3,10 +3,12 @@ import process from 'node:process';
 import { URL } from 'node:url';
 import type { Prisma } from '@prisma/client';
 import { BucketScope, LogLevel } from '@sapphire/framework';
-import { type ServerOptions } from '@sapphire/plugin-api';
+import type { ServerOptionsAuth, ServerOptions } from '@sapphire/plugin-api';
 import { Time } from '@sapphire/time-utilities';
-import { type BooleanString, envParseBoolean, envParseString, setup } from '@skyra/env-utilities';
-import { type ClientOptions, GatewayIntentBits, Partials, type WebhookClientData } from 'discord.js';
+import type { ArrayString, BooleanString } from '@skyra/env-utilities';
+import { envIsDefined, envParseArray, envParseBoolean, envParseString, setup } from '@skyra/env-utilities';
+import type { OAuth2Scopes, ClientOptions, WebhookClientData } from 'discord.js';
+import { GatewayIntentBits, Partials } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
 export const OWNERS = ['288703114473635841'];
@@ -31,11 +33,25 @@ function parsePrismaLogging(): Prisma.LogLevel[] {
 	return process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'];
 }
 
+function parseApiAuth(): ServerOptionsAuth | undefined {
+	if (!envIsDefined('OAUTH_SECRET')) return undefined;
+
+	return {
+		id: envParseString('CLIENT_ID'),
+		secret: envParseString('OAUTH_SECRET'),
+		cookie: envParseString('OAUTH_COOKIE'),
+		redirect: envParseString('OAUTH_REDIRECT_URL'),
+		scopes: envParseArray('OAUTH_SCOPE') as OAuth2Scopes[],
+		domainOverwrite: envParseString('OAUTH_DOMAIN_OVERWRITE'),
+	};
+}
+
 function parseApi(): ServerOptions | undefined {
 	if (!envParseBoolean('API_ENABLED', false)) return undefined;
 
 	return {
-		prefix: envParseString('API_PREFIX', '/'),
+		auth: parseApiAuth(),
+		origin: envParseString('API_ORIGIN'),
 		listenOptions: {
 			port: 8282,
 		},
@@ -74,7 +90,13 @@ export const CLIENT_OPTIONS: ClientOptions = {
 declare module '@skyra/env-utilities' {
 	interface Env {
 		API_ENABLED: BooleanString;
-		API_PREFIX: string;
+		API_ORIGIN: string;
+		CLIENT_ID: string;
+		OAUTH_COOKIE: string;
+		OAUTH_DOMAIN_OVERWRITE: string;
+		OAUTH_REDIRECT_URL: string;
+		OAUTH_SCOPE: ArrayString;
+		OAUTH_SECRET: string;
 		REDIS_URI: string;
 		WEBHOOK_ERROR_ID: string;
 		WEBHOOK_ERROR_TOKEN: string;

@@ -4,6 +4,8 @@ import { type Subcommand } from '@sapphire/plugin-subcommands';
 export class UserRoute extends Route {
 	public run(_request: Route.Request, response: Route.Response) {
 		const commandStore = this.container.stores.get('commands');
+		const categories = Array.from(new Set(commandStore.map(command => command.category)));
+
 		const commands = commandStore.map(command => {
 			const subcommand = command as unknown as Subcommand;
 			const options: Options = {
@@ -20,7 +22,12 @@ export class UserRoute extends Route {
 				});
 			return options;
 		});
-		response.json(commands);
+
+		const result = categories.map(category => ({
+			name: category,
+			commands: commands.filter(command => command.category === category),
+		}));
+		response.json(result);
 	}
 }
 
