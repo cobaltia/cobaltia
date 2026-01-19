@@ -57,9 +57,8 @@ export class UserRoute extends Route {
 		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
-			const user =
-				this.container.client.users.cache.get(userData.id) ??
-				(await this.container.client.users.fetch(userData.id));
+			const user = this.container.client.users.cache.get(userData.id);
+			if (!user) continue;
 			const wallet = userData.wallet.toString();
 			leaderboard.push({
 				id: user.id,
@@ -87,9 +86,8 @@ export class UserRoute extends Route {
 		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
-			const user =
-				this.container.client.users.cache.get(userData.id) ??
-				(await this.container.client.users.fetch(userData.id));
+			const user = this.container.client.users.cache.get(userData.id);
+			if (!user) continue;
 			const bank = userData.bankBalance.toString();
 			leaderboard.push({
 				id: user.id,
@@ -113,14 +111,13 @@ export class UserRoute extends Route {
 		const data = result.unwrap();
 		const leaderboard: { avatar: string; id: string; networth: string; rank: number; tag: string }[] = [];
 
-		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
+		const missing = data.filter((userData: any) => !this.container.client.users.cache.has(userData.id));
+		await Promise.all(missing.map(async (userData: any) => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
-			const user =
-				this.container.client.users.cache.get(userData.id) ??
-				(await this.container.client.users.fetch(userData.id));
-			const networth = (userData.net_worth ?? 0).toString();
+			const user = this.container.client.users.cache.get((userData as any).id);
+			if (!user) continue;
+			const networth = ((userData as any).net_worth ?? 0).toString();
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
@@ -147,9 +144,8 @@ export class UserRoute extends Route {
 		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
-			const user =
-				this.container.client.users.cache.get(userData.id) ??
-				(await this.container.client.users.fetch(userData.id));
+			const user = this.container.client.users.cache.get(userData.id);
+			if (!user) continue;
 			const level = userData.level;
 			leaderboard.push({
 				id: user.id,
@@ -177,9 +173,8 @@ export class UserRoute extends Route {
 		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
-			const user =
-				this.container.client.users.cache.get(userData.id) ??
-				(await this.container.client.users.fetch(userData.id));
+			const user = this.container.client.users.cache.get(userData.id);
+			if (!user) continue;
 			const socialCredit = userData.socialCredit;
 			leaderboard.push({
 				id: user.id,
@@ -203,14 +198,13 @@ export class UserRoute extends Route {
 		const data = result.unwrap();
 		const leaderboard: { avatar: string; duration: string; id: string; rank: number; tag: string }[] = [];
 
-		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.user_id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.user_id)));
+		const missing = data.filter((userData: any) => !this.container.client.users.cache.has(userData.user_id));
+		await Promise.all(missing.map(async (userData: any) => this.container.client.users.fetch(userData.user_id)));
 
 		for (const [index, userData] of data.entries()) {
-			const user =
-				this.container.client.users.cache.get(userData.user_id) ??
-				(await this.container.client.users.fetch(userData.user_id));
-			const voiceChatTime = userData.total_duration;
+			const user = this.container.client.users.cache.get((userData as any).user_id);
+			if (!user) continue;
+			const voiceChatTime = (userData as any).total_duration;
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
