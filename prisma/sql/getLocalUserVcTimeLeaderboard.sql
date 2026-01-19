@@ -5,6 +5,6 @@ WHERE v.guild_id = $1 AND v.user_id IN
 FROM voices v
 WHERE v.guild_id = $1)
 GROUP BY v.user_id, v.guild_id
-ORDER BY total_duration DESC
+ORDER BY total_duration DESC, v.user_id ASC
 LIMIT $2
 OFFSET $3;

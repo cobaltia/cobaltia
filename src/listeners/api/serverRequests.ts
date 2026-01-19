@@ -38,9 +38,9 @@ export class ServerRequests extends Listener<typeof ServerEvent.Request> {
 		});
 
 		// Log stream errors if the response pipeline fails
-		response.once('error', () => {
+		response.once('error', error => {
 			const durationMs = Date.now() - start;
-			this.container.logger.fatal(`${method} ${url} ${durationMs}ms ${ip}`);
+			this.container.logger.fatal(`${method} ${url} ${durationMs}ms ${ip} ${error.message}`);
 		});
 	}
 }

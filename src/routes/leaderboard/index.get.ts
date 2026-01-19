@@ -54,13 +54,13 @@ export class UserRoute extends Route {
 		const leaderboard: { avatar: string; id: string; rank: number; tag: string; wallet: string }[] = [];
 
 		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
+		await Promise.allSettled(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
 			const user =
 				this.container.client.users.cache.get(userData.id) ??
 				(await this.container.client.users.fetch(userData.id));
-			const wallet = userData.wallet.toString();
+			const wallet = userData.wallet.toDecimalPlaces(2).toString();
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
@@ -84,13 +84,13 @@ export class UserRoute extends Route {
 		const leaderboard: { avatar: string; bank: string; id: string; rank: number; tag: string }[] = [];
 
 		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
+		await Promise.allSettled(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
 			const user =
 				this.container.client.users.cache.get(userData.id) ??
 				(await this.container.client.users.fetch(userData.id));
-			const bank = userData.bankBalance.toString();
+			const bank = userData.bankBalance.toDecimalPlaces(2).toString();
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
@@ -114,13 +114,13 @@ export class UserRoute extends Route {
 		const leaderboard: { avatar: string; id: string; networth: string; rank: number; tag: string }[] = [];
 
 		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
+		await Promise.allSettled(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
 			const user =
 				this.container.client.users.cache.get(userData.id) ??
 				(await this.container.client.users.fetch(userData.id));
-			const networth = (userData.net_worth ?? 0).toString();
+			const networth = (userData.net_worth?.toDecimalPlaces(2) ?? 0).toString();
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
@@ -144,7 +144,7 @@ export class UserRoute extends Route {
 		const leaderboard: { avatar: string; id: string; level: number; rank: number; tag: string }[] = [];
 
 		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
+		await Promise.allSettled(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
 			const user =
@@ -174,7 +174,7 @@ export class UserRoute extends Route {
 		const leaderboard: { avatar: string; id: string; rank: number; socialCredit: number; tag: string }[] = [];
 
 		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.id)));
+		await Promise.allSettled(missing.map(async userData => this.container.client.users.fetch(userData.id)));
 
 		for (const [index, userData] of data.entries()) {
 			const user =
@@ -204,7 +204,7 @@ export class UserRoute extends Route {
 		const leaderboard: { avatar: string; duration: string; id: string; rank: number; tag: string }[] = [];
 
 		const missing = data.filter(userData => !this.container.client.users.cache.has(userData.user_id));
-		await Promise.all(missing.map(async userData => this.container.client.users.fetch(userData.user_id)));
+		await Promise.allSettled(missing.map(async userData => this.container.client.users.fetch(userData.user_id)));
 
 		for (const [index, userData] of data.entries()) {
 			const user =
