@@ -19,8 +19,6 @@ export class UserRoute extends Route {
 		const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.min(limit, 100) : 10;
 		const safeOffset = Number.isFinite(offset) && offset >= 0 ? offset : 0;
 
-		console.log(`Leaderboard request: id=${id}, limit=${safeLimit}, offset=${safeOffset}`);
-
 		switch (id) {
 			case 'wallet':
 				await this.handleWallet(safeLimit, safeOffset, response);
