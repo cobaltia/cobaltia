@@ -121,9 +121,10 @@ export class UserRoute extends Route {
 		);
 
 		for (const [index, userData] of data.entries()) {
-			const user = this.container.client.users.cache.get((userData as { id: string; net_worth: bigint }).id);
+			const typedUserData = userData as { id: string; net_worth: bigint };
+			const user = this.container.client.users.cache.get(typedUserData.id);
 			if (!user) continue;
-			const networth = ((userData as { id: string; net_worth: bigint }).net_worth ?? 0).toString();
+			const networth = (typedUserData.net_worth ?? 0).toString();
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
@@ -215,11 +216,10 @@ export class UserRoute extends Route {
 		);
 
 		for (const [index, userData] of data.entries()) {
-			const user = this.container.client.users.cache.get(
-				(userData as { total_duration: bigint; user_id: string }).user_id,
-			);
+			const typedUserData = userData as { total_duration: bigint; user_id: string };
+			const user = this.container.client.users.cache.get(typedUserData.user_id);
 			if (!user) continue;
-			const voiceChatTime = (userData as { total_duration: bigint; user_id: string }).total_duration;
+			const voiceChatTime = typedUserData.total_duration;
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
