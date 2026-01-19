@@ -42,7 +42,7 @@ function parseApiAuth(): ServerOptionsAuth | undefined {
 		cookie: envParseString('OAUTH_COOKIE'),
 		redirect: envParseString('OAUTH_REDIRECT_URL'),
 		scopes: envParseArray('OAUTH_SCOPE') as OAuth2Scopes[],
-		domainOverwrite: envParseString('OAUTH_DOMAIN_OVERWRITE', undefined),
+		domainOverwrite: envIsDefined('OAUTH_DOMAIN_OVERWRITE') ? envParseString('OAUTH_DOMAIN_OVERWRITE') : undefined,
 	};
 }
 
@@ -93,7 +93,7 @@ declare module '@skyra/env-utilities' {
 		API_ORIGIN: string;
 		CLIENT_ID: string;
 		OAUTH_COOKIE: string;
-		OAUTH_DOMAIN_OVERWRITE: string;
+		OAUTH_DOMAIN_OVERWRITE?: string;
 		OAUTH_REDIRECT_URL: string;
 		OAUTH_SCOPE: ArrayString;
 		OAUTH_SECRET: string;
