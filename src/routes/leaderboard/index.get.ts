@@ -120,7 +120,7 @@ export class UserRoute extends Route {
 			const user =
 				this.container.client.users.cache.get(userData.id) ??
 				(await this.container.client.users.fetch(userData.id));
-			const networth = (userData.net_worth?.toDecimalPlaces(2) ?? 0).toString();
+			const networth = userData.net_worth?.toDecimalPlaces(2)?.toString() ?? '0.00';
 			leaderboard.push({
 				id: user.id,
 				tag: user.tag,
