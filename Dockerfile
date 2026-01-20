@@ -37,4 +37,4 @@ EXPOSE 8282
 
 CMD ["pnpm", "run", "start"]
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl -f http://localhost:8282/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl -f http://localhost:8282/health || exit 1
