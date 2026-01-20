@@ -88,6 +88,7 @@ export async function getLocalLevel(users: string[], limit = 10, offset = 0) {
 export async function getGlobalSocialCredit(limit = 10, offset = 0) {
 	return Result.fromAsync(async () =>
 		container.prisma.user.findMany({
+			where: { socialCredit: { not: 1_000 } },
 			orderBy: [{ socialCredit: 'desc' }, { id: 'asc' }],
 			take: limit,
 			skip: offset,
@@ -98,7 +99,7 @@ export async function getGlobalSocialCredit(limit = 10, offset = 0) {
 export async function getLocalSocialCredit(users: string[], limit = 10, offset = 0) {
 	return Result.fromAsync(async () =>
 		container.prisma.user.findMany({
-			where: { id: { in: users }, socialCredit: { gt: 0 } },
+			where: { id: { in: users }, socialCredit: { not: 1_000 } },
 			orderBy: [{ socialCredit: 'desc' }, { id: 'asc' }],
 			take: limit,
 			skip: offset,
