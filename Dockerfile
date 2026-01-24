@@ -1,16 +1,15 @@
-FROM node:23 as base
+FROM node:24 AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN corepack prepare pnpm@10.1.0 --activate
 
 WORKDIR /bot
 
 COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node package.json .
 
-FROM base as builder
+FROM base AS builder
 
 COPY --chown=node:node tsconfig.base.json .
 COPY --chown=node:node src/ src/
@@ -24,7 +23,7 @@ RUN pnpm exec prisma generate
 RUN pnpm exec prisma generate --sql
 RUN pnpm run build
 
-FROM builder as runner
+FROM builder AS runner
 
 RUN apt-get update && apt-get install -y curl
 
