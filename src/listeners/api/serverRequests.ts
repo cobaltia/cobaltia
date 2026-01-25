@@ -16,6 +16,7 @@ export class ServerRequests extends Listener<typeof ServerEvent.Request> {
 		// Basic request metadata
 		const method = request.method ?? 'UNKNOWN';
 		const url = request.url ?? '';
+		const isHealthOrMetrics = url.startsWith('/health') || url.startsWith('/metrics');
 		const ip =
 			(request.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ??
 			request.socket?.remoteAddress ??
@@ -27,6 +28,11 @@ export class ServerRequests extends Listener<typeof ServerEvent.Request> {
 			const status = response.statusCode ?? 0;
 
 			const msg = `${method} ${url} ${status} ${durationMs}ms ${ip}`;
+
+			if (isHealthOrMetrics && status < 400) {
+				this.container.logger.debug(msg);
+				return;
+			}
 
 			if (status >= 500) {
 				this.container.logger.error(msg);

@@ -4,6 +4,7 @@ import { URL } from 'node:url';
 import type { Prisma } from '@prisma/client';
 import { BucketScope, LogLevel } from '@sapphire/framework';
 import type { ServerOptionsAuth, ServerOptions } from '@sapphire/plugin-api';
+import { type ScheduledTaskHandlerOptions } from '@sapphire/plugin-scheduled-tasks';
 import { Time } from '@sapphire/time-utilities';
 import type { ArrayString, BooleanString } from '@skyra/env-utilities';
 import { envIsDefined, envParseArray, envParseBoolean, envParseString, setup } from '@skyra/env-utilities';
@@ -22,6 +23,16 @@ function parseWebhookError(): WebhookClientData | null {
 	return {
 		id: envParseString('WEBHOOK_ERROR_ID'),
 		token: WEBHOOK_ERROR_TOKEN,
+	};
+}
+
+function parseWebhookLog(): WebhookClientData | null {
+	const { WEBHOOK_LOG_TOKEN } = process.env;
+	if (!WEBHOOK_LOG_TOKEN) return null;
+
+	return {
+		id: envParseString('WEBHOOK_LOG_ID'),
+		token: WEBHOOK_LOG_TOKEN,
 	};
 }
 
@@ -58,7 +69,18 @@ function parseApi(): ServerOptions | undefined {
 	};
 }
 
+function parseTasks(): ScheduledTaskHandlerOptions {
+	return {
+		bull: {
+			connection: {
+				url: parseRedisUri(),
+			},
+		},
+	};
+}
+
 export const WEBHOOK_ERROR = parseWebhookError();
+export const WEBHOOK_LOG = parseWebhookLog();
 export const REDIS_URI = parseRedisUri();
 export const PRISMA_LOGGING = parsePrismaLogging();
 
@@ -85,6 +107,7 @@ export const CLIENT_OPTIONS: ClientOptions = {
 		level: process.env.NODE_ENV === 'production' ? LogLevel.Info : LogLevel.Debug,
 	},
 	api: parseApi(),
+	tasks: parseTasks(),
 };
 
 declare module '@skyra/env-utilities' {
@@ -100,5 +123,7 @@ declare module '@skyra/env-utilities' {
 		REDIS_URI: string;
 		WEBHOOK_ERROR_ID: string;
 		WEBHOOK_ERROR_TOKEN: string;
+		WEBHOOK_LOG_ID: string;
+		WEBHOOK_LOG_TOKEN: string;
 	}
 }

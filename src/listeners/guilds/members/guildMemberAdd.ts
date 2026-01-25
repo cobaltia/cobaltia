@@ -40,14 +40,16 @@ export class GuildMemberAddListener extends Listener<typeof Events.GuildMemberAd
 	private buildEmbed(member: GuildMember) {
 		const icon = member.user.displayAvatarURL({ extension: 'png', forceStatic: false });
 		const created = new Date(member.user.createdTimestamp);
+		const description = [
+			`Registered ${bold(time(created, TimestampStyles.RelativeTime))} on ${bold(
+				time(created, TimestampStyles.LongDate),
+			)}`,
+			`Guild Member Count: ${bold(`${member.guild.memberCount}`)}`,
+		];
 		return new EmbedBuilder()
 			.setAuthor({ name: getTag(member.user), iconURL: icon })
 			.setTitle('Member Joined Server')
-			.setDescription(
-				`Registered ${bold(time(created, TimestampStyles.RelativeTime))} on ${bold(
-					time(created, TimestampStyles.LongDate),
-				)}\nGuild Member Count: ${bold(`${member.guild.memberCount}`)}`,
-			)
+			.setDescription(description.join('\n'))
 			.setFooter({ text: `User ID: ${member.id}` })
 			.setColor(Colors.Green)
 			.setTimestamp();
