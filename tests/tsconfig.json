@@ -6,7 +6,8 @@
 		"types": ["vitest/globals"],
 		"paths": {
 			"#lib/*": ["../src/lib/*"],
-			"#root/*": ["../src/*"]
+			"#root/*": ["../src/*"],
+			"#util/*": ["../src/lib/util/*"]
 		}
 	},
 	"include": [".", "../src"],

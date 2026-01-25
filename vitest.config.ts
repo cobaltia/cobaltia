@@ -6,6 +6,7 @@ export default defineConfig({
 		alias: [
 			{ find: '#lib', replacement: `${resolve('src/lib')}` },
 			{ find: '#root', replacement: `${resolve('src')}` },
+			{ find: '#util', replacement: `${resolve('src/lib/util')}` },
 		],
 	},
 	esbuild: { format: 'esm' },
