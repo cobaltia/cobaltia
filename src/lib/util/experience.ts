@@ -7,27 +7,29 @@ export function nextLevel(level: number): Option<number> {
 	return some(5 * level ** 2 + 50 * level + 100);
 }
 
-// TODO(Isidro): Make sure that I give the user the correct amount of levels not just one
 export async function handleExperience(
 	experience: number,
 	data: PrismaUser,
 ): Promise<Result<PrismaUser | false, Error>> {
-	const result = nextLevel(data.level);
-	if (result.isNone()) return err(new Error(`Level ${data.level} is not a valid level`));
-	const nextLvl = result.unwrap();
+	let currentLevel = data.level;
+	let currentExperience = data.experience + experience;
+	let leveledUp = false;
 
-	if (data.experience + experience >= nextLvl) {
-		const newExp = data.experience - nextLvl + experience;
-		const next = await container.prisma.user.update({
-			where: { id: data.id },
-			data: { experience: newExp, level: data.level + 1 },
-		});
-		return ok(next);
-	} else {
-		await container.prisma.user.update({
-			where: { id: data.id },
-			data: { experience: data.experience + experience },
-		});
-		return ok(false);
+	while (true) {
+		const requirement = nextLevel(currentLevel);
+		if (requirement.isNone()) return err(new Error(`Level ${currentLevel} is not a valid level`));
+		const nextLevelRequirement = requirement.unwrap();
+		if (currentExperience < nextLevelRequirement) break;
+
+		currentExperience -= nextLevelRequirement;
+		currentLevel += 1;
+		leveledUp = true;
 	}
+
+	const updated = await container.prisma.user.update({
+		where: { id: data.id },
+		data: { experience: currentExperience, level: currentLevel },
+	});
+
+	return leveledUp ? ok(updated) : ok(false);
 }

@@ -39,6 +39,7 @@
 		"@sapphire/framework": "^5.5.0",
 		"@sapphire/plugin-api": "^8.3.1",
 		"@sapphire/plugin-pattern-commands": "^6.0.3",
+		"@sapphire/plugin-scheduled-tasks": "^10.0.4",
 		"@sapphire/plugin-subcommands": "^7.0.1",
 		"@sapphire/ratelimits": "^2.4.11",
 		"@sapphire/result": "^2.8.0",

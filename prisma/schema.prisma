@@ -17,16 +17,20 @@ model Client {
   tax         Decimal  @default(7) @map("tax")
   executives  String[] @default([]) @map("executives")
   ministers   String[] @default([]) @map("ministers")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("client")
 }
 
 model Guild {
-  id               String  @id @db.VarChar(20)
-  logChannelId     String? @map("log_channel_id") @db.VarChar(20)
-  welcomeChannelId String? @map("welcome_channel_id") @db.VarChar(20)
-  voiceChannelId   String? @map("voice_channel_id") @db.VarChar(20)
-  welcomeMessage   String  @default("Welcome to {guild}, {user}!") @map("welcome_message")
+  id               String   @id @db.VarChar(20)
+  logChannelId     String?  @map("log_channel_id") @db.VarChar(20)
+  welcomeChannelId String?  @map("welcome_channel_id") @db.VarChar(20)
+  voiceChannelId   String?  @map("voice_channel_id") @db.VarChar(20)
+  welcomeMessage   String   @default("Welcome to {guild}, {user}!") @map("welcome_message")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("guilds")
 }
@@ -40,6 +44,8 @@ model User {
   experience      Int               @default(0) @map("experience")
   level           Int               @default(0) @map("level")
   socialCredit    Int               @default(1000) @map("social_credit")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
   Voice           Voice[]
   BankTransaction BankTransaction[]
   Inventory       Inventory[]
@@ -48,10 +54,12 @@ model User {
 }
 
 model Inventory {
-  id       String @id @default(cuid())
-  userId   String @map("user_id") @db.VarChar(20)
-  itemId   String @map("item_id") @db.VarChar(20)
-  quantity Int    @default(0) @map("quantity")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id") @db.VarChar(20)
+  itemId    String   @map("item_id") @db.VarChar(20)
+  quantity  Int      @default(0) @map("quantity")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -68,6 +76,8 @@ model Voice {
   date      DateTime @default(now()) @map("date")
   duration  Int      @default(0) @map("duration")
   earned    Decimal  @default(0) @map("earned")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("voices")
 }
@@ -80,14 +90,18 @@ model BankTransaction {
   account     User        @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   String      @map("account_id")
   date        DateTime    @default(now()) @map("date")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @default(now()) @updatedAt @map("updated_at")
 
   @@map("bank_transactions")
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  name        String   @map("name")
-  enabled     Boolean  @default(false) @map("enabled")
+  id        String   @id @default(cuid())
+  name      String   @unique() @map("name")
+  enabled   Boolean  @default(false) @map("enabled")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("events")
 }

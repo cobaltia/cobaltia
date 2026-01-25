@@ -48,11 +48,11 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 					value: experience,
 				});
 				if (data === false) return;
-				// TODO(Isidro): msg is deleted instantly fix it
 				const msg = await message.channel.send(
 					`Congratulations ${message.author}, you have leveled up to level ${data.level}!`,
 				);
-				await setTimeout(30 * Time.Second, msg.delete());
+				await setTimeout(30 * Time.Second);
+				await msg.delete().catch(() => null);
 			},
 			err: async error => this.handleErr(error),
 		});
