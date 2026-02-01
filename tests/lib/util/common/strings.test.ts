@@ -11,7 +11,8 @@ describe('getDifference', () => {
 	});
 
 	it('escapes markdown characters before diffing', () => {
-		expect(getDifference('**bold**', '**bold**!')).toBe('\\*\\*bold~~\\*\\*~~**\\*\\*!**');
+		const diff = getDifference('**bold**', '**bold**!');
+		expect(diff).toBe(String.raw`\*\*bold\*\***!**`);
 	});
 });
 
