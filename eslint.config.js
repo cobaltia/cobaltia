@@ -3,8 +3,6 @@ import node from 'eslint-config-neon/node';
 import prettier from 'eslint-config-neon/prettier';
 import typescript from 'eslint-config-neon/typescript';
 
-const tsFiles = ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'];
-
 /**
  * @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigArray}
  */
@@ -14,10 +12,10 @@ const config = [
 	},
 	...common,
 	...node,
-	...typescript.map(tsConfig => (tsConfig.files ? tsConfig : { ...tsConfig, files: tsFiles })),
+	...typescript,
 	...prettier,
 	{
-		files: tsFiles,
+		files: ['**/*.ts', '**/*.tsx'],
 		languageOptions: {
 			parserOptions: {
 				project: ['./tsconfig.eslint.json'],
