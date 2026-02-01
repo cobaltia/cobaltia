@@ -21,7 +21,7 @@
 		"lint": "eslint --fix --ext ts src tests",
 		"format": "prettier --write .",
 		"start": "node --enable-source-maps dist/cobaltia.js",
-		"postinstall": "husky install",
+		"postinstall": "husky",
 		"prisma:push": "pnpm exec prisma generate && prisma db push",
 		"test": "vitest run",
 		"test:format": "prettier --check ."

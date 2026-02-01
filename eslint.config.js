@@ -8,7 +8,7 @@ import typescript from 'eslint-config-neon/typescript';
  */
 const config = [
 	{
-		ignores: ['**/dist/*', 'eslint.config.js'],
+		ignores: ['**/dist/**', 'eslint.config.js'],
 	},
 	...common,
 	...node,
