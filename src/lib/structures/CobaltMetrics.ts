@@ -263,7 +263,7 @@ export class CobaltMetrics {
 				});
 
 				const totalMoney = result[0].total_money ? new Decimal(result[0].total_money) : new Decimal(0);
-				const clientMoney = clientResult?.bankBalance ? clientResult.bankBalance : new Decimal(0);
+				const clientMoney = clientResult?.bankBalance ?? new Decimal(0);
 				const total = totalMoney.add(clientMoney);
 				this.set(total.toNumber());
 			},
