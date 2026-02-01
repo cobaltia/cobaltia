@@ -131,12 +131,7 @@ function getCommandLine(command: Command | Subcommand) {
 	return `**Command**: ${command.location.full}`;
 }
 
-function getOptionsLine(
-	options:
-		| ChatInputCommand.Interaction['options']
-		| ChatInputCommandInteraction['options']
-		| ContextMenuCommandInteraction['options'],
-) {
+function getOptionsLine(options: ChatInputCommand.Interaction['options'] | ContextMenuCommandInteraction['options']) {
 	if (options.data.length === 0) return '**Options**: None';
 
 	const mappedOptions = [];

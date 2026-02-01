@@ -15,11 +15,9 @@ export class UserRoute extends Route {
 				subcommands: null,
 			};
 			if (subcommand.options.subcommands)
-				options.subcommands = subcommand.options.subcommands.map(subcommand => {
-					return {
-						name: subcommand.name,
-					};
-				});
+				options.subcommands = subcommand.options.subcommands.map(subcommand => ({
+					name: subcommand.name,
+				}));
 			return options;
 		});
 

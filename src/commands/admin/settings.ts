@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-base-to-string */
 import { Command, Result } from '@sapphire/framework';
 import {
 	ActionRowBuilder,
