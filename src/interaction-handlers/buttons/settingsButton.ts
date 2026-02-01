@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-base-to-string */
 import { InteractionHandler, InteractionHandlerTypes, Result } from '@sapphire/framework';
 import {
 	EmbedBuilder,

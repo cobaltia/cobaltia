@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Piece } from '@sapphire/framework';
 import { type Awaitable } from '@sapphire/utilities';
 import { type ChatInputCommandInteraction } from 'discord.js';

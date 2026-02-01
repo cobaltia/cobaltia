@@ -59,37 +59,36 @@ export function flattenGuild(guild: Guild): FlattenedGuild {
 	};
 }
 
-export interface FlattenedGuild
-	extends Pick<
-		Guild,
-		| 'afkChannelId'
-		| 'afkTimeout'
-		| 'applicationId'
-		| 'approximateMemberCount'
-		| 'approximatePresenceCount'
-		| 'available'
-		| 'banner'
-		| 'defaultMessageNotifications'
-		| 'description'
-		| 'explicitContentFilter'
-		| 'features'
-		| 'icon'
-		| 'id'
-		| 'joinedTimestamp'
-		| 'mfaLevel'
-		| 'name'
-		| 'ownerId'
-		| 'partnered'
-		| 'preferredLocale'
-		| 'premiumSubscriptionCount'
-		| 'premiumTier'
-		| 'splash'
-		| 'systemChannelId'
-		| 'vanityURLCode'
-		| 'verificationLevel'
-		| 'verified'
-		| 'widgetEnabled'
-	> {
+export interface FlattenedGuild extends Pick<
+	Guild,
+	| 'afkChannelId'
+	| 'afkTimeout'
+	| 'applicationId'
+	| 'approximateMemberCount'
+	| 'approximatePresenceCount'
+	| 'available'
+	| 'banner'
+	| 'defaultMessageNotifications'
+	| 'description'
+	| 'explicitContentFilter'
+	| 'features'
+	| 'icon'
+	| 'id'
+	| 'joinedTimestamp'
+	| 'mfaLevel'
+	| 'name'
+	| 'ownerId'
+	| 'partnered'
+	| 'preferredLocale'
+	| 'premiumSubscriptionCount'
+	| 'premiumTier'
+	| 'splash'
+	| 'systemChannelId'
+	| 'vanityURLCode'
+	| 'verificationLevel'
+	| 'verified'
+	| 'widgetEnabled'
+> {
 	channels: FlattenedGuildChannel[];
 
 	roles: FlattenedRole[];
