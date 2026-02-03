@@ -14,6 +14,9 @@ importers:
       '@prisma/client':
         specifier: ^6.12.0
         version: 6.12.0(prisma@6.12.0(typescript@5.9.3))(typescript@5.9.3)
+      '@sapphire/bitfield':
+        specifier: ^1.2.4
+        version: 1.2.4
       '@sapphire/decorators':
         specifier: ^6.2.0
         version: 6.2.0
@@ -885,6 +888,10 @@ packages:
 
   '@sapphire/async-queue@1.5.5':
     resolution: {integrity: sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+
+  '@sapphire/bitfield@1.2.4':
+    resolution: {integrity: sha512-x0Zvb5jbn8A9fOdWksvxPuXdHGzk6v0Z5ogcYKKg06Az/Ih2WupKZ88CIX1/pZWk6vBWqH5LAU0lOVtEaw7D/A==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
   '@sapphire/cron@1.2.1':
@@ -1792,18 +1799,12 @@ packages:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
 
-  discord-api-types@0.37.120:
-    resolution: {integrity: sha512-7xpNK0EiWjjDFp2nAhHXezE4OUWm7s1zhc/UXXN6hnFFU8dfoPHgV0Hx0RPiCa3ILRpdeh152icc68DGCyXYIw==}
-
   discord-api-types@0.38.38:
     resolution: {integrity: sha512-7qcM5IeZrfb+LXW07HvoI5L+j4PQeMZXEkSm1htHAHh4Y9JSMXBWjy/r7zmUCOj4F7zNjMcm7IMWr131MT2h0Q==}
 
   discord.js@14.25.1:
     resolution: {integrity: sha512-2l0gsPOLPs5t6GFZfQZKnL1OJNYFcuC/ETWsW4VtKVD/tg4ICa9x+jb9bkPffkMdRpRpuUaO/fKkHCBeiCKh8g==}
     engines: {node: '>=18'}
-
-  dnd5e-dice-roller@0.0.13:
-    resolution: {integrity: sha512-2gc/ocy4J3KRG+32hGOJyA+wVYP/YhP49rG8dM3/0VZvzoUbMAcCt2z0Kt95pX4s5EA1xJEVJEAgwpDGdl/L7A==}
 
   dnd5e-dice-roller@0.0.15:
     resolution: {integrity: sha512-aVXc6eyC8aeoEacS/ihr7lYaEuBUteNFHKaN795fjwS8PtQMMz/N01LM1clf/YNWMjm8I5QmdvQ/CETOiSOW4g==}
@@ -4807,6 +4808,8 @@ snapshots:
 
   '@sapphire/async-queue@1.5.5': {}
 
+  '@sapphire/bitfield@1.2.4': {}
+
   '@sapphire/cron@1.2.1':
     dependencies:
       '@sapphire/utilities': 3.18.2
@@ -5623,10 +5626,10 @@ snapshots:
       '@skyra/env-utilities': 2.0.1
       '@skyra/jaro-winkler': 1.1.1
       dayjs: 1.11.13
-      diff: 5.2.2
-      discord-api-types: 0.37.120
+      diff: 8.0.3
+      discord-api-types: 0.38.38
       discord.js: 14.25.1
-      dnd5e-dice-roller: 0.0.13
+      dnd5e-dice-roller: 0.0.15(prisma@6.12.0(typescript@5.9.3))(typescript@5.9.3)
       ioredis: 5.9.2
       prom-client: 15.1.3
     transitivePeerDependencies:
@@ -5798,8 +5801,6 @@ snapshots:
     dependencies:
       path-type: 4.0.0
 
-  discord-api-types@0.37.120: {}
-
   discord-api-types@0.38.38: {}
 
   discord.js@14.25.1:
@@ -5820,8 +5821,6 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-
-  dnd5e-dice-roller@0.0.13: {}
 
   dnd5e-dice-roller@0.0.15(prisma@6.12.0(typescript@5.9.3))(typescript@5.9.3):
     dependencies:

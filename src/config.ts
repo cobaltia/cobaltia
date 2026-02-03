@@ -10,6 +10,7 @@ import type { ArrayString, BooleanString } from '@skyra/env-utilities';
 import { envIsDefined, envParseArray, envParseBoolean, envParseString, setup } from '@skyra/env-utilities';
 import type { OAuth2Scopes, ClientOptions, WebhookClientData } from 'discord.js';
 import { GatewayIntentBits, Partials } from 'discord.js';
+import { transformOauthGuildsAndUser } from '#lib/api/utils';
 
 process.env.NODE_ENV ??= 'development';
 export const OWNERS = ['288703114473635841'];
@@ -53,6 +54,7 @@ function parseApiAuth(): ServerOptionsAuth | undefined {
 		cookie: envParseString('OAUTH_COOKIE'),
 		redirect: envParseString('OAUTH_REDIRECT_URL'),
 		scopes: envParseArray('OAUTH_SCOPE') as OAuth2Scopes[],
+		transformers: [transformOauthGuildsAndUser],
 		domainOverwrite: envIsDefined('OAUTH_DOMAIN_OVERWRITE') ? envParseString('OAUTH_DOMAIN_OVERWRITE') : undefined,
 	};
 }
