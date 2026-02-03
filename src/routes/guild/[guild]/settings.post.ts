@@ -3,6 +3,8 @@ import { Time } from '@sapphire/time-utilities';
 import { PermissionFlagsBits } from 'discord.js';
 import { authenticated, ratelimit } from '#lib/api/utils';
 
+const DEFAULT_WELCOME_MESSAGE = 'Welcome to {guild}, {user}!';
+
 interface SetupRequestBody {
 	logChannelId?: string | null;
 	voiceChannelId?: string | null;
@@ -29,12 +31,18 @@ export class UserRoute extends Route {
 		}
 
 		const { logChannelId, welcomeChannelId, voiceChannelId, welcomeMessage } = body;
+		const normalizedWelcomeMessage =
+			welcomeMessage === null
+				? DEFAULT_WELCOME_MESSAGE
+				: typeof welcomeMessage === 'string' && welcomeMessage.trim() === ''
+					? DEFAULT_WELCOME_MESSAGE
+					: welcomeMessage;
 
 		if (
 			(!isNullableString(logChannelId) && logChannelId !== undefined) ||
 			(!isNullableString(welcomeChannelId) && welcomeChannelId !== undefined) ||
 			(!isNullableString(voiceChannelId) && voiceChannelId !== undefined) ||
-			(welcomeMessage !== undefined && typeof welcomeMessage !== 'string')
+			(welcomeMessage !== undefined && welcomeMessage !== null && typeof welcomeMessage !== 'string')
 		) {
 			response.status(HttpCodes.BadRequest).json({ error: 'Invalid payload types' });
 			return;
@@ -44,7 +52,7 @@ export class UserRoute extends Route {
 			logChannelId === undefined &&
 			welcomeChannelId === undefined &&
 			voiceChannelId === undefined &&
-			welcomeMessage === undefined
+			normalizedWelcomeMessage === undefined
 		) {
 			response.status(HttpCodes.BadRequest).json({ error: 'No settings provided' });
 			return;
@@ -87,7 +95,7 @@ export class UserRoute extends Route {
 		if (logChannelId !== undefined) updateData.logChannelId = logChannelId ?? null;
 		if (welcomeChannelId !== undefined) updateData.welcomeChannelId = welcomeChannelId ?? null;
 		if (voiceChannelId !== undefined) updateData.voiceChannelId = voiceChannelId ?? null;
-		if (welcomeMessage !== undefined) updateData.welcomeMessage = welcomeMessage;
+		if (normalizedWelcomeMessage !== undefined) updateData.welcomeMessage = normalizedWelcomeMessage;
 
 		const createData: {
 			id: string;
