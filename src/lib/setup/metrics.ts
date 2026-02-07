@@ -1,13 +1,13 @@
 import { container } from '@sapphire/framework';
-import { AnalyticsRecorder } from '#lib/structures/AnalyticsRecorder';
 import { CobaltMetrics } from '#lib/structures/CobaltMetrics';
+import { CobaltAnalytics } from '#lib/structures/CobaltAnalytics';
 
 container.metrics = new CobaltMetrics();
-container.analytics = new AnalyticsRecorder();
+container.analytics = new CobaltAnalytics();
 
 declare module '@sapphire/framework' {
 	interface Container {
-		analytics: AnalyticsRecorder;
+		analytics: CobaltAnalytics;
 		metrics: CobaltMetrics;
 	}
 }

@@ -1,7 +1,7 @@
 import type { AuditAction, EntityType, ExperienceReason, ItemAction, MoneyReason } from '@prisma/client';
 import { container } from '@sapphire/framework';
 
-export class AnalyticsRecorder {
+export class CobaltAnalytics {
 	public recordCommand(data: {
 		channelId: string;
 		command: string;

@@ -106,35 +106,6 @@ model Event {
   @@map("events")
 }
 
-enum Transaction {
-  DEPOSIT
-  WITHDRAW
-  TRANSFER
-}
-
-enum MoneyReason {
-  BOUNTY_CLAIM
-  DAILY
-  DEATH
-  GAMBLING
-  ROB
-  STORE
-  TAX
-  VOICE
-  WORK
-}
-
-enum ExperienceReason {
-  MESSAGE
-  VOICE
-}
-
-enum ItemAction {
-  BUY
-  SELL
-  USE
-}
-
 model CommandHistory {
   id        String   @id @default(cuid())
   command   String   @map("command") @db.VarChar(50)
@@ -207,31 +178,6 @@ model ItemHistory {
   @@map("item_history")
 }
 
-enum EntityType {
-  USER
-  GUILD
-  CHANNEL
-}
-
-enum AuditAction {
-  COMMAND_SUCCESS
-  COMMAND_ERROR
-  MONEY_EARNED
-  MONEY_LOST
-  EXPERIENCE_GAINED
-  LEVEL_UP
-  ITEM_BOUGHT
-  ITEM_SOLD
-  ITEM_USED
-  BANK_DEPOSIT
-  BANK_WITHDRAW
-  BANK_TRANSFER
-  SOCIAL_CREDIT_ADDED
-  SOCIAL_CREDIT_REMOVED
-  GOVERNMENT_ROLE_ADDED
-  GOVERNMENT_ROLE_REMOVED
-}
-
 model DiscordEntity {
   id        String     @id @db.VarChar(20)
   type      EntityType @map("type")
@@ -259,4 +205,58 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_log")
+}
+
+enum Transaction {
+  DEPOSIT
+  WITHDRAW
+  TRANSFER
+}
+
+enum MoneyReason {
+  BOUNTY_CLAIM
+  DAILY
+  DEATH
+  GAMBLING
+  ROB
+  STORE
+  TAX
+  VOICE
+  WORK
+}
+
+enum ExperienceReason {
+  MESSAGE
+  VOICE
+}
+
+enum ItemAction {
+  BUY
+  SELL
+  USE
+}
+
+enum EntityType {
+  USER
+  GUILD
+  CHANNEL
+}
+
+enum AuditAction {
+  COMMAND_SUCCESS
+  COMMAND_ERROR
+  MONEY_EARNED
+  MONEY_LOST
+  EXPERIENCE_GAINED
+  LEVEL_UP
+  ITEM_BOUGHT
+  ITEM_SOLD
+  ITEM_USED
+  BANK_DEPOSIT
+  BANK_WITHDRAW
+  BANK_TRANSFER
+  SOCIAL_CREDIT_ADDED
+  SOCIAL_CREDIT_REMOVED
+  GOVERNMENT_ROLE_ADDED
+  GOVERNMENT_ROLE_REMOVED
 }
