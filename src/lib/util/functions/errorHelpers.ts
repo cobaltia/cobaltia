@@ -46,11 +46,11 @@ export async function handleChatInputOrContextMenuCommandError(
 
 	await sendErrorChannel(interaction, command, error);
 
-	container.metrics.incrementCommand({
+	container.analytics.recordCommand({
 		command: interaction.commandName,
-		user: interaction.user.id,
-		guild: interaction.guildId ?? 'none',
-		channel: interaction.channelId,
+		userId: interaction.user.id,
+		guildId: interaction.guildId ?? 'none',
+		channelId: interaction.channelId,
 		success: false,
 	});
 

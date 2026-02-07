@@ -111,3 +111,152 @@ enum Transaction {
   WITHDRAW
   TRANSFER
 }
+
+enum MoneyReason {
+  BOUNTY_CLAIM
+  DAILY
+  DEATH
+  GAMBLING
+  ROB
+  STORE
+  TAX
+  VOICE
+  WORK
+}
+
+enum ExperienceReason {
+  MESSAGE
+  VOICE
+}
+
+enum ItemAction {
+  BUY
+  SELL
+  USE
+}
+
+model CommandHistory {
+  id        String   @id @default(cuid())
+  command   String   @map("command") @db.VarChar(50)
+  userId    String   @map("user_id") @db.VarChar(20)
+  guildId   String   @map("guild_id") @db.VarChar(20)
+  channelId String   @map("channel_id") @db.VarChar(20)
+  success   Boolean  @map("success")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([guildId])
+  @@map("command_history")
+}
+
+model MoneyHistory {
+  id        String      @id @default(cuid())
+  userId    String      @map("user_id") @db.VarChar(20)
+  guildId   String      @map("guild_id") @db.VarChar(20)
+  channelId String      @map("channel_id") @db.VarChar(20)
+  command   String      @map("command") @db.VarChar(50)
+  reason    MoneyReason @map("reason")
+  amount    Decimal     @map("amount")
+  earned    Boolean     @map("earned")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([reason])
+  @@map("money_history")
+}
+
+model ExperienceHistory {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id") @db.VarChar(20)
+  reason    ExperienceReason @map("reason")
+  amount    Int              @map("amount")
+  levelUp   Boolean          @default(false) @map("level_up")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([reason])
+  @@map("experience_history")
+}
+
+model MessageHistory {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id") @db.VarChar(20)
+  guildId   String   @map("guild_id") @db.VarChar(20)
+  channelId String   @map("channel_id") @db.VarChar(20)
+  count     Int      @default(1) @map("count")
+  date      DateTime @default(now()) @map("date") @db.Date
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([userId, guildId, channelId, date])
+  @@map("message_history")
+}
+
+model ItemHistory {
+  id        String     @id @default(cuid())
+  userId    String     @map("user_id") @db.VarChar(20)
+  guildId   String     @map("guild_id") @db.VarChar(20)
+  channelId String     @map("channel_id") @db.VarChar(20)
+  itemId    String     @map("item_id") @db.VarChar(20)
+  action    ItemAction @map("action")
+  quantity  Int        @default(1) @map("quantity")
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([itemId])
+  @@map("item_history")
+}
+
+enum EntityType {
+  USER
+  GUILD
+  CHANNEL
+}
+
+enum AuditAction {
+  COMMAND_SUCCESS
+  COMMAND_ERROR
+  MONEY_EARNED
+  MONEY_LOST
+  EXPERIENCE_GAINED
+  LEVEL_UP
+  ITEM_BOUGHT
+  ITEM_SOLD
+  ITEM_USED
+  BANK_DEPOSIT
+  BANK_WITHDRAW
+  BANK_TRANSFER
+  SOCIAL_CREDIT_ADDED
+  SOCIAL_CREDIT_REMOVED
+  GOVERNMENT_ROLE_ADDED
+  GOVERNMENT_ROLE_REMOVED
+}
+
+model DiscordEntity {
+  id        String     @id @db.VarChar(20)
+  type      EntityType @map("type")
+  name      String     @map("name") @db.VarChar(100)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@map("discord_entities")
+}
+
+model AuditLog {
+  id         String      @id @default(cuid())
+  action     AuditAction @map("action")
+  userId     String      @map("user_id") @db.VarChar(20)
+  guildId    String?     @map("guild_id") @db.VarChar(20)
+  channelId  String?     @map("channel_id") @db.VarChar(20)
+  targetId   String?     @map("target_id") @db.VarChar(50)
+  targetType String?     @map("target_type") @db.VarChar(20)
+  metadata   String?     @map("metadata") @db.VarChar(255)
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([guildId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_log")
+}

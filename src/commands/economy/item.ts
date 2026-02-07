@@ -91,21 +91,23 @@ export class ItemCommand extends Subcommand {
 			data: { wallet: { increment: item.sellPrice * amount } },
 		});
 
-		this.container.metrics.incrementItemLost({
-			item: item.name,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'sell',
+		this.container.analytics.recordItem({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			itemId: item.name,
+			action: 'SELL',
+			quantity: amount,
 		});
 
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'store',
-			value: item.sellPrice * amount,
+			reason: 'STORE',
+			amount: item.sellPrice * amount,
+			earned: true,
 		});
 
 		return interaction.editReply(

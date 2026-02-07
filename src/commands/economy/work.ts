@@ -39,22 +39,24 @@ export class WorkCommand extends Command {
 			data: { bankBalance: { increment: tax } },
 		});
 
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'work',
-			value: money - tax,
+			reason: 'WORK',
+			amount: money - tax,
+			earned: true,
 		});
 
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: this.container.client.id!,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: 'none',
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'tax',
-			value: tax,
+			reason: 'TAX',
+			amount: tax,
+			earned: true,
 		});
 
 		const embed = new EmbedBuilder().setDescription(

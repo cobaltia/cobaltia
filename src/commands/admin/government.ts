@@ -114,6 +114,16 @@ export class GovernmentCommand extends Subcommand {
 			},
 		});
 
+		this.container.analytics.audit({
+			action: 'GOVERNMENT_ROLE_ADDED',
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			targetId: user.id,
+			targetType: 'user',
+			metadata: `Added ${user.tag} as executive`,
+		});
+
 		await interaction.editReply(`Added ${user.tag} to the executive group.`);
 	}
 
@@ -134,6 +144,16 @@ export class GovernmentCommand extends Subcommand {
 			data: {
 				ministers: { push: user.id },
 			},
+		});
+
+		this.container.analytics.audit({
+			action: 'GOVERNMENT_ROLE_ADDED',
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			targetId: user.id,
+			targetType: 'user',
+			metadata: `Added ${user.tag} as minister`,
 		});
 
 		await interaction.editReply(`Added ${user.tag} to the minister group.`);
@@ -160,6 +180,16 @@ export class GovernmentCommand extends Subcommand {
 			},
 		});
 
+		this.container.analytics.audit({
+			action: 'GOVERNMENT_ROLE_REMOVED',
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			targetId: user.id,
+			targetType: 'user',
+			metadata: `Removed ${user.tag} from executive`,
+		});
+
 		await interaction.editReply(`Removed ${user.tag} from the executive group.`);
 	}
 
@@ -182,6 +212,16 @@ export class GovernmentCommand extends Subcommand {
 			data: {
 				ministers: { set: updatedMinisters },
 			},
+		});
+
+		this.container.analytics.audit({
+			action: 'GOVERNMENT_ROLE_REMOVED',
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			targetId: user.id,
+			targetType: 'user',
+			metadata: `Removed ${user.tag} from minister`,
 		});
 
 		await interaction.editReply(`Removed ${user.tag} from the minister group.`);

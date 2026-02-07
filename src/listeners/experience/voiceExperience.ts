@@ -51,11 +51,11 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 
 		await result.match({
 			ok: async data => {
-				this.container.metrics.incrementExperience({
-					user: member.id,
-					level_up: Boolean(data),
-					reason: 'voice',
-					value: amount,
+				this.container.analytics.recordExperience({
+					userId: member.id,
+					reason: 'VOICE',
+					amount,
+					levelUp: Boolean(data),
 				});
 				// TODO(Isidro): msg is deleted instantly fix it
 				if (data === false) return;
@@ -64,20 +64,14 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 			err: async error => this.handleErr(error),
 		});
 
-		this.container.metrics.incrementVoiceTime({
-			user: member.id,
-			guild: member.guild.id,
-			channel: previous.channelId ?? 'none',
-			value: elapsed,
-		});
-
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: member.id,
+			guildId: member.guild.id,
+			channelId: previous.channelId ?? 'none',
 			command: 'none',
-			user: member.id,
-			guild: member.guild.id,
-			channel: previous.channelId ?? 'none',
-			reason: 'voice',
-			value: total,
+			reason: 'VOICE',
+			amount: total,
+			earned: true,
 		});
 
 		await this.container.prisma.user.update({

@@ -100,21 +100,23 @@ export class PlayCommand extends Subcommand {
 				data: { wallet: { increment: won - tax } },
 			});
 
-			this.container.metrics.incrementMoneyEarned({
+			this.container.analytics.recordMoney({
+				userId: interaction.user.id,
+				guildId: interaction.guildId ?? 'none',
+				channelId: interaction.channelId,
 				command: interaction.commandName,
-				user: interaction.user.id,
-				guild: interaction.guildId ?? 'none',
-				channel: interaction.channelId,
-				reason: 'gambling',
-				value: won - tax,
+				reason: 'GAMBLING',
+				amount: won - tax,
+				earned: true,
 			});
-			this.container.metrics.incrementMoneyEarned({
+			this.container.analytics.recordMoney({
+				userId: this.container.client.id!,
+				guildId: interaction.guildId ?? 'none',
+				channelId: interaction.channelId,
 				command: interaction.commandName,
-				user: 'none',
-				guild: interaction.guildId ?? 'none',
-				channel: interaction.channelId,
-				reason: 'tax',
-				value: tax,
+				reason: 'TAX',
+				amount: tax,
+				earned: true,
 			});
 
 			embed
@@ -135,21 +137,23 @@ export class PlayCommand extends Subcommand {
 				where: { id: this.container.client.id! },
 				data: { bankBalance: { increment: amountToGamble } },
 			});
-			this.container.metrics.incrementMoneyLost({
+			this.container.analytics.recordMoney({
+				userId: interaction.user.id,
+				guildId: interaction.guildId ?? 'none',
+				channelId: interaction.channelId,
 				command: interaction.commandName,
-				user: interaction.user.id,
-				guild: interaction.guildId ?? 'none',
-				channel: interaction.channelId,
-				reason: 'gambling',
-				value: amountToGamble.toNumber(),
+				reason: 'GAMBLING',
+				amount: amountToGamble.toNumber(),
+				earned: false,
 			});
-			this.container.metrics.incrementMoneyEarned({
+			this.container.analytics.recordMoney({
+				userId: this.container.client.id!,
+				guildId: interaction.guildId ?? 'none',
+				channelId: interaction.channelId,
 				command: interaction.commandName,
-				user: 'none',
-				guild: interaction.guildId ?? 'none',
-				channel: interaction.channelId,
-				reason: 'gambling',
-				value: amountToGamble.toNumber(),
+				reason: 'GAMBLING',
+				amount: amountToGamble.toNumber(),
+				earned: true,
 			});
 			embed
 				.setDescription(

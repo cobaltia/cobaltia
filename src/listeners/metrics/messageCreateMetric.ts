@@ -12,10 +12,10 @@ export class MessageCreateMetric extends Listener<typeof Events.MessageCreate> {
 
 	public run(message: Message) {
 		if (message.author.bot || !isGuildMessage(message) || message.system || message.webhookId !== null) return;
-		this.container.metrics.incrementMessage({
-			user: message.author.id,
-			guild: message.guildId,
-			channel: message.channelId,
+		this.container.analytics.recordMessage({
+			userId: message.author.id,
+			guildId: message.guildId,
+			channelId: message.channelId,
 		});
 	}
 }

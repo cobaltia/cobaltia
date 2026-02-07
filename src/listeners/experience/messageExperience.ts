@@ -41,11 +41,11 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 		await result.match({
 			ok: async data => {
 				ratelimit.consume();
-				this.container.metrics.incrementExperience({
-					user: message.author.id,
-					level_up: Boolean(data),
-					reason: 'message',
-					value: experience,
+				this.container.analytics.recordExperience({
+					userId: message.author.id,
+					reason: 'MESSAGE',
+					amount: experience,
+					levelUp: Boolean(data),
 				});
 				if (data === false) return;
 				const msg = await message.channel.send(

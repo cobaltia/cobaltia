@@ -112,22 +112,24 @@ export class RobCommand extends Command {
 			data: { wallet: { increment: amount }, bounty: { increment: bounty } },
 		});
 
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'rob',
-			value: amount,
+			reason: 'ROB',
+			amount,
+			earned: true,
 		});
 
-		this.container.metrics.incrementMoneyLost({
+		this.container.analytics.recordMoney({
+			userId: victim.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: victim.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'rob',
-			value: amount,
+			reason: 'ROB',
+			amount,
+			earned: false,
 		});
 
 		const message = [
@@ -163,22 +165,24 @@ export class RobCommand extends Command {
 			data: { wallet: robber.wallet.lessThan(0) ? robber.wallet : 0, bounty: 0 },
 		});
 
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: victim.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: victim.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'bounty_claim',
-			value: robber.bounty.toNumber(),
+			reason: 'BOUNTY_CLAIM',
+			amount: robber.bounty.toNumber(),
+			earned: true,
 		});
 
-		this.container.metrics.incrementMoneyLost({
+		this.container.analytics.recordMoney({
+			userId: robber.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: robber.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'death',
-			value: robber.wallet.lessThan(0) ? robber.wallet.toNumber() : 0,
+			reason: 'DEATH',
+			amount: robber.wallet.lessThan(0) ? robber.wallet.toNumber() : 0,
+			earned: false,
 		});
 
 		return `You tried to rob ${victim} but they fought back and killed you. They claimed your bounty of ${formatMoney(
@@ -197,13 +201,14 @@ export class RobCommand extends Command {
 			data: { wallet: { decrement: fine }, bounty: 0 },
 		});
 
-		this.container.metrics.incrementMoneyLost({
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'death',
-			value: fine,
+			reason: 'DEATH',
+			amount: fine,
+			earned: false,
 		});
 
 		return `You were caught by the police and had to pay a fine of ${formatMoney(
@@ -228,22 +233,24 @@ export class RobCommand extends Command {
 			data: { wallet: 0 },
 		});
 
-		this.container.metrics.incrementMoneyLost({
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'rob',
-			value: robber.wallet.toNumber(),
+			reason: 'ROB',
+			amount: robber.wallet.toNumber(),
+			earned: false,
 		});
 
-		this.container.metrics.incrementMoneyEarned({
+		this.container.analytics.recordMoney({
+			userId: victim.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
 			command: interaction.commandName,
-			user: victim.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			reason: 'rob',
-			value: robber.wallet.toNumber(),
+			reason: 'ROB',
+			amount: robber.wallet.toNumber(),
+			earned: true,
 		});
 
 		return `${victim} took advantage of your attempt to rob them and took all your money. You lost all your money.`;

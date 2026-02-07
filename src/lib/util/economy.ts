@@ -189,13 +189,14 @@ export async function handleBuy(
 		},
 	});
 
-	container.metrics.incrementMoneyLost({
+	container.analytics.recordMoney({
+		userId: interaction.user.id,
+		guildId: interaction.guildId ?? 'none',
+		channelId: interaction.channelId,
 		command: interaction.commandName,
-		user: interaction.user.id,
-		guild: interaction.guildId ?? 'none',
-		channel: interaction.channelId,
-		reason: 'store',
-		value: item.price * amount,
+		reason: 'STORE',
+		amount: item.price * amount,
+		earned: false,
 	});
 
 	return ok(next);

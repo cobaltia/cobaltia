@@ -76,12 +76,13 @@ export class StoreCommand extends Subcommand {
 		if (data.wallet.lessThan(storeItem.price))
 			return interaction.reply('You do not have enough money to buy this item.');
 
-		this.container.metrics.incrementItemBought({
-			item: storeItem.name,
-			user: interaction.user.id,
-			guild: interaction.guildId ?? 'none',
-			channel: interaction.channelId,
-			value: amount,
+		this.container.analytics.recordItem({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			itemId: storeItem.name,
+			action: 'BUY',
+			quantity: amount,
 		});
 
 		const buyResult = await handleBuy(storeItem, interaction, amount);
