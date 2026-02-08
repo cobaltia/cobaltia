@@ -120,7 +120,11 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata: `Added ${user.tag} as executive`,
+			metadata:
+				`executives: [${clientData.executives.join(', ')}] → [${[...clientData.executives, user.id].join(', ')}]`.slice(
+					0,
+					255,
+				),
 		});
 
 		await interaction.editReply(`Added ${user.tag} to the executive group.`);
@@ -151,7 +155,11 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata: `Added ${user.tag} as minister`,
+			metadata:
+				`ministers: [${clientData.ministers.join(', ')}] → [${[...clientData.ministers, user.id].join(', ')}]`.slice(
+					0,
+					255,
+				),
 		});
 
 		await interaction.editReply(`Added ${user.tag} to the minister group.`);
@@ -184,7 +192,10 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata: `Removed ${user.tag} from executive`,
+			metadata: `executives: [${clientData.executives.join(', ')}] → [${updatedExecutives.join(', ')}]`.slice(
+				0,
+				255,
+			),
 		});
 
 		await interaction.editReply(`Removed ${user.tag} from the executive group.`);
@@ -217,7 +228,10 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata: `Removed ${user.tag} from minister`,
+			metadata: `ministers: [${clientData.ministers.join(', ')}] → [${updatedMinisters.join(', ')}]`.slice(
+				0,
+				255,
+			),
 		});
 
 		await interaction.editReply(`Removed ${user.tag} from the minister group.`);

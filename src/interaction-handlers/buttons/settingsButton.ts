@@ -33,6 +33,7 @@ export class SettingsButtonHandler extends InteractionHandler {
 
 	private async handleLogDisable(interaction: ButtonInteraction) {
 		await interaction.deferUpdate();
+		const previous = await this.container.prisma.guild.findUnique({ where: { id: interaction.guild!.id } });
 		await this.container.prisma.guild.update({
 			where: { id: interaction.guild!.id },
 			data: { logChannelId: null },
@@ -42,7 +43,7 @@ export class SettingsButtonHandler extends InteractionHandler {
 			action: 'GUILD_SETTING_UPDATED',
 			userId: interaction.user.id,
 			guildId: interaction.guild!.id,
-			metadata: 'Disabled log channel',
+			metadata: `logChannelId: ${previous?.logChannelId ?? 'none'} → none`,
 		});
 
 		const { embed, components } = await this.buildResponse(interaction);
@@ -52,6 +53,7 @@ export class SettingsButtonHandler extends InteractionHandler {
 
 	private async handleWelcomeDisable(interaction: ButtonInteraction) {
 		await interaction.deferUpdate();
+		const previous = await this.container.prisma.guild.findUnique({ where: { id: interaction.guild!.id } });
 		await this.container.prisma.guild.update({
 			where: { id: interaction.guild!.id },
 			data: { welcomeChannelId: null },
@@ -61,7 +63,7 @@ export class SettingsButtonHandler extends InteractionHandler {
 			action: 'GUILD_SETTING_UPDATED',
 			userId: interaction.user.id,
 			guildId: interaction.guild!.id,
-			metadata: 'Disabled welcome channel',
+			metadata: `welcomeChannelId: ${previous?.welcomeChannelId ?? 'none'} → none`,
 		});
 
 		const { embed, components } = await this.buildResponse(interaction);
@@ -71,6 +73,7 @@ export class SettingsButtonHandler extends InteractionHandler {
 
 	private async handleVoiceDisable(interaction: ButtonInteraction) {
 		await interaction.deferUpdate();
+		const previous = await this.container.prisma.guild.findUnique({ where: { id: interaction.guild!.id } });
 		await this.container.prisma.guild.update({
 			where: { id: interaction.guild!.id },
 			data: { voiceChannelId: null },
@@ -80,7 +83,7 @@ export class SettingsButtonHandler extends InteractionHandler {
 			action: 'GUILD_SETTING_UPDATED',
 			userId: interaction.user.id,
 			guildId: interaction.guild!.id,
-			metadata: 'Disabled voice channel',
+			metadata: `voiceChannelId: ${previous?.voiceChannelId ?? 'none'} → none`,
 		});
 
 		const { embed, components } = await this.buildResponse(interaction);

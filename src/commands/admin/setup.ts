@@ -66,6 +66,8 @@ export class SetupCommand extends Subcommand {
 		const channel = interaction.options.getChannel('channel', true);
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
+		const previous = await this.container.prisma.guild.findUnique({ where: { id: interaction.guild!.id } });
+
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },
 			update: { logChannelId: channel.id },
@@ -78,7 +80,7 @@ export class SetupCommand extends Subcommand {
 			guildId: interaction.guild!.id,
 			targetId: channel.id,
 			targetType: 'channel',
-			metadata: 'Set log channel',
+			metadata: `logChannelId: ${previous?.logChannelId ?? 'none'} → ${channel.id}`,
 		});
 
 		await interaction.editReply({ content: `Set ${channel} as new log channel!` });
@@ -89,19 +91,23 @@ export class SetupCommand extends Subcommand {
 		const message = interaction.options.getString('message') ?? undefined;
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
+		const previous = await this.container.prisma.guild.findUnique({ where: { id: interaction.guild!.id } });
+
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },
 			update: { welcomeChannelId: channel.id, welcomeMessage: message },
 			create: { id: interaction.guild!.id, welcomeChannelId: channel.id, welcomeMessage: message },
 		});
 
+		const changes = [`welcomeChannelId: ${previous?.welcomeChannelId ?? 'none'} → ${channel.id}`];
+		if (message) changes.push(`welcomeMessage: ${previous?.welcomeMessage ?? 'none'} → ${message}`);
 		this.container.analytics.audit({
 			action: 'GUILD_SETTING_UPDATED',
 			userId: interaction.user.id,
 			guildId: interaction.guild!.id,
 			targetId: channel.id,
 			targetType: 'channel',
-			metadata: `Set welcome channel${message ? ' with custom message' : ''}`,
+			metadata: changes.join(', ').slice(0, 255),
 		});
 
 		await interaction.editReply({ content: `Set ${channel} as new welcome channel` });
@@ -110,6 +116,8 @@ export class SetupCommand extends Subcommand {
 	public async chatInputVoice(interaction: Subcommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+		const previous = await this.container.prisma.guild.findUnique({ where: { id: interaction.guild!.id } });
 
 		await this.container.prisma.guild.upsert({
 			where: { id: interaction.guild!.id },
@@ -123,7 +131,7 @@ export class SetupCommand extends Subcommand {
 			guildId: interaction.guild!.id,
 			targetId: channel.id,
 			targetType: 'channel',
-			metadata: 'Set voice channel',
+			metadata: `voiceChannelId: ${previous?.voiceChannelId ?? 'none'} → ${channel.id}`,
 		});
 
 		await interaction.editReply({ content: `Set ${channel} as new voice channel` });
