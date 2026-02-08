@@ -111,6 +111,14 @@ export class UserRoute extends Route {
 			create: createData,
 		});
 
+		const changedFields = Object.keys(updateData).join(', ');
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: request.auth!.id,
+			guildId,
+			metadata: `API: updated ${changedFields}`,
+		});
+
 		response.json({
 			logChannelId: result.logChannelId,
 			welcomeChannelId: result.welcomeChannelId,

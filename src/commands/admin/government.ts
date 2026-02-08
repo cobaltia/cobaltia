@@ -117,8 +117,7 @@ export class GovernmentCommand extends Subcommand {
 		this.container.analytics.audit({
 			action: 'GOVERNMENT_ROLE_ADDED',
 			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
+			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
 			metadata: `Added ${user.tag} as executive`,
@@ -149,8 +148,7 @@ export class GovernmentCommand extends Subcommand {
 		this.container.analytics.audit({
 			action: 'GOVERNMENT_ROLE_ADDED',
 			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
+			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
 			metadata: `Added ${user.tag} as minister`,
@@ -183,8 +181,7 @@ export class GovernmentCommand extends Subcommand {
 		this.container.analytics.audit({
 			action: 'GOVERNMENT_ROLE_REMOVED',
 			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
+			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
 			metadata: `Removed ${user.tag} from executive`,
@@ -217,8 +214,7 @@ export class GovernmentCommand extends Subcommand {
 		this.container.analytics.audit({
 			action: 'GOVERNMENT_ROLE_REMOVED',
 			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
+			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
 			metadata: `Removed ${user.tag} from minister`,

@@ -53,6 +53,8 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 			ok: async data => {
 				this.container.analytics.recordExperience({
 					userId: member.id,
+					guildId: member.guild.id,
+					channelId: previous.channelId ?? 'none',
 					reason: 'VOICE',
 					amount,
 					levelUp: Boolean(data),

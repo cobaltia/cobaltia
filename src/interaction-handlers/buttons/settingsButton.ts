@@ -38,6 +38,13 @@ export class SettingsButtonHandler extends InteractionHandler {
 			data: { logChannelId: null },
 		});
 
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: interaction.user.id,
+			guildId: interaction.guild!.id,
+			metadata: 'Disabled log channel',
+		});
+
 		const { embed, components } = await this.buildResponse(interaction);
 
 		await interaction.editReply({ embeds: [embed], components });
@@ -50,6 +57,13 @@ export class SettingsButtonHandler extends InteractionHandler {
 			data: { welcomeChannelId: null },
 		});
 
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: interaction.user.id,
+			guildId: interaction.guild!.id,
+			metadata: 'Disabled welcome channel',
+		});
+
 		const { embed, components } = await this.buildResponse(interaction);
 
 		await interaction.editReply({ embeds: [embed], components });
@@ -60,6 +74,13 @@ export class SettingsButtonHandler extends InteractionHandler {
 		await this.container.prisma.guild.update({
 			where: { id: interaction.guild!.id },
 			data: { voiceChannelId: null },
+		});
+
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: interaction.user.id,
+			guildId: interaction.guild!.id,
+			metadata: 'Disabled voice channel',
 		});
 
 		const { embed, components } = await this.buildResponse(interaction);

@@ -144,13 +144,6 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { next, money } = nextResult.unwrap();
-		this.container.analytics.audit({
-			action: 'BANK_DEPOSIT',
-			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
-			metadata: `Deposited $${money}`,
-		});
 		const description = ['Bank Deposit'];
 		if (reason) description.push(reason);
 		this.container.client.emit(
@@ -189,13 +182,6 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { next, money } = nextResult.unwrap();
-		this.container.analytics.audit({
-			action: 'BANK_WITHDRAW',
-			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
-			metadata: `Withdrew $${money}`,
-		});
 		const description = ['Bank Withdrawal'];
 		if (reason) description.push(reason);
 		this.container.client.emit(
@@ -247,15 +233,6 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { money, transferor: next } = result.unwrap();
-		this.container.analytics.audit({
-			action: 'BANK_TRANSFER',
-			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
-			targetId: user.id,
-			targetType: 'user',
-			metadata: `Transferred $${money} to ${user.tag}`,
-		});
 		const description = ['Bank Transfer'];
 		if (reason) description.push(reason);
 		this.container.client.emit(

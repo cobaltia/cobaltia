@@ -43,6 +43,8 @@ export class MessageExperienceListener extends Listener<typeof Events.MessageCre
 				ratelimit.consume();
 				this.container.analytics.recordExperience({
 					userId: message.author.id,
+					guildId: message.guildId,
+					channelId: message.channelId,
 					reason: 'MESSAGE',
 					amount: experience,
 					levelUp: Boolean(data),

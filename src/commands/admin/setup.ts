@@ -72,6 +72,15 @@ export class SetupCommand extends Subcommand {
 			create: { id: interaction.guild!.id, logChannelId: channel.id },
 		});
 
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: interaction.user.id,
+			guildId: interaction.guild!.id,
+			targetId: channel.id,
+			targetType: 'channel',
+			metadata: 'Set log channel',
+		});
+
 		await interaction.editReply({ content: `Set ${channel} as new log channel!` });
 	}
 
@@ -86,6 +95,15 @@ export class SetupCommand extends Subcommand {
 			create: { id: interaction.guild!.id, welcomeChannelId: channel.id, welcomeMessage: message },
 		});
 
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: interaction.user.id,
+			guildId: interaction.guild!.id,
+			targetId: channel.id,
+			targetType: 'channel',
+			metadata: `Set welcome channel${message ? ' with custom message' : ''}`,
+		});
+
 		await interaction.editReply({ content: `Set ${channel} as new welcome channel` });
 	}
 
@@ -97,6 +115,15 @@ export class SetupCommand extends Subcommand {
 			where: { id: interaction.guild!.id },
 			update: { voiceChannelId: channel.id },
 			create: { id: interaction.guild!.id, voiceChannelId: channel.id },
+		});
+
+		this.container.analytics.audit({
+			action: 'GUILD_SETTING_UPDATED',
+			userId: interaction.user.id,
+			guildId: interaction.guild!.id,
+			targetId: channel.id,
+			targetType: 'channel',
+			metadata: 'Set voice channel',
 		});
 
 		await interaction.editReply({ content: `Set ${channel} as new voice channel` });

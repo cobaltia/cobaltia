@@ -139,6 +139,8 @@ model MoneyHistory {
 model ExperienceHistory {
   id        String           @id @default(cuid())
   userId    String           @map("user_id") @db.VarChar(20)
+  guildId   String           @map("guild_id") @db.VarChar(20)
+  channelId String           @map("channel_id") @db.VarChar(20)
   reason    ExperienceReason @map("reason")
   amount    Int              @map("amount")
   levelUp   Boolean          @default(false) @map("level_up")
@@ -193,8 +195,7 @@ model AuditLog {
   id         String      @id @default(cuid())
   action     AuditAction @map("action")
   userId     String      @map("user_id") @db.VarChar(20)
-  guildId    String?     @map("guild_id") @db.VarChar(20)
-  channelId  String?     @map("channel_id") @db.VarChar(20)
+  guildId    String      @map("guild_id") @db.VarChar(20)
   targetId   String?     @map("target_id") @db.VarChar(50)
   targetType String?     @map("target_type") @db.VarChar(20)
   metadata   String?     @map("metadata") @db.VarChar(255)
@@ -243,20 +244,7 @@ enum EntityType {
 }
 
 enum AuditAction {
-  COMMAND_SUCCESS
-  COMMAND_ERROR
-  MONEY_EARNED
-  MONEY_LOST
-  EXPERIENCE_GAINED
-  LEVEL_UP
-  ITEM_BOUGHT
-  ITEM_SOLD
-  ITEM_USED
-  BANK_DEPOSIT
-  BANK_WITHDRAW
-  BANK_TRANSFER
-  SOCIAL_CREDIT_ADDED
-  SOCIAL_CREDIT_REMOVED
   GOVERNMENT_ROLE_ADDED
   GOVERNMENT_ROLE_REMOVED
+  GUILD_SETTING_UPDATED
 }

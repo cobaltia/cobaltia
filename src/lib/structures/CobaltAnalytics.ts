@@ -20,15 +20,6 @@ export class CobaltAnalytics {
 				},
 			}),
 		);
-		this.audit({
-			action: data.success ? 'COMMAND_SUCCESS' : 'COMMAND_ERROR',
-			userId: data.userId,
-			guildId: data.guildId,
-			channelId: data.channelId,
-			targetId: data.command,
-			targetType: 'command',
-			metadata: `${data.success ? 'Executed' : 'Failed'} ${data.command}`,
-		});
 		this.resolveEntities(data);
 	}
 
@@ -54,39 +45,29 @@ export class CobaltAnalytics {
 				},
 			}),
 		);
-		const label = data.earned ? 'Earned' : 'Lost';
-		this.audit({
-			action: data.earned ? 'MONEY_EARNED' : 'MONEY_LOST',
-			userId: data.userId,
-			guildId: data.guildId,
-			channelId: data.channelId,
-			targetId: data.reason,
-			targetType: 'economy',
-			metadata: `${label} $${data.amount} from ${data.reason.toLowerCase()}`,
-		});
 		this.resolveEntities(data);
 	}
 
-	public recordExperience(data: { amount: number; levelUp: boolean; reason: ExperienceReason; userId: string }) {
+	public recordExperience(data: {
+		amount: number;
+		channelId: string;
+		guildId: string;
+		levelUp: boolean;
+		reason: ExperienceReason;
+		userId: string;
+	}) {
 		this.write(async () =>
 			container.prisma.experienceHistory.create({
 				data: {
 					userId: data.userId,
+					guildId: data.guildId,
+					channelId: data.channelId,
 					reason: data.reason,
 					amount: data.amount,
 					levelUp: data.levelUp,
 				},
 			}),
 		);
-		this.audit({
-			action: data.levelUp ? 'LEVEL_UP' : 'EXPERIENCE_GAINED',
-			userId: data.userId,
-			targetId: data.reason,
-			targetType: 'experience',
-			metadata: data.levelUp
-				? `Leveled up from ${data.reason.toLowerCase()}`
-				: `Gained ${data.amount} XP from ${data.reason.toLowerCase()}`,
-		});
 		this.resolveEntities(data);
 	}
 
@@ -139,24 +120,12 @@ export class CobaltAnalytics {
 				},
 			}),
 		);
-		const auditActionMap = { BUY: 'ITEM_BOUGHT', SELL: 'ITEM_SOLD', USE: 'ITEM_USED' } as const;
-		const labelMap = { BUY: 'Bought', SELL: 'Sold', USE: 'Used' } as const;
-		this.audit({
-			action: auditActionMap[data.action],
-			userId: data.userId,
-			guildId: data.guildId,
-			channelId: data.channelId,
-			targetId: data.itemId,
-			targetType: 'item',
-			metadata: `${labelMap[data.action]} ${data.quantity}x ${data.itemId}`,
-		});
 		this.resolveEntities(data);
 	}
 
 	public audit(data: {
 		action: AuditAction;
-		channelId?: string;
-		guildId?: string;
+		guildId: string;
 		metadata?: string;
 		targetId?: string;
 		targetType?: string;
@@ -165,8 +134,7 @@ export class CobaltAnalytics {
 		const payload = {
 			action: data.action,
 			userId: data.userId,
-			guildId: data.guildId === 'none' ? null : (data.guildId ?? null),
-			channelId: data.channelId === 'none' ? null : (data.channelId ?? null),
+			guildId: data.guildId,
 			targetId: data.targetId ?? null,
 			targetType: data.targetType ?? null,
 			metadata: data.metadata ?? null,

@@ -1,17 +1,19 @@
 import { clearInterval, setInterval } from 'node:timers';
 import { Route } from '@sapphire/plugin-api';
 import Redis from 'ioredis';
-import { authenticated } from '#lib/api/utils';
 import { REDIS_URI } from '#root/config';
 
 export class UserRoute extends Route {
-	@authenticated()
 	public run(request: Route.Request, response: Route.Response) {
 		response.writeHead(200, {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
 			Connection: 'keep-alive',
 		});
+		response.write(': heartbeat\n\n');
+
+		const guildId = request.query.guildId as string | undefined;
+		const userId = request.query.userId as string | undefined;
 
 		const subscriber = new Redis(REDIS_URI);
 
@@ -22,6 +24,9 @@ export class UserRoute extends Route {
 		});
 
 		subscriber.on('message', (_channel: string, message: string) => {
+			const event = JSON.parse(message) as Record<string, unknown>;
+			if (guildId && event.guildId !== guildId) return;
+			if (userId && event.userId !== userId) return;
 			response.write(`data: ${message}\n\n`);
 		});
 

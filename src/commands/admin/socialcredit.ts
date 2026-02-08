@@ -84,16 +84,6 @@ export class SocialCreditCommand extends Subcommand {
 			data: { socialCredit: newAmount },
 		});
 
-		this.container.analytics.audit({
-			action: 'SOCIAL_CREDIT_ADDED',
-			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
-			targetId: user.id,
-			targetType: 'user',
-			metadata: `Added ${amount} social credit to ${user.tag}`,
-		});
-
 		const embed = new EmbedBuilder().setDescription(`Added ${amount} social credit to ${user}`);
 		await interaction.editReply({ embeds: [embed] });
 	}
@@ -117,16 +107,6 @@ export class SocialCreditCommand extends Subcommand {
 		await this.container.prisma.user.update({
 			where: { id: user.id },
 			data: { socialCredit: newAmount },
-		});
-
-		this.container.analytics.audit({
-			action: 'SOCIAL_CREDIT_REMOVED',
-			userId: interaction.user.id,
-			guildId: interaction.guildId ?? 'none',
-			channelId: interaction.channelId,
-			targetId: user.id,
-			targetType: 'user',
-			metadata: `Removed ${amount} social credit from ${user.tag}`,
 		});
 
 		const embed = new EmbedBuilder().setDescription(`Removed ${amount} social credit from ${user}`);
