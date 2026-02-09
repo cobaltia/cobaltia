@@ -16,11 +16,11 @@ export class UserRoute extends Route {
 		}
 
 		response.json({
-			wallet: user.wallet,
-			bankBalance: user.bankBalance,
-			bankLimit: user.bankLimit,
-			netWorth: user.wallet.add(user.bankBalance),
-			bounty: user.bounty,
+			wallet: user.wallet.toDecimalPlaces(2).toNumber(),
+			bankBalance: user.bankBalance.toDecimalPlaces(2).toNumber(),
+			bankLimit: user.bankLimit.toDecimalPlaces(2).toNumber(),
+			netWorth: user.wallet.add(user.bankBalance).toDecimalPlaces(2).toNumber(),
+			bounty: user.bounty.toDecimalPlaces(2).toNumber(),
 			experience: user.experience,
 			level: user.level,
 			socialCredit: user.socialCredit,

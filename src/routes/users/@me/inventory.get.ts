@@ -8,7 +8,7 @@ export class UserRoute extends Route {
 	public async run(request: Route.Request, response: Route.Response) {
 		const inventory = await this.container.prisma.inventory.findMany({
 			where: { userId: request.auth!.id, quantity: { gt: 0 } },
-			orderBy: { updatedAt: 'desc' },
+			orderBy: { quantity: 'desc' },
 		});
 
 		const itemStore = this.container.stores.get('items');

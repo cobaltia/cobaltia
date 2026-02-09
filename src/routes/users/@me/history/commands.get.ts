@@ -11,15 +11,22 @@ export class UserRoute extends Route {
 		const before = request.query.before as string | undefined;
 		const command = request.query.command as string | undefined;
 
-		const where: Prisma.CommandHistoryWhereInput = { userId: request.auth!.id };
+		const where: Prisma.CommandHistoryWhereInput = { userId: request.auth!.id, success: true };
 		if (before) where.createdAt = { lt: new Date(before) };
 		if (command) where.command = command;
 
-		const data = await this.container.prisma.commandHistory.findMany({
+		const commands = await this.container.prisma.commandHistory.findMany({
 			where,
 			orderBy: { createdAt: 'desc' },
 			take: limit,
 		});
+
+		const data = commands.map(entry => ({
+			id: entry.id,
+			userId: entry.userId,
+			command: entry.command,
+			createdAt: entry.createdAt,
+		}));
 
 		response.json({ data });
 	}
