@@ -7,12 +7,12 @@ import {
 	ButtonStyle,
 	EmbedBuilder,
 	MessageFlags,
+	bold,
 	type MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { getBankStatement, getUser } from '#lib/database';
-import { Events as CobaltEvents } from '#lib/types/discord';
+import { getUser } from '#lib/database';
 import { formatMoney } from '#util/common';
-import { getTransactionSymbol, handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
+import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
 export class BankCommand extends Subcommand {
 	public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
@@ -146,14 +146,16 @@ export class BankCommand extends Subcommand {
 		const { next, money } = nextResult.unwrap();
 		const description = ['Bank Deposit'];
 		if (reason) description.push(reason);
-		this.container.client.emit(
-			CobaltEvents.RawBankTransaction,
-			interaction.user,
-			null,
-			money,
-			'DEPOSIT',
-			description,
-		);
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			command: 'bank deposit',
+			reason: 'DEPOSIT',
+			amount: money,
+			type: 'NEUTRAL',
+			description: description.join('. '),
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle('Deposit Successful')
@@ -184,14 +186,16 @@ export class BankCommand extends Subcommand {
 		const { next, money } = nextResult.unwrap();
 		const description = ['Bank Withdrawal'];
 		if (reason) description.push(reason);
-		this.container.client.emit(
-			CobaltEvents.RawBankTransaction,
-			interaction.user,
-			null,
-			money,
-			'WITHDRAW',
-			description,
-		);
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			command: 'bank withdraw',
+			reason: 'WITHDRAW',
+			amount: money,
+			type: 'NEUTRAL',
+			description: description.join('. '),
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle('Withdraw Successful')
@@ -233,16 +237,28 @@ export class BankCommand extends Subcommand {
 		}
 
 		const { money, transferor: next } = result.unwrap();
-		const description = ['Bank Transfer'];
-		if (reason) description.push(reason);
-		this.container.client.emit(
-			CobaltEvents.RawBankTransaction,
-			interaction.user,
-			user,
-			money,
-			'TRANSFER',
-			description,
-		);
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			command: 'bank transfer',
+			reason: 'TRANSFER',
+			amount: money,
+			type: 'LOST',
+			description: [`Transfer to ${user.username}`, reason].filter(entry => entry !== null).join('. '),
+		});
+		this.container.analytics.recordMoney({
+			userId: user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId,
+			command: 'bank transfer',
+			reason: 'DEPOSIT',
+			amount: money,
+			type: 'EARNED',
+			description: [`Transfer from ${interaction.user.username}`, reason]
+				.filter(entry => entry !== null)
+				.join('. '),
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle('Transfer Successful')
@@ -258,16 +274,20 @@ export class BankCommand extends Subcommand {
 	public async chatInputStatement(interaction: Subcommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-		const result = await Result.fromAsync(async () => getBankStatement(interaction.user.id));
-		if (result.isErr()) {
-			throw result.unwrapErr();
-		}
+		const data = await this.container.prisma.moneyHistory.findMany({
+			where: {
+				userId: interaction.user.id,
+				reason: { in: ['DEPOSIT', 'WITHDRAW', 'TRANSFER'] },
+			},
+			orderBy: { createdAt: 'desc' },
+			take: 10,
+		});
 
-		const data = result.unwrap();
-		const transactions = data.map(
-			transaction =>
-				`${getTransactionSymbol(transaction.type)} ${formatMoney(transaction.amount)} - ${transaction.description.join('. ')}`,
-		);
+		const transactions = data.map(entry => {
+			const symbol = entry.type === 'EARNED' ? bold('+') : entry.type === 'LOST' ? bold('\\-') : bold('~');
+			const desc = entry.description ?? entry.reason;
+			return `${symbol} ${formatMoney(entry.amount)} - ${desc}`;
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Statement`)

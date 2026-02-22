@@ -1,4 +1,3 @@
-import type { $Enums } from '@prisma/client';
 import { type ChatInputCommandInteraction, type GuildMember, type Message } from 'discord.js';
 import type { Event } from '#lib/structures/Event';
 import type { Item } from '#lib/structures/Item';
@@ -15,10 +14,6 @@ export const Events = {
 	VoiceUndeaf: 'voiceUndeaf' as const,
 	VoiceStreamStart: 'voiceStreamStart' as const,
 	VoiceStreamStop: 'voiceStreamStop' as const,
-	RawBankTransaction: 'rawBankTransaction' as const,
-	BankDepositTransaction: 'bankDepositTransaction' as const,
-	BankWithdrawTransaction: 'bankWithdrawTransaction' as const,
-	BankTransferTransaction: 'bankTransferTransaction' as const,
 	ItemRequestReceived: 'itemRequestReceived' as const,
 	UnknownItem: 'unknownItem' as const,
 	ItemDenied: 'itemDenied' as const,
@@ -103,16 +98,6 @@ declare module 'discord.js' {
 		[CobaltEvents.VoiceUndeaf]: [member: GuildMember, previous: VoiceState];
 		[CobaltEvents.VoiceStreamStart]: [member: GuildMember, next: VoiceState];
 		[CobaltEvents.VoiceStreamStop]: [member: GuildMember, previous: VoiceState];
-		[CobaltEvents.RawBankTransaction]: [
-			user: User,
-			receiver: User | null,
-			amount: number,
-			transactionType: $Enums.Transaction,
-			description: string[],
-		];
-		[CobaltEvents.BankDepositTransaction]: [user: User, amount: number, description: string[]];
-		[CobaltEvents.BankWithdrawTransaction]: [user: User, amount: number, description: string[]];
-		[CobaltEvents.BankTransferTransaction]: [user: User, receiver: User, amount: number, description: string[]];
 		[CobaltEvents.ItemRequestReceived]: [
 			itemName: string,
 			amount: number,

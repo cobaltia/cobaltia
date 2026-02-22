@@ -73,7 +73,7 @@ export class VoiceExperienceListener extends Listener<typeof Events.VoiceChannel
 			command: 'none',
 			reason: 'VOICE',
 			amount: total,
-			earned: true,
+			type: 'EARNED',
 		});
 
 		await this.container.prisma.user.update({

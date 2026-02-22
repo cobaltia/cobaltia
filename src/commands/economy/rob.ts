@@ -119,7 +119,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'ROB',
 			amount,
-			earned: true,
+			type: 'EARNED',
 		});
 
 		this.container.analytics.recordMoney({
@@ -129,7 +129,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'ROB',
 			amount,
-			earned: false,
+			type: 'LOST',
 		});
 
 		const message = [
@@ -156,9 +156,6 @@ export class RobCommand extends Command {
 			where: { id: victim.id },
 			data: { bankBalance: { increment: robber.bounty } },
 		});
-		this.container.client.emit('RawBankTransaction', victim, null, robber.bounty, 'DEPOSIT', [
-			`Bounty claim from ${interaction.user.username}`,
-		]);
 
 		await this.container.prisma.user.update({
 			where: { id: interaction.user.id },
@@ -172,7 +169,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'BOUNTY_CLAIM',
 			amount: robber.bounty.toNumber(),
-			earned: true,
+			type: 'EARNED',
 		});
 
 		this.container.analytics.recordMoney({
@@ -182,7 +179,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'DEATH',
 			amount: robber.wallet.lessThan(0) ? robber.wallet.toNumber() : 0,
-			earned: false,
+			type: 'LOST',
 		});
 
 		return `You tried to rob ${victim} but they fought back and killed you. They claimed your bounty of ${formatMoney(
@@ -208,7 +205,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'DEATH',
 			amount: fine,
-			earned: false,
+			type: 'LOST',
 		});
 
 		return `You were caught by the police and had to pay a fine of ${formatMoney(
@@ -240,7 +237,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'ROB',
 			amount: robber.wallet.toNumber(),
-			earned: false,
+			type: 'LOST',
 		});
 
 		this.container.analytics.recordMoney({
@@ -250,7 +247,7 @@ export class RobCommand extends Command {
 			command: interaction.commandName,
 			reason: 'ROB',
 			amount: robber.wallet.toNumber(),
-			earned: true,
+			type: 'EARNED',
 		});
 
 		return `${victim} took advantage of your attempt to rob them and took all your money. You lost all your money.`;

@@ -25,15 +25,16 @@ export class UserRoute extends Route {
 			id: entry.id,
 			userId: entry.userId,
 			amount: entry.amount.toDecimalPlaces(2).toNumber(),
-			reason: this.getReason(entry.reason, entry.earned),
-			earned: entry.earned,
+			reason: this.getReason(entry.reason, entry.type, entry.description),
+			description: entry.description,
+			type: entry.type,
 			createdAt: entry.createdAt,
 		}));
 
 		response.json({ data });
 	}
 
-	private getReason(reason: $Enums.MoneyReason, earned: boolean) {
+	private getReason(reason: $Enums.MoneyReason, type: $Enums.MoneyType, description: string | null) {
 		switch (reason) {
 			case 'BOUNTY_CLAIM':
 				return 'Earned from claiming a bounty';
@@ -42,17 +43,25 @@ export class UserRoute extends Route {
 			case 'DEATH':
 				return 'Lost from dying';
 			case 'GAMBLING':
-				return earned ? 'Earned from gambling' : 'Lost from gambling';
+				return type === 'EARNED' ? 'Earned from gambling' : 'Lost from gambling';
 			case 'ROB':
 				return 'Stolen from another user';
 			case 'STORE':
-				return earned ? 'Earned from selling an item in the store' : 'Spent on buying an item from the store';
+				return type === 'EARNED'
+					? 'Earned from selling an item in the store'
+					: 'Spent on buying an item from the store';
 			case 'TAX':
 				return 'Paid as tax';
 			case 'WORK':
 				return 'Earned from work';
 			case 'VOICE':
 				return 'Earned from spending time in voice chat';
+			case 'DEPOSIT':
+				return 'Deposited into bank';
+			case 'WITHDRAW':
+				return 'Withdrawn from bank';
+			case 'TRANSFER':
+				return description ?? (type === 'EARNED' ? 'Received a bank transfer' : 'Sent a bank transfer');
 			default:
 				return reason;
 		}

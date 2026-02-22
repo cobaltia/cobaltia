@@ -46,7 +46,7 @@ export class WorkCommand extends Command {
 			command: interaction.commandName,
 			reason: 'WORK',
 			amount: money - tax,
-			earned: true,
+			type: 'EARNED',
 		});
 
 		this.container.analytics.recordMoney({
@@ -56,7 +56,7 @@ export class WorkCommand extends Command {
 			command: interaction.commandName,
 			reason: 'TAX',
 			amount: tax,
-			earned: true,
+			type: 'LOST',
 		});
 
 		const embed = new EmbedBuilder().setDescription(

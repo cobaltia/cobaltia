@@ -107,7 +107,7 @@ export class PlayCommand extends Subcommand {
 				command: interaction.commandName,
 				reason: 'GAMBLING',
 				amount: won - tax,
-				earned: true,
+				type: 'EARNED',
 			});
 			this.container.analytics.recordMoney({
 				userId: this.container.client.id!,
@@ -116,7 +116,7 @@ export class PlayCommand extends Subcommand {
 				command: interaction.commandName,
 				reason: 'TAX',
 				amount: tax,
-				earned: true,
+				type: 'LOST',
 			});
 
 			embed
@@ -144,7 +144,7 @@ export class PlayCommand extends Subcommand {
 				command: interaction.commandName,
 				reason: 'GAMBLING',
 				amount: amountToGamble.toNumber(),
-				earned: false,
+				type: 'LOST',
 			});
 			this.container.analytics.recordMoney({
 				userId: this.container.client.id!,
@@ -153,7 +153,7 @@ export class PlayCommand extends Subcommand {
 				command: interaction.commandName,
 				reason: 'GAMBLING',
 				amount: amountToGamble.toNumber(),
-				earned: true,
+				type: 'EARNED',
 			});
 			embed
 				.setDescription(

@@ -8,7 +8,6 @@ import {
 	type ModalSubmitInteraction,
 } from 'discord.js';
 import { getUser } from '#lib/database';
-import { Events as CobaltEvents } from '#lib/types/discord';
 import { formatMoney } from '#util/common';
 import { handleDeposit, handleTransfer, handleWithdraw } from '#util/economy';
 
@@ -50,14 +49,16 @@ export class BankModalHandler extends InteractionHandler {
 		const { next, money } = nextResult.unwrap();
 		const description = ['Bank Deposit'];
 		if (reason) description.push(reason);
-		this.container.client.emit(
-			CobaltEvents.RawBankTransaction,
-			interaction.user,
-			null,
-			money,
-			'DEPOSIT',
-			description,
-		);
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId ?? 'none',
+			command: 'bank deposit',
+			reason: 'DEPOSIT',
+			amount: money,
+			type: 'NEUTRAL',
+			description: description.join('. '),
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
@@ -101,14 +102,16 @@ export class BankModalHandler extends InteractionHandler {
 		const { next, money } = nextResult.unwrap();
 		const description = ['Bank Withdrawal'];
 		if (reason) description.push(reason);
-		this.container.client.emit(
-			CobaltEvents.RawBankTransaction,
-			interaction.user,
-			null,
-			money,
-			'WITHDRAW',
-			description,
-		);
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId ?? 'none',
+			command: 'bank withdraw',
+			reason: 'WITHDRAW',
+			amount: money,
+			type: 'NEUTRAL',
+			description: description.join('. '),
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.user.tag}'s Bank Balance`)
@@ -167,14 +170,26 @@ export class BankModalHandler extends InteractionHandler {
 		const { money, transferor: next } = result.unwrap();
 		const description = ['Bank Transfer'];
 		if (reason) description.push(reason);
-		this.container.client.emit(
-			CobaltEvents.RawBankTransaction,
-			interaction.user,
-			user,
-			money,
-			'TRANSFER',
-			description,
-		);
+		this.container.analytics.recordMoney({
+			userId: interaction.user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId ?? 'none',
+			command: 'bank transfer',
+			reason: 'TRANSFER',
+			amount: money,
+			type: 'LOST',
+			description: [...description, `Transfer to ${user.username}`].join('. '),
+		});
+		this.container.analytics.recordMoney({
+			userId: user.id,
+			guildId: interaction.guildId ?? 'none',
+			channelId: interaction.channelId ?? 'none',
+			command: 'bank transfer',
+			reason: 'DEPOSIT',
+			amount: money,
+			type: 'EARNED',
+			description: [...description, `Transfer from ${interaction.user.username}`].join('. '),
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle('Transfer Successful')

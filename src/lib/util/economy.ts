@@ -1,11 +1,10 @@
 /* eslint-disable typescript-sort-keys/interface */
-import type { $Enums, User as PrismaUser, User } from '@prisma/client';
+import type { User as PrismaUser, User } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { UserError, container } from '@sapphire/framework';
 import { type Subcommand } from '@sapphire/plugin-subcommands';
 import { type Result, err, ok } from '@sapphire/result';
 import { roundNumber } from '@sapphire/utilities';
-import { bold } from 'discord.js';
 import { getUser } from '#lib/database';
 import { type Item } from '#lib/structures/Item';
 import { getNumberWithSuffix, parseNumberWithSuffix } from '#util/common';
@@ -148,17 +147,6 @@ export async function handleTransfer(
 	return ok({ transferor: nextTransferor, transferee: nextTransferee, money });
 }
 
-export function getTransactionSymbol(type: $Enums.Transaction) {
-	switch (type) {
-		case 'DEPOSIT':
-			return bold('+');
-		case 'WITHDRAW':
-			return bold('\\-');
-		case 'TRANSFER':
-			return bold('\\-');
-	}
-}
-
 export async function handleBuy(
 	item: Item,
 	interaction: Subcommand.ChatInputCommandInteraction,
@@ -196,7 +184,7 @@ export async function handleBuy(
 		command: interaction.commandName,
 		reason: 'STORE',
 		amount: item.price * amount,
-		earned: false,
+		type: 'LOST',
 	});
 
 	return ok(next);

@@ -1,4 +1,4 @@
-import type { AuditAction, EntityType, ExperienceReason, ItemAction, MoneyReason } from '@prisma/client';
+import type { AuditAction, EntityType, ExperienceReason, ItemAction, MoneyReason, MoneyType } from '@prisma/client';
 import { container } from '@sapphire/framework';
 
 export class CobaltAnalytics {
@@ -27,9 +27,10 @@ export class CobaltAnalytics {
 		amount: number;
 		channelId: string;
 		command: string;
-		earned: boolean;
+		description?: string;
 		guildId: string;
 		reason: MoneyReason;
+		type: MoneyType;
 		userId: string;
 	}) {
 		this.write(async () =>
@@ -41,7 +42,8 @@ export class CobaltAnalytics {
 					command: data.command,
 					reason: data.reason,
 					amount: data.amount,
-					earned: data.earned,
+					type: data.type,
+					description: data.description ?? null,
 				},
 			}),
 		);
@@ -138,7 +140,6 @@ export class CobaltAnalytics {
 			targetId: data.targetId ?? null,
 			targetType: data.targetType ?? null,
 			metadata: data.metadata ?? null,
-			createdAt: new Date().toISOString(),
 		};
 
 		this.write(async () => container.prisma.auditLog.create({ data: payload }));

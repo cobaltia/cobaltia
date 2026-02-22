@@ -47,7 +47,6 @@ model User {
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
   Voice           Voice[]
-  BankTransaction BankTransaction[]
   Inventory       Inventory[]
 
   @@map("users")
@@ -82,20 +81,6 @@ model Voice {
   @@map("voices")
 }
 
-model BankTransaction {
-  id          String      @id @default(cuid())
-  amount      Decimal     @map("amount")
-  type        Transaction @map("type")
-  description String[]    @map("description")
-  account     User        @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  accountId   String      @map("account_id")
-  date        DateTime    @default(now()) @map("date")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @default(now()) @updatedAt @map("updated_at")
-
-  @@map("bank_transactions")
-}
-
 model Event {
   id        String   @id @default(cuid())
   name      String   @unique() @map("name")
@@ -126,10 +111,11 @@ model MoneyHistory {
   guildId   String      @map("guild_id") @db.VarChar(20)
   channelId String      @map("channel_id") @db.VarChar(20)
   command   String      @map("command") @db.VarChar(50)
-  reason    MoneyReason @map("reason")
-  amount    Decimal     @map("amount")
-  earned    Boolean     @map("earned")
-  createdAt DateTime    @default(now()) @map("created_at")
+  reason      MoneyReason @map("reason")
+  amount      Decimal     @map("amount")
+  type        MoneyType   @default(EARNED) @map("type")
+  description String?     @map("description")
+  createdAt   DateTime    @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([reason])
@@ -208,22 +194,25 @@ model AuditLog {
   @@map("audit_log")
 }
 
-enum Transaction {
-  DEPOSIT
-  WITHDRAW
-  TRANSFER
-}
-
 enum MoneyReason {
   BOUNTY_CLAIM
   DAILY
   DEATH
+  DEPOSIT
   GAMBLING
   ROB
   STORE
   TAX
+  TRANSFER
   VOICE
+  WITHDRAW
   WORK
+}
+
+enum MoneyType {
+  EARNED
+  LOST
+  NEUTRAL
 }
 
 enum ExperienceReason {

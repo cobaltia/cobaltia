@@ -107,7 +107,7 @@ export class ItemCommand extends Subcommand {
 			command: interaction.commandName,
 			reason: 'STORE',
 			amount: item.sellPrice * amount,
-			earned: true,
+			type: 'EARNED',
 		});
 
 		return interaction.editReply(

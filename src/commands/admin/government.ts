@@ -120,11 +120,7 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata:
-				`executives: [${clientData.executives.join(', ')}] → [${[...clientData.executives, user.id].join(', ')}]`.slice(
-					0,
-					255,
-				),
+			metadata: `Added ${user.tag} (${user.id}) to the executive group`,
 		});
 
 		await interaction.editReply(`Added ${user.tag} to the executive group.`);
@@ -155,11 +151,7 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata:
-				`ministers: [${clientData.ministers.join(', ')}] → [${[...clientData.ministers, user.id].join(', ')}]`.slice(
-					0,
-					255,
-				),
+			metadata: `Added ${user.tag} (${user.id}) to the minister group`,
 		});
 
 		await interaction.editReply(`Added ${user.tag} to the minister group.`);
@@ -192,10 +184,7 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata: `executives: [${clientData.executives.join(', ')}] → [${updatedExecutives.join(', ')}]`.slice(
-				0,
-				255,
-			),
+			metadata: `Removed ${user.tag} (${user.id}) from the executive group`,
 		});
 
 		await interaction.editReply(`Removed ${user.tag} from the executive group.`);
@@ -228,10 +217,7 @@ export class GovernmentCommand extends Subcommand {
 			guildId: interaction.guildId!,
 			targetId: user.id,
 			targetType: 'user',
-			metadata: `ministers: [${clientData.ministers.join(', ')}] → [${updatedMinisters.join(', ')}]`.slice(
-				0,
-				255,
-			),
+			metadata: `Removed ${user.tag} (${user.id}) from the minister group`,
 		});
 
 		await interaction.editReply(`Removed ${user.tag} from the minister group.`);
