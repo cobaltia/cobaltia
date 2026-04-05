@@ -114,6 +114,12 @@ export class GovernmentCommand extends Subcommand {
 			},
 		});
 
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'government_role_assigned',
+			properties: { role: 'executive', target_user_id: user.id },
+		});
+
 		await interaction.editReply(`Added ${user.tag} to the executive group.`);
 	}
 
@@ -134,6 +140,12 @@ export class GovernmentCommand extends Subcommand {
 			data: {
 				ministers: { push: user.id },
 			},
+		});
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'government_role_assigned',
+			properties: { role: 'minister', target_user_id: user.id },
 		});
 
 		await interaction.editReply(`Added ${user.tag} to the minister group.`);

@@ -15,6 +15,17 @@ export class GuildMemberRemoveListener extends Listener<typeof Events.GuildMembe
 	}
 
 	public async run(member: GuildMember) {
+		if (!member.user.bot) {
+			this.container.posthog.capture({
+				distinctId: member.user.id,
+				event: 'member_left',
+				properties: {
+					guild_id: member.guild.id,
+					guild_name: member.guild.name,
+				},
+			});
+		}
+
 		const result = await Result.fromAsync(async () => getGuild(member.guild.id));
 
 		await result.match({

@@ -87,6 +87,19 @@ export class StoreCommand extends Subcommand {
 		const buyResult = await handleBuy(storeItem, interaction, amount);
 		if (buyResult.isErr()) return interaction.reply((buyResult.unwrapErr() as Error).message);
 
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'item_purchased',
+			properties: {
+				item_name: storeItem.name,
+				item_display_name: storeItem.displayName,
+				item_price: storeItem.price,
+				quantity: amount,
+				total_cost: storeItem.price * amount,
+				guild_id: interaction.guildId ?? 'none',
+			},
+		});
+
 		return interaction.reply(
 			amount >= 2
 				? `You have bought ${amount} ${storeItem.displayName}s.`

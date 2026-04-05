@@ -21,6 +21,15 @@ export class GuildCreate extends Listener<typeof Events.GuildCreate> {
 
 	private async handleOk(guild: Guild) {
 		this.container.logger.info(`Joined guild ${guild.name} (${guild.id})`);
+
+		this.container.posthog.capture({
+			distinctId: guild.id,
+			event: 'guild_joined',
+			properties: {
+				guild_name: guild.name,
+				member_count: guild.memberCount,
+			},
+		});
 	}
 
 	private async handleErr(error: unknown) {

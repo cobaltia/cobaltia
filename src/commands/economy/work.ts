@@ -57,6 +57,23 @@ export class WorkCommand extends Command {
 			value: tax,
 		});
 
+		this.container.posthog.identify({
+			distinctId: interaction.user.id,
+			properties: {
+				$set: { username: interaction.user.username, discriminator: interaction.user.discriminator },
+			},
+		});
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'work_completed',
+			properties: {
+				amount_earned: money - tax,
+				tax_paid: tax,
+				guild_id: interaction.guildId ?? 'none',
+			},
+		});
+
 		const embed = new EmbedBuilder().setDescription(
 			`You worked and earned ${inlineCode(formatMoney(money - tax)!)} after tax 🤑🤑🤑`,
 		);

@@ -155,6 +155,15 @@ export class BankCommand extends Subcommand {
 			description,
 		);
 
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'bank_deposit',
+			properties: {
+				amount: Number(money),
+				guild_id: interaction.guildId ?? 'none',
+			},
+		});
+
 		const embed = new EmbedBuilder()
 			.setTitle('Deposit Successful')
 			.setDescription(formatMoney(money))
@@ -192,6 +201,15 @@ export class BankCommand extends Subcommand {
 			'WITHDRAW',
 			description,
 		);
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'bank_withdrawal',
+			properties: {
+				amount: Number(money),
+				guild_id: interaction.guildId ?? 'none',
+			},
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle('Withdraw Successful')
@@ -243,6 +261,16 @@ export class BankCommand extends Subcommand {
 			'TRANSFER',
 			description,
 		);
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'bank_transfer',
+			properties: {
+				amount: Number(money),
+				recipient_id: user.id,
+				guild_id: interaction.guildId ?? 'none',
+			},
+		});
 
 		const embed = new EmbedBuilder()
 			.setTitle('Transfer Successful')

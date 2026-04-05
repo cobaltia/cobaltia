@@ -54,6 +54,11 @@ export async function handleChatInputOrContextMenuCommandError(
 		success: false,
 	});
 
+	container.posthog.captureException(error, interaction.user.id, {
+		command: interaction.commandName,
+		guild_id: interaction.guildId ?? 'none',
+	});
+
 	logger.fatal(`[COMMAND] ${command.location.full}\n${error.stack ?? error.message}`);
 	try {
 		await alert(interaction, generateUnexpectedErrorMessage(interaction, error));

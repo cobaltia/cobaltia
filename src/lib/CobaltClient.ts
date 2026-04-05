@@ -15,6 +15,8 @@ export class CobaltClient extends SapphireClient {
 	public override async destroy() {
 		container.logger.info('Flushing Redis...');
 		await container.redis.flushall();
+		container.logger.info('Shutting down PostHog...');
+		await container.posthog.shutdown();
 		container.logger.info('Destroying client...');
 		await super.destroy();
 	}

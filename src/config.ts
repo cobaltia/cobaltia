@@ -85,6 +85,8 @@ export const WEBHOOK_ERROR = parseWebhookError();
 export const WEBHOOK_LOG = parseWebhookLog();
 export const REDIS_URI = parseRedisUri();
 export const PRISMA_LOGGING = parsePrismaLogging();
+export const POSTHOG_API_KEY = envParseString('POSTHOG_API_KEY', '');
+export const POSTHOG_HOST = envParseString('POSTHOG_HOST', 'https://us.i.posthog.com');
 
 export const CLIENT_OPTIONS: ClientOptions = {
 	intents: [
@@ -122,6 +124,8 @@ declare module '@skyra/env-utilities' {
 		OAUTH_REDIRECT_URL: string;
 		OAUTH_SCOPE: ArrayString;
 		OAUTH_SECRET: string;
+		POSTHOG_API_KEY: string;
+		POSTHOG_HOST: string;
 		REDIS_URI: string;
 		WEBHOOK_ERROR_ID: string;
 		WEBHOOK_ERROR_TOKEN: string;

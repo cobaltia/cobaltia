@@ -4,6 +4,7 @@ import '#lib/setup/webhooks';
 import '#lib/setup/buckets';
 import '#lib/setup/registry';
 import '#lib/setup/metrics';
+import '#lib/setup/posthog';
 import '@sapphire/plugin-subcommands/register';
 import '@sapphire/plugin-api/register';
 import '@sapphire/plugin-pattern-commands/register';

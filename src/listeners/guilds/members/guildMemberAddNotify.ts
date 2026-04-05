@@ -15,6 +15,22 @@ export class GuildMemberAddNotifyListener extends Listener<typeof Events.GuildMe
 	public async run(member: GuildMember) {
 		if (member.user.bot) return;
 
+		this.container.posthog.identify({
+			distinctId: member.user.id,
+			properties: {
+				$set: { username: member.user.username, discriminator: member.user.discriminator },
+			},
+		});
+
+		this.container.posthog.capture({
+			distinctId: member.user.id,
+			event: 'member_joined',
+			properties: {
+				guild_id: member.guild.id,
+				guild_name: member.guild.name,
+			},
+		});
+
 		const result = await Result.fromAsync(async () => getGuild(member.guild.id));
 
 		await result.match({

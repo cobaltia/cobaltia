@@ -82,6 +82,11 @@ export class RobCommand extends Command {
 				break;
 			case 1:
 				embed.setDescription(await this.robFail(user));
+				this.container.posthog.capture({
+					distinctId: interaction.user.id,
+					event: 'rob_failed',
+					properties: { outcome: 'fought_back', victim_id: user.id, guild_id: interaction.guildId ?? 'none' },
+				});
 				break;
 			case 2:
 				embed.setDescription(await this.robKilled(interaction, user));
@@ -128,6 +133,17 @@ export class RobCommand extends Command {
 			channel: interaction.channelId,
 			reason: 'rob',
 			value: amount,
+		});
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'rob_succeeded',
+			properties: {
+				amount,
+				bounty_added: bounty,
+				victim_id: victim.id,
+				guild_id: interaction.guildId ?? 'none',
+			},
 		});
 
 		const message = [
@@ -181,6 +197,17 @@ export class RobCommand extends Command {
 			value: robber.wallet.lessThan(0) ? robber.wallet.toNumber() : 0,
 		});
 
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'rob_failed',
+			properties: {
+				outcome: 'killed',
+				victim_id: victim.id,
+				bounty_lost: robber.bounty.toNumber(),
+				guild_id: interaction.guildId ?? 'none',
+			},
+		});
+
 		return `You tried to rob ${victim} but they fought back and killed you. They claimed your bounty of ${formatMoney(
 			robber.bounty,
 		)}. You lost all your money.`;
@@ -204,6 +231,12 @@ export class RobCommand extends Command {
 			channel: interaction.channelId,
 			reason: 'death',
 			value: fine,
+		});
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'rob_failed',
+			properties: { outcome: 'caught', fine, guild_id: interaction.guildId ?? 'none' },
 		});
 
 		return `You were caught by the police and had to pay a fine of ${formatMoney(
@@ -244,6 +277,17 @@ export class RobCommand extends Command {
 			channel: interaction.channelId,
 			reason: 'rob',
 			value: robber.wallet.toNumber(),
+		});
+
+		this.container.posthog.capture({
+			distinctId: interaction.user.id,
+			event: 'rob_failed',
+			properties: {
+				outcome: 'reversed',
+				victim_id: victim.id,
+				amount_lost: robber.wallet.toNumber(),
+				guild_id: interaction.guildId ?? 'none',
+			},
 		});
 
 		return `${victim} took advantage of your attempt to rob them and took all your money. You lost all your money.`;
