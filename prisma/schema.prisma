@@ -36,19 +36,17 @@ model Guild {
 }
 
 model User {
-  id              String            @id @db.VarChar(20)
-  bankBalance     Decimal           @default(0) @map("bank_balance")
-  bankLimit       Decimal           @default(1000) @map("bank_limit")
-  wallet          Decimal           @default(0) @map("wallet")
-  bounty          Decimal           @default(0) @map("bounty")
-  experience      Int               @default(0) @map("experience")
-  level           Int               @default(0) @map("level")
-  socialCredit    Int               @default(1000) @map("social_credit")
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
-  Voice           Voice[]
-  BankTransaction BankTransaction[]
-  Inventory       Inventory[]
+  id           String        @id @db.VarChar(20)
+  wallet       Decimal       @default(0) @map("wallet")
+  bounty       Decimal       @default(0) @map("bounty")
+  experience   Int           @default(0) @map("experience")
+  level        Int           @default(0) @map("level")
+  socialCredit Int           @default(1000) @map("social_credit")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  Voice        Voice[]
+  BankAccount  BankAccount[]
+  Inventory    Inventory[]
 
   @@map("users")
 }
@@ -82,12 +80,27 @@ model Voice {
   @@map("voices")
 }
 
+model BankAccount {
+  id           String            @id @default(cuid())
+  userId       String            @map("user_id") @db.VarChar(20)
+  balance      Decimal           @default(0) @map("balance")
+  limit        Decimal           @default(1000) @map("limit")
+  type         AccountType       @default(BANK) @map("type")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @default(now()) @updatedAt @map("updated_at")
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions BankTransaction[]
+
+  @@unique([userId, type])
+  @@map("bank_accounts")
+}
+
 model BankTransaction {
   id          String      @id @default(cuid())
   amount      Decimal     @map("amount")
   type        Transaction @map("type")
   description String[]    @map("description")
-  account     User        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account     BankAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   String      @map("account_id")
   date        DateTime    @default(now()) @map("date")
   createdAt   DateTime    @default(now()) @map("created_at")
@@ -104,6 +117,11 @@ model Event {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("events")
+}
+
+enum AccountType {
+  BANK
+  BROKERAGE
 }
 
 enum Transaction {
