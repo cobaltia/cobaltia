@@ -3,6 +3,7 @@ import { Piece } from '@sapphire/framework';
 import { type Awaitable } from '@sapphire/utilities';
 import { type ChatInputCommandInteraction } from 'discord.js';
 
+// @ts-expect-error TS6196: Keep the intentionally unused Options type parameter.
 export class Event<Options extends Event.Options = Event.Options> extends Piece<EventOptions, 'events'> {
 	public constructor(context: Event.LoaderContext, options: EventOptions) {
 		super(context, options);

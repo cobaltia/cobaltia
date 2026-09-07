@@ -4,6 +4,7 @@ import { type ChatInputCommandInteraction } from 'discord.js';
 import { type ItemPayload } from '#lib/types';
 import { ItemEmojis } from '#lib/util/constants';
 
+// @ts-expect-error TS6196: Keep the intentionally unused Options type parameter.
 export class Item<Options extends Item.Options = Item.Options> extends AliasPiece<ItemOptions, 'items'> {
 	public readonly displayName: string;
 
