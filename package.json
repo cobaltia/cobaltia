@@ -80,6 +80,6 @@
 	},
 	"lint-staged": {
 		"*": "prettier --ignore-unknown --write",
-		"*.{.mjs,js,ts}": "oxlint --fix --ext mjs,js,ts"
+		"*.{.mjs,js,ts}": "oxlint --tsconfig tsconfig.eslint.json src --fix --fix-suggestions"
 	}
 }
