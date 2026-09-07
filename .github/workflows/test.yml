@@ -12,18 +12,16 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/setup@v2
         with:
-          version: 9
-      - name: Install Node v20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
+          version: 12
+          runtime: node@24
+          cache: true
+          install: false
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
-      - name: Run Eslint
-        run: pnpm run lint --fix=false
+      - name: Run Oxlint
+        run: pnpm run lint:ci
 
   Format:
     name: Format
@@ -31,14 +29,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/setup@v2
         with:
-          version: 9
-      - name: Install Node v20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
+          version: 12
+          runtime: node@24
+          cache: true
+          install: false
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
       - name: Run Prettier
@@ -58,14 +54,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/setup@v2
         with:
-          version: 9
-      - name: Install Node v20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
+          version: 12
+          runtime: node@24
+          cache: true
+          install: false
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
       - name: Build Code
@@ -79,14 +73,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/setup@v2
         with:
-          version: 9
-      - name: Install Node v20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
+          version: 12
+          runtime: node@24
+          cache: true
+          install: false
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
       - name: Run Test
