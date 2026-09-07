@@ -8,6 +8,7 @@ WORKDIR /bot
 
 COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node package.json .
+COPY --chown=node:node pnpm-workspace.yaml .
 
 FROM base AS builder
 
